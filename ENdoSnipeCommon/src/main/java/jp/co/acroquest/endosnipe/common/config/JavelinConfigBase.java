@@ -1,20 +1,20 @@
 /*******************************************************************************
  * ENdoSnipe 5.0 - (https://github.com/endosnipe)
- *
+ * 
  * The MIT License (MIT)
- *
+ * 
  * Copyright (c) 2012 Acroquest Technology Co.,Ltd.
- *
+ * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,7 +41,7 @@ import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
 
 /**
  * Javelinの設定を保持するためのクラスです。<br />
- *
+ * 
  * @author eriguchi
  */
 public class JavelinConfigBase
@@ -311,7 +311,7 @@ public class JavelinConfigBase
 
     /** ServletJavelinで実行時に除外するパターンの判定結果キャッシュのサイズ。  */
     private static final String SERVLET_EXCLUDE_PATTERN_CACH_SIZE = JAVELIN_PREFIX
-        + "servlet.exclude.pattern.cache.size";
+        + "servlet.exclude.pattern";
 
     /** ServletJavelinで実行時に除外するパターン の判定結果キャッシュのサイズのデフォルト値。 */
     private static final int DEF_SERVLET_EXCLUDE_PATTERN_CACH_SIZE = 10000;
@@ -955,7 +955,7 @@ public class JavelinConfigBase
 
     /**
      * 指定したキーに対するBoolean値の更新を確実に反映させる。
-     *
+     * 
      * @param key 更新反映対象のキー
      */
     public void updateBooleanValue(final String key)
@@ -965,7 +965,7 @@ public class JavelinConfigBase
 
     /**
      * 指定したキーに対するInteger値の更新を確実に反映させる。
-     *
+     * 
      * @param key 更新反映対象のキー
      */
     public void updateIntValue(final String key)
@@ -975,7 +975,7 @@ public class JavelinConfigBase
 
     /**
      * 指定したキーに対するLong値の更新を確実に反映させる。
-     *
+     * 
      * @param key 更新反映対象のキー
      */
     public void updateLongValue(final String key)
@@ -1159,8 +1159,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * Bytecodeの内容を元に計測対象から除外する際のポリシーを取得する。
-     *
+     * Bytecodeの内容を元に計測対象から除外する際のポリシーを取得する。 
+     * 
      * @return Bytecodeの内容を元に計測対象から除外する際のポリシー。
      */
     public int getByteCodeExcludePolicy()
@@ -1301,7 +1301,7 @@ public class JavelinConfigBase
 
     /**
      * スレッドコンテンション監視を行うかどうかの設定を返す。
-     *
+     * 
      * @return スレッドコンテンション監視を行うかどうか。
      */
     public boolean isThreadContentionMonitor()
@@ -1992,7 +1992,7 @@ public class JavelinConfigBase
 
     /**
      * アラーム送信間隔の最小値を取得する。
-     *
+     * 
      * 前回アラーム送信・Javelinログ出力を行った際から
      * 経過した時間がこの最小値を超えていた場合のみ、アラーム送信・Javelinログ出力を行う。
      * @return アラーム送信間隔の最小値。
@@ -2004,7 +2004,7 @@ public class JavelinConfigBase
 
     /**
      * 同一のイベントを検出する間隔を取得する。
-     *
+     * 
      * @return 同一のイベントを検出する間隔。
      */
     public long getEventInterval()
@@ -2014,10 +2014,10 @@ public class JavelinConfigBase
 
     /**
      * アラーム送信間隔の最小値を設定する。
-     *
+     * 
      * 前回アラーム送信・Javelinログ出力を行った際から
      * 経過した時間がこの最小を超えていた場合のみ、アラーム送信・Javelinログ出力を行う。
-     *
+     * 
      * @param alarmMinimumInterval 閾値。
      */
     public void setAlarmMinimumInterval(final long alarmMinimumInterval)
@@ -2056,7 +2056,7 @@ public class JavelinConfigBase
 
     /**
      * Turn Around Timeの保持期間を取得する。
-     *
+     * 
      * @return Turn Around Timeの保持期間
      */
     public long getTatKeepTime()
@@ -2086,7 +2086,7 @@ public class JavelinConfigBase
 
     /**
      * ネットワーク入力量を取得するかどうかを取得する。
-     *
+     * 
      * @return ネットワーク入力量を取得するかどうか
      */
     public boolean isNetInputMonitor()
@@ -2096,7 +2096,7 @@ public class JavelinConfigBase
 
     /**
      * ネットワーク入力量を取得するかどうかを設定する。
-     *
+     * 
      * @param isNetInputMonitor ネットワーク入力量を取得するかどうか
      */
     public void setNetInputMonitor(final boolean isNetInputMonitor)
@@ -2106,7 +2106,7 @@ public class JavelinConfigBase
 
     /**
      * ネットワーク出力量を取得するかどうかを取得する。
-     *
+     * 
      * @return ネットワーク出力量を取得するかどうか
      */
     public boolean isNetOutputMonitor()
@@ -2116,7 +2116,7 @@ public class JavelinConfigBase
 
     /**
      * ネットワーク出力量を取得するかどうかを設定する。
-     *
+     * 
      * @param isNetOutputMonitor ネットワーク出力量を取得するかどうか
      */
     public void setNetOutputMonitor(final boolean isNetOutputMonitor)
@@ -2126,7 +2126,7 @@ public class JavelinConfigBase
 
     /**
      * ファイル入力量を取得するかどうかを取得する。
-     *
+     * 
      * @return ファイル入力量を取得するかどうか
      */
     public boolean isFileInputMonitor()
@@ -2136,7 +2136,7 @@ public class JavelinConfigBase
 
     /**
      * ファイル入力量を取得するかどうかを設定する。
-     *
+     * 
      * @param isFileInputMonitor ファイル入力量を取得するかどうか
      */
     public void setFileInputMonitor(final boolean isFileInputMonitor)
@@ -2146,7 +2146,7 @@ public class JavelinConfigBase
 
     /**
      * ファイル出力量を取得するかどうかを取得する。
-     *
+     * 
      * @return ファイル出力量を取得するかどうか
      */
     public boolean isFileOutputMonitor()
@@ -2156,7 +2156,7 @@ public class JavelinConfigBase
 
     /**
      * ファイル出力量を取得するかどうかを設定する。
-     *
+     * 
      * @param isFileOutputMonitor ファイル出力量を取得するかどうか
      */
     public void setFileOutputMonitor(final boolean isFileOutputMonitor)
@@ -2166,7 +2166,7 @@ public class JavelinConfigBase
 
     /**
      * ファイナライズ待ちオブジェクト数を取得するかどうかを取得する。
-     *
+     * 
      * @return ファイナライズ待ちオブジェクト数を取得するかどうか
      */
     public boolean isFinalizationCount()
@@ -2176,7 +2176,7 @@ public class JavelinConfigBase
 
     /**
      * ファイナライズ待ちオブジェクト数を取得するかどうかを設定する。
-     *
+     * 
      * @param isFinalizationCount ファイナライズ待ちオブジェクト数を取得するかどうか
      */
     public void setFinalizationCount(final boolean isFinalizationCount)
@@ -2186,7 +2186,7 @@ public class JavelinConfigBase
 
     /**
      * メソッド呼び出し間隔超過を監視するかどうかを取得する。
-     *
+     * 
      * @return メソッド呼び出し間隔超過を監視するかどうか
      */
     public boolean isIntervalMonitor()
@@ -2196,7 +2196,7 @@ public class JavelinConfigBase
 
     /**
      * メソッド呼び出し間隔超過を監視するかどうかを設定する。
-     *
+     * 
      * @param isIntervalMonitor メソッド呼び出し間隔超過を監視するかどうか
      */
     public void setIntervalMonitor(final boolean isIntervalMonitor)
@@ -2206,7 +2206,7 @@ public class JavelinConfigBase
 
     /**
      * HttpSessionのインスタンス数を監視するかどうかを取得する。
-     *
+     * 
      * @return HttpSessionのインスタンス数を監視するかどうか
      */
     public boolean isHttpSessionCount()
@@ -2216,7 +2216,7 @@ public class JavelinConfigBase
 
     /**
      * HttpSessionのインスタンス数を監視するかどうかを設定する。
-     *
+     * 
      * @param isHttpSessionCount HttpSessionのインスタンス数を監視するかどうか
      */
     public void setHttpSessionCount(final boolean isHttpSessionCount)
@@ -2226,7 +2226,7 @@ public class JavelinConfigBase
 
     /**
      * HttpSessionへの登録オブジェクト総サイズを監視するかどうかを取得する。
-     *
+     * 
      * @return HttpSessionへの登録オブジェクト総サイズを監視するかどうか
      */
     public boolean isHttpSessionSize()
@@ -2236,7 +2236,7 @@ public class JavelinConfigBase
 
     /**
      * HttpSessionへの登録オブジェクト総サイズを監視するかどうかを設定する。
-     *
+     * 
      * @param isHttpSessionSize HttpSessionへの登録オブジェクト総サイズを監視するかどうか
      */
     public void setHttpSessionSize(final boolean isHttpSessionSize)
@@ -2246,7 +2246,7 @@ public class JavelinConfigBase
 
     /**
      * Javelinの設定オブジェクトを作成する。 Javelin起動時にのみ呼び出される。
-     *
+     * 
      * @param absoluteJarDirectory Jarが存在する絶対パス
      */
     public JavelinConfigBase(final String absoluteJarDirectory)
@@ -2256,7 +2256,7 @@ public class JavelinConfigBase
 
     /**
      * ログ出力から除外する対象を記述したフィルタファイル名を返す。
-     *
+     * 
      * @return ファイル名
      */
     public String getExclude()
@@ -2267,7 +2267,7 @@ public class JavelinConfigBase
 
     /**
      * ログ出力をする対象を記述したフィルタファイル名を返す。
-     *
+     * 
      * @return ファイル名
      */
     public String getInclude()
@@ -2278,7 +2278,7 @@ public class JavelinConfigBase
 
     /**
      * JVNファイルダウンロード時の最大バイト数を返す。
-     *
+     * 
      * @return JVNファイルダウンロード時の最大バイト数。
      */
     public int getJvnDownloadMax()
@@ -2288,7 +2288,7 @@ public class JavelinConfigBase
 
     /**
      * JVNファイルダウンロード時の最大バイト数を返す。
-     *
+     * 
      * @param jvnDownloadMax JVNファイルダウンロード時の最大バイト数。
      */
     public void setJvnDownloadMax(final int jvnDownloadMax)
@@ -2298,7 +2298,7 @@ public class JavelinConfigBase
 
     /**
      * "javelin." で開始するオプションを上書きする。
-     *
+     * 
      * @param properties オプションリスト
      */
     public void overwriteProperty(final Properties properties)
@@ -2317,7 +2317,7 @@ public class JavelinConfigBase
 
     /**
      * 警告を発生させるCPU時間の閾値を設定する。
-     *
+     * 
      * @param cpuTime CPU時間
      */
     public void setAlarmCpuThreashold(final long cpuTime)
@@ -2327,7 +2327,7 @@ public class JavelinConfigBase
 
     /**
      * 警告を発生させるCPU時間の閾値を取得する。
-     *
+     * 
      * @return 警告を発生させるCPU時間の閾値
      */
     public long getAlarmCpuThreashold()
@@ -2337,7 +2337,7 @@ public class JavelinConfigBase
 
     /**
      * ライセンスファイルパスを返す。
-     *
+     * 
      * @return ライセンスファイルパス。
      */
     public String getLicensePath()
@@ -2348,7 +2348,7 @@ public class JavelinConfigBase
 
     /**
      * クラス名を単純化するかどうかのフラグ。
-     *
+     * 
      * @return 単純化する場合はtrue。
      */
     public boolean isClassNameSimplify()
@@ -2359,7 +2359,7 @@ public class JavelinConfigBase
 
     /**
      * Collectionのメモリリーク検出を行うかどうかを設定します。<br />
-     *
+     * 
      * @param collectionMonitor Collectionのメモリリーク検出を行う場合、<code>true</code>
      */
     public void setCollectionMonitor(final boolean collectionMonitor)
@@ -2369,7 +2369,7 @@ public class JavelinConfigBase
 
     /**
      * Collectionのメモリリーク検出を行うかどうかを返します。<br />
-     *
+     * 
      * @return Collectionのメモリリーク検出を行う場合、<code>true</code>
      */
     public boolean isCollectionMonitor()
@@ -2379,7 +2379,7 @@ public class JavelinConfigBase
 
     /**
      * Collection、Mapのサイズを記録する閾値を設定する。
-     *
+     * 
      * @param collectionSizeThreshold COLLECTION_SIZE_THRESHOLD
      */
     public void setCollectionSizeThreshold(final int collectionSizeThreshold)
@@ -2389,7 +2389,7 @@ public class JavelinConfigBase
 
     /**
      * Collection、Mapのサイズを記録する閾値を設定する。
-     *
+     * 
      * @return Collection、Mapのサイズを記録する閾値。
      */
     public int getCollectionSizeThreshold()
@@ -2399,7 +2399,7 @@ public class JavelinConfigBase
 
     /**
      * コレクションの数を監視する際の出力チェックの間隔を取得する。
-     *
+     * 
      * @return コレクションの数を監視する際の出力チェックの間隔。
      */
     public int getCollectionInterval()
@@ -2409,7 +2409,7 @@ public class JavelinConfigBase
 
     /**
      * コレクションの数を監視する際に保持するスタックトレースの数。
-     *
+     * 
      * @return コレクションの数を監視する際に保持するスタックトレースの数。
      */
     public int getCollectionTraceMax()
@@ -2419,7 +2419,7 @@ public class JavelinConfigBase
 
     /**
      * スタックトレースの表示に使う深さです。<br />
-     *
+     * 
      * @return スタックトレースの表示に使う深さ。
      */
     public int getTraceDepth()
@@ -2429,7 +2429,7 @@ public class JavelinConfigBase
 
     /**
      * コレクションの数を監視する際に保持するスタックトレースの深さ。
-     *
+     * 
      * @return コレクションの数を監視する際に保持するスタックトレースの深さ。
      */
     public int getCollectionLeakDetectDepth()
@@ -2439,7 +2439,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムを取得する際に、GCを行うかどうかを取得する。
-     *
+     * 
      * @return クラスヒストグラムを取得する際に、GCを行うかどうか。
      */
     public boolean getClassHistoGC()
@@ -2449,7 +2449,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムを取得する際に、GCを行うかどうかを設定する。
-     *
+     * 
      * @param classHistoGC クラスヒストグラムを取得する際に、GCを行うかどうか。
      */
     public void setClassHistoGC(final boolean classHistoGC)
@@ -2459,7 +2459,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムの上位何件を取得するかを取得する。
-     *
+     * 
      * @return クラスヒストグラムの上位何件を取得するか。
      */
     public int getClassHistoMax()
@@ -2469,7 +2469,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムの上位何件を取得するかを設定する。
-     *
+     * 
      * @param classHistoMax クラスヒストグラムの上位何件を取得するか。
      */
     public void setClassHistoMax(final int classHistoMax)
@@ -2479,7 +2479,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラム取得間隔(ミリ秒)を取得する。
-     *
+     * 
      * @return クラスヒストグラム取得間隔(ミリ秒)。
      */
     public int getClassHistoInterval()
@@ -2489,7 +2489,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラム取得間隔(ミリ秒)を設定する。
-     *
+     * 
      * @param classHistoInterval クラスヒストグラム取得間隔(ミリ秒)。
      */
     public void setClassHistoInterval(final int classHistoInterval)
@@ -2499,7 +2499,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムを取得するかどうかを取得する。
-     *
+     * 
      * @return クラスヒストグラムを取得するかどうか。
      */
     public boolean getClassHisto()
@@ -2509,7 +2509,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムを取得するかどうかを設定する。
-     *
+     * 
      * @param classHisto クラスヒストグラムを取得するかどうか。
      */
     public void setClassHisto(final boolean classHisto)
@@ -2519,7 +2519,7 @@ public class JavelinConfigBase
 
     /**
      * クラスヒストグラムを取得するかどうかを取得する。
-     *
+     * 
      * @return クラスヒストグラムを取得するかどうか。
      */
     public boolean getDetach()
@@ -2529,7 +2529,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索検出を行うかどうかを返します。<br />
-     *
+     * 
      * @return 線形検索の検出を行う場合、<code>true</code>
      */
     public boolean isLinearSearchMonitor()
@@ -2539,7 +2539,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索検出を行うかどうかを設定します。<br />
-     *
+     * 
      * @param linearSearchEnabled 線形検索検出を行うかどうか
      */
     public void setLinearSearchMonitor(final boolean linearSearchEnabled)
@@ -2549,7 +2549,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索対象となるリストサイズの閾値を取得します。<br />
-     *
+     * 
      * @return 線形検索対象となるリストサイズの閾値
      */
     public int getLinearSearchListSize()
@@ -2559,7 +2559,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索対象とするリストサイズの閾値を設定します。<br />
-     *
+     * 
      * @param size 線形検索対象とするリストサイズの閾値
      */
     public void setLinearSearchListSize(final int size)
@@ -2569,7 +2569,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索対象となる、リストに対する線形アクセス回数の割合の閾値を取得します。<br />
-     *
+     * 
      * @return リストに対する線形アクセス回数の閾値
      */
     public double getLinearSearchListRatio()
@@ -2579,7 +2579,7 @@ public class JavelinConfigBase
 
     /**
      * 線形検索対象となる、リストに対する線形アクセス回数の割合の閾値を取得します。<br />
-     *
+     * 
      * @param linearSearchRatio リストに対する線形アクセス回数の割合の閾値
      */
     public void setLinearSearchListRatio(final double linearSearchRatio)
@@ -2589,7 +2589,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視を行うかどうかを取得する。
-     *
+     * 
      * @return スレッド監視を行う場合は<code>true</code>。
      */
     public boolean getThreadMonitor()
@@ -2599,7 +2599,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視を行う間隔(ミリ秒)を取得する。
-     *
+     * 
      * @return スレッド監視を行う間隔(ミリ秒)。
      */
     public long getThreadMonitorInterval()
@@ -2609,7 +2609,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視の際に出力するスタックトレースの深さを取得する。
-     *
+     * 
      * @return スレッド監視の際に出力するスタックトレースの深さ。
      */
     public int getThreadMonitorDepth()
@@ -2619,7 +2619,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプを出力するかどうかを返します。<br />
-     *
+     * 
      * @return フルスレッドダンプを出力するときに<code>true</code>。
      */
     public boolean isThreadDump()
@@ -2629,7 +2629,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプを出力するかどうかを設定ます。<br />
-     *
+     * 
      * @param threadDumpMonitor フルスレッドダンプを出力するかどうか。
      */
     public void setThreadDumpMonitor(final boolean threadDumpMonitor)
@@ -2639,7 +2639,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力間隔を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力間隔。
      */
     public int getThreadDumpInterval()
@@ -2649,7 +2649,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力間隔を設定ます。<br />
-     *
+     * 
      * @param threadDumpInterval フルスレッドダンプ出力間隔。
      */
     public void setThreadDumpInterval(final int threadDumpInterval)
@@ -2659,7 +2659,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のスレッド数の閾値
      */
     public int getThreadDumpThreadNum()
@@ -2669,7 +2669,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpNum フルスレッドダンプ出力のスレッド数の閾値
      */
     public void setThreadDumpThreadNum(final int threadDumpNum)
@@ -2679,7 +2679,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のスレッド数の閾値
      */
     public boolean isResourceThreadRunnable()
@@ -2689,7 +2689,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpNum フルスレッドダンプ出力のスレッド数の閾値
      */
     public void setResourceThreadRunnable(final boolean threadDumpNum)
@@ -2699,7 +2699,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のスレッド数の閾値
      */
     public boolean isResourceThreadBlocked()
@@ -2709,7 +2709,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のスレッド数の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpNum フルスレッドダンプ出力のスレッド数の閾値
      */
     public void setResourceThreadBlocked(final boolean threadDumpNum)
@@ -2719,7 +2719,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のCPU使用率の閾値
      */
     public int getThreadDumpCpu()
@@ -2729,7 +2729,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpCpu フルスレッドダンプ出力のCPU使用率の閾値
      */
     public void setThreadDumpCpu(final int threadDumpCpu)
@@ -2739,7 +2739,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のCPU使用率の閾値
      */
     public int getThreadDumpCpuSys()
@@ -2749,7 +2749,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpCpu フルスレッドダンプ出力のCPU使用率の閾値
      */
     public void setThreadDumpCpuSys(final int threadDumpCpu)
@@ -2759,7 +2759,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を返します。<br />
-     *
+     * 
      * @return フルスレッドダンプ出力のCPU使用率の閾値
      */
     public int getThreadDumpCpuUser()
@@ -2769,7 +2769,7 @@ public class JavelinConfigBase
 
     /**
      * フルスレッドダンプ出力のCPU使用率の閾値を設定します。<br />
-     *
+     * 
      * @param threadDumpCpu フルスレッドダンプ出力のCPU使用率の閾値
      */
     public void setThreadDumpCpuUser(final int threadDumpCpu)
@@ -2779,7 +2779,7 @@ public class JavelinConfigBase
 
     /**
      * フルGCを検出するかどうかを設定します。<br />
-     *
+     * 
      * @param fullGCMonitor フルGCを検出する場合、<code>true</code>
      */
     public void setFullGCMonitor(final boolean fullGCMonitor)
@@ -2789,7 +2789,7 @@ public class JavelinConfigBase
 
     /**
      * フルGCを検出するかどうかを取得します。<br />
-     *
+     * 
      * @return フルGCを検出する場合、<code>true</code>
      */
     public boolean isFullGCMonitor()
@@ -2799,7 +2799,7 @@ public class JavelinConfigBase
 
     /**
      * フルGCを行うGarbageCollector名のリストを取得します。<br />
-     *
+     * 
      * @return フルGCを検出する場合、<code>true</code>
      */
     public String getFullGCList()
@@ -2809,7 +2809,7 @@ public class JavelinConfigBase
 
     /**
      * フルGC検出を行うGC時間の閾値を取得します。<br />
-     *
+     * 
      * @return フルGC検出を行うGC時間の閾値
      */
     public int getFullGCThreshold()
@@ -2819,7 +2819,7 @@ public class JavelinConfigBase
 
     /**
      * フルGC検出を行うGC時間の閾値を設定します。<br />
-     *
+     * 
      * @param threshold フルGC検出を行うGC時間の閾値
      */
     public void setFullGCThreshold(final int threshold)
@@ -2829,7 +2829,7 @@ public class JavelinConfigBase
 
     /**
      * 継承を調べる深さの最大値を取得する。
-     *
+     * 
      * @return クラスヒストグラムを取得するかどうか。
      */
     public int getInheritanceDepth()
@@ -2839,7 +2839,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視を行うかどうかを設定する。
-     *
+     * 
      * @param threadMonitor スレッド監視を行う場合はtrue。
      */
     public void setThreadMonitor(final boolean threadMonitor)
@@ -2849,7 +2849,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視を行う間隔(ミリ秒)を設定する。
-     *
+     * 
      * @param threadMonitorInterval スレッド監視を行う間隔(ミリ秒)。
      */
     public void setThreadMonitorInterval(final long threadMonitorInterval)
@@ -2859,7 +2859,7 @@ public class JavelinConfigBase
 
     /**
      * スレッド監視の際に出力するスタックトレースの深さを取得する。
-     *
+     * 
      * @param threadMonitorDepth スレッド監視の際に出力するスタックトレースの深さ。
      */
     public void setThreadMonitorDepth(final int threadMonitorDepth)
@@ -2869,7 +2869,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック回数が多すぎるかどうかの閾値を取得する。
-     *
+     * 
      * @return ブロック回数が多すぎるかどうかの閾値。
      */
     public long getBlockThreshold()
@@ -2879,7 +2879,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック回数が多すぎるかどうかの閾値を設定する。
-     *
+     * 
      * @param blockThreshold ブロック回数が多すぎるかどうかの閾値。
      */
     public void setBlockThreshold(final long blockThreshold)
@@ -2889,7 +2889,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック継続イベントを出力する際のブロック継続時間の閾値を取得する。
-     *
+     * 
      * @return ブロック継続イベントを出力する際のブロック継続時間の閾値
      */
     public long getBlockTimeThreshold()
@@ -2899,7 +2899,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック継続イベントを出力する際のブロック継続時間の閾値を設定する。
-     *
+     * 
      * @param blockTimeThreshold ブロック継続イベントを出力する際のブロック継続時間の閾値
      */
     public void setBlockTimeThreshold(final long blockTimeThreshold)
@@ -2909,7 +2909,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック回数が閾値を超えた際に取得するスレッド情報の数を取得する。
-     *
+     * 
      * @return ブロック回数が閾値を超えた際に取得するスレッド情報の数。
      */
     public int getBlockThreadInfoNum()
@@ -2919,7 +2919,7 @@ public class JavelinConfigBase
 
     /**
      * ブロック回数が閾値を超えた際に取得するスレッド情報の数を設定する。
-     *
+     * 
      * @param blockThreadInfoNum ブロック回数が閾値を超えた際に取得するスレッド情報の数。
      */
     public void setBlockThreadInfoNum(final int blockThreadInfoNum)
@@ -2929,7 +2929,7 @@ public class JavelinConfigBase
 
     /**
      * メソッドに対する呼び出し間隔の閾値定義を取得する。
-     *
+     * 
      * @return メソッドに対する呼び出し間隔の閾値定義。
      */
     public String getIntervalThreshold()
@@ -2939,7 +2939,7 @@ public class JavelinConfigBase
 
     /**
      * メソッドに対する呼び出し間隔の閾値定義を設定する。
-     *
+     * 
      * @param callCountThreshold メソッドに対する呼び出し間隔の閾値定義。
      */
     public void setIntervalThreshold(final String callCountThreshold)
@@ -2949,7 +2949,7 @@ public class JavelinConfigBase
 
     /**
      * メソッドに対する、引数の値ごとの呼び出し間隔の閾値定義を取得する。
-     *
+     * 
      * @return メソッドに対する、引数の値ごとの呼び出し間隔の閾値定義。
      */
     public String getIntervalPerArgsThreshold()
@@ -2959,7 +2959,7 @@ public class JavelinConfigBase
 
     /**
      * メソッドに対する、引数の値ごとの呼び出し間隔の閾値定義を設定する。
-     *
+     * 
      * @param callCountThreshold メソッドに対する、引数の値ごとの呼び出し間隔の閾値定義。
      */
     public void setIntervalPerArgsThreshold(final String callCountThreshold)
@@ -2979,7 +2979,7 @@ public class JavelinConfigBase
 
     /**
      * 複数スレッドアクセス監視を行うどうかを返します。<br />
-     *
+     * 
      * @return true:監視する、false:監視しない。
      */
     public boolean isConcurrentAccessMonitored()
@@ -2999,7 +2999,7 @@ public class JavelinConfigBase
 
     /**
      * タイムアウト値設定の監視を行うかどうかを返します。<br />
-     *
+     * 
      * @return タイムアウト値の設定の監視を行う場合、<code>true</code>
      */
     public boolean isTimeoutMonitor()
@@ -3009,7 +3009,7 @@ public class JavelinConfigBase
 
     /**
      * 計測対象から自動除外する呼び出し回数の閾値を返します。<br />
-     *
+     * 
      * @return 計測対象から自動除外する呼び出し回数の閾値
      */
     public int getAutoExcludeThresholdCount()
@@ -3020,7 +3020,7 @@ public class JavelinConfigBase
 
     /**
      * 計測対象から自動除外する実行時間の閾値を返します。<br />
-     *
+     * 
      * @return 計測対象から自動除外する実行時間の閾値(単位:ミリ秒)
      */
     public int getAutoExcludeThresholdTime()
@@ -3030,7 +3030,7 @@ public class JavelinConfigBase
 
     /**
      * Javelinの再接続間隔を取得
-     *
+     * 
      * @return Javelinの再接続間隔
      */
     public int getJavelinBindInterval()
@@ -3040,7 +3040,7 @@ public class JavelinConfigBase
 
     /**
      * Javelinの再接続間隔を設定
-     *
+     * 
      * @param javelinBindInterval 再接続間隔
      */
     public void setJavelinBindInterval(final int javelinBindInterval)
@@ -3050,7 +3050,7 @@ public class JavelinConfigBase
 
     /**
      * Log4Jのログ出力において、スタックトレースを出力する閾値レベルを取得する。
-     *
+     * 
      * @return スタックトレースを出力する閾値レベル
      */
     public String getLog4jPrintStackLevel()
@@ -3060,7 +3060,7 @@ public class JavelinConfigBase
 
     /**
      * Log4Jのログ出力において、スタックトレースを出力する閾値レベルを設定する。
-     *
+     * 
      * @param log4jPrintStackLevel スタックトレースを出力する閾値レベル
      */
     public void setLog4jPrintStackLevel(final String log4jPrintStackLevel)
@@ -3069,8 +3069,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * デッドロックの監視を行うか、を取得する。<br />
-     *
+     * デッドロックの監視を行うか、を取得する。<br /> 
+     * 
      * @return デッドロックの監視を行うか
      */
     public boolean isDeadLockMonitor()
@@ -3079,8 +3079,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * デッドロックの監視を行うか、を設定する。<br />
-     *
+     * デッドロックの監視を行うか、を設定する。<br /> 
+     * 
      * @param deadLockMonitor デッドロックの監視を行うか
      */
     public void setDeadLockMonitor(final boolean deadLockMonitor)
@@ -3089,8 +3089,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうかを取得する。<br />
-     *
+     * EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうかを取得する。<br /> 
+     * 
      * @return EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうか
      */
     public boolean isEjbSessionMonitor()
@@ -3099,8 +3099,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうかを設定する。<br />
-     *
+     * EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうかを設定する。<br /> 
+     * 
      * @param ejbSessionMonitor EJBのセッションBeanの呼び出し／応答までの時間の監視を行うかどうか
      */
     public void setEjbSessionMonitor(final boolean ejbSessionMonitor)
@@ -3109,8 +3109,8 @@ public class JavelinConfigBase
     }
 
     /**
-     * BottleNeckEye/DataCollectorとの通信用ポートを範囲指定するかを取得する。<br />
-     *
+     * BottleNeckEye/DataCollectorとの通信用ポートを範囲指定するかを取得する。<br /> 
+     * 
      * @return BottleNeckEye/DataCollectorとの通信用ポートを範囲指定するか
      */
     public boolean isAcceptPortIsRange()
@@ -3120,7 +3120,7 @@ public class JavelinConfigBase
 
     /**
      * BottleNeckEye/DataCollectorとの通信用ポートを範囲指定する際の最大値を取得
-     *
+     * 
      * @return BottleNeckEye/DataCollectorとの通信用ポートを範囲指定する際の最大値
      */
     public int getAcceptPortRangeMax()
@@ -3220,7 +3220,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドを監視するかどうかを返します。<br />
-     *
+     * 
      * @return ストールメソッドを監視するときに<code>true</code>。
      */
     public boolean isMethodStallMonitor()
@@ -3230,7 +3230,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドを監視するかどうかを設定ます。<br />
-     *
+     * 
      * @param methodStallMonitor ストールメソッドを監視するかどうか。
      */
     public void setMethodStallMonitor(final boolean methodStallMonitor)
@@ -3240,7 +3240,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドを監視する周期を返します。<br />
-     *
+     * 
      * @return ストールメソッドを監視する周期。
      */
     public int getMethodStallInterval()
@@ -3250,7 +3250,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドを監視する周期を設定ます。<br />
-     *
+     * 
      * @param methodStallInterval ストールメソッドを監視する周期。
      */
     public void setMethodStallInterval(final int methodStallInterval)
@@ -3260,7 +3260,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドと判断する閾値を返します。<br />
-     *
+     * 
      * @return ストールメソッドと判断する閾値。
      */
     public int getMethodStallThreshold()
@@ -3270,7 +3270,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッドと判断する閾値を設定ます。<br />
-     *
+     * 
      * @param methodStallThreshold ストールメソッドと判断する閾値。
      */
     public void setMethodStallThreshold(final int methodStallThreshold)
@@ -3280,7 +3280,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッド検出時に出力するスタックトレースの深さを返します。<br />
-     *
+     * 
      * @return ストールメソッド検出時に出力するスタックトレースの深さ。
      */
     public int getMethodStallTraceDepth()
@@ -3290,7 +3290,7 @@ public class JavelinConfigBase
 
     /**
      * ストールメソッド検出時に出力するスタックトレースの深さを設定ます。<br />
-     *
+     * 
      * @param methodStallTraceDepth ストールメソッド検出時に出力するスタックトレースの深さ。
      */
     public void setMethodStallTraceDepth(final int methodStallTraceDepth)
@@ -3300,7 +3300,7 @@ public class JavelinConfigBase
 
     /**
      * HTTPステータス出力可否を設定します。
-     *
+     * 
      * @param isHttpStatusError HTTPステータスエラーを通知するかどうか
      */
     public void setHttpStatusError(final boolean isHttpStatusError)
@@ -3310,7 +3310,7 @@ public class JavelinConfigBase
 
     /**
      * HTTPステータス出力可否を取得します。
-     *
+     * 
      * @return HTTPステータスエラーの通知可否
      */
     public boolean isHttpStatusError()
@@ -3320,7 +3320,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバのホスト名を取得します。
-     *
+     * 
      * @return MBeanサーバのホスト名
      */
     public String getJMXHost()
@@ -3330,7 +3330,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバのホスト名を設定します。
-     *
+     * 
      * @param hostname MBeanサーバのホスト名
      */
     public void setJMXHost(final String hostname)
@@ -3340,7 +3340,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバのポート番号を取得します。
-     *
+     * 
      * @return MBeanサーバのポート番号
      */
     public int getJMXPort()
@@ -3350,7 +3350,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバのポート番号を設定します。
-     *
+     * 
      * @param port MBeanサーバのポート番号
      */
     public void setJMXPort(final int port)
@@ -3360,7 +3360,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバの認証ユーザ名を取得します。
-     *
+     * 
      * @return MBeanサーバの認証ユーザ名
      */
     public String getJMXUserName()
@@ -3370,7 +3370,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバの認証ユーザ名を設定します。
-     *
+     * 
      * @param userName MBeanサーバの認証ユーザ名
      */
     public void setJMXUserName(final String userName)
@@ -3380,7 +3380,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバの認証パスワードを取得します。
-     *
+     * 
      * @return MBeanサーバの認証パスワード
      */
     public String getJMXPassword()
@@ -3390,7 +3390,7 @@ public class JavelinConfigBase
 
     /**
      * MBeanサーバの認証パスワードを設定します。
-     *
+     * 
      * @param password MBeanサーバの認証パスワード
      */
     public void setJMXPassword(final String password)
@@ -3400,7 +3400,7 @@ public class JavelinConfigBase
 
     /**
      * 接続モード(server/client)を返します。<br />
-     *
+     * 
      * @return 接続モード(server/client)。
      */
     public String getConnectionMode()
@@ -3410,7 +3410,7 @@ public class JavelinConfigBase
 
     /**
      * 接続モード(server/client)を返します。<br />
-     *
+     * 
      * @param connectionMode 接続モード(server/client)。
      */
     public void setConnectionMode(final String connectionMode)
@@ -3420,7 +3420,7 @@ public class JavelinConfigBase
 
     /**
      * 項目名に付与する接頭辞の文字列を取得します。
-     *
+     * 
      * @return 項目名に付与する接頭辞。
      */
     public String getItemNamePrefix()
@@ -3430,7 +3430,7 @@ public class JavelinConfigBase
 
     /**
      * 項目名に接頭辞を付与しないパターンを取得します。
-     *
+     * 
      * @return 項目名に接頭辞を付与しないパターン(前方一致)。
      */
     public String getItemNameNoPrefixList()
@@ -3440,7 +3440,7 @@ public class JavelinConfigBase
 
     /**
      * HadoopAgentからリソース値を取得するかどうかを指定します。
-     *
+     * 
      * @return HadoopAgentからリソース値を取得する場合はtrue、そうでない場合はfalse。
      */
     public boolean isCollectHadoopAgentResources()
@@ -3451,7 +3451,7 @@ public class JavelinConfigBase
 
     /**
      * HBaseAgentからリソース値を取得するかどうかを指定します。
-     *
+     * 
      * @return HBaseAgentからリソース値を取得する場合はtrue、そうでない場合はfalse。
      */
     public boolean isCollectHBaseAgentResources()
@@ -3462,7 +3462,7 @@ public class JavelinConfigBase
 
     /**
      * Invocation名の長さの上限を示す。
-     *
+     * 
      * @return Invocation名の長さの上限。
      */
     public int getInvocationNameLimitLength()
@@ -3473,7 +3473,7 @@ public class JavelinConfigBase
 
     /**
      * Javelinを適用したプロセスが属するクラスタ名称を取得する。
-     *
+     * 
      * @return Javelinを適用したプロセスが属するクラスタ名称。
      */
     public String getClusterName()
@@ -3483,7 +3483,7 @@ public class JavelinConfigBase
 
     /**
      * スレッドダンプの閾値
-     *
+     * 
      * @return スレッドダンプの閾値。
      */
     public Map<String, Double> getThreadDumpResourceTreshold()
@@ -3574,7 +3574,7 @@ public class JavelinConfigBase
 
     /**
      * ServletJavelinで実行時に除外するパターンの判定結果キャッシュのサイズを返します。<br />
-     *
+     * 
      * @return ServletJavelinで実行時に除外するパターンの判定結果キャッシュのサイズ。
      */
     public int getServletExcludePatternCacheSize()
@@ -3585,7 +3585,7 @@ public class JavelinConfigBase
 
     /**
      * ServletJavelinで実行時に除外するパターンの判定結果キャッシュのサイズを設定します。<br />
-     *
+     * 
      * @param servletExcludePatternCacheSize ServletJavelinで実行時に除外するパターンの判定結果キャッシュのサイズ。
      */
     public void setServletExcludePatternCacheSize(final int servletExcludePatternCacheSize)
