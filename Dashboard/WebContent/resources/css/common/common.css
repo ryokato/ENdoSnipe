@@ -208,3 +208,14 @@ tr.ui-state-hover {
 tr.ui-state-hover a {
 	text-decoration: underline !important;
 }
+
+.default-btn {
+	height: 30px;
+	margin: 5px 5px 5px 0px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.clear-float {
+	clear: both;
+}

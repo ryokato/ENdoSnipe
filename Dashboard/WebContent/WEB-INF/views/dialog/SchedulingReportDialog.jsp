@@ -11,7 +11,7 @@
 <body>
 	<div id="persArea"></div>
 	<input id="treeData" type="hidden" value='${treeData}' />
-	<div id="schedulingReportDialog" title="Scheduling Report" style="display: none">
+	<div id="schedulingReportDialog" title="Periodic Report" style="display: none">
 		<div id="schedulingReportNameArea" class="dialogContentArea"
 			style="display: none">
 			<div id="reportIdValue" class="dialogValue">
@@ -22,7 +22,7 @@
 			
 		</div>
 		<div id="schedulingReportNameArea" class="dialogContentArea">
-			<div id="schedulingReportNameItem" class="dialogItem">Scheduling Report Name :</div>
+			<div id="schedulingReportNameItem" class="dialogItem">Periodic Report Name :</div>
 			<div id="schedulingReportNameValue" class="dialogValue">
 				<input type="text" style="width:410px" id="schedulingReportName" class="schedulingReportValue"
 					value="" />
@@ -37,7 +37,7 @@
 			</div>
 		</div>
 		<div id="schedulingReportSetTermArea" class="dialogContentArea">
-			<div id="schedulingReportSetTermItem" class="dialogItem">Scheduling Report Term :</div>
+			<div id="schedulingReportSetTermItem" class="dialogItem">Periodic Report Term :</div>
 			
 			<div id="schedulingReportSetTermValue" class="dialogValue">
 				<input type="radio" name="scheduling_report_type" id="schedulingReportDaily" value="DAILY" checked />DAILY&nbsp; <!-- checked  -->

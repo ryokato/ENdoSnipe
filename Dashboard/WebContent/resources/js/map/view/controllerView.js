@@ -52,14 +52,15 @@ ENS.controllerView = wgp.AbstractView
 				});
 				$("#controllerDiv")
 						.append(
-								"<input type='button' id='controllerReloadButton' value='reload'>");
+								"<input type='button' class='default-btn' id='controllerReloadButton' value='reload'>");
 				$("#controllerDiv").append(
-						"<input type='button' id='controllerClearButton' value='clear'>");
+						"<input type='button' class='default-btn' id='controllerClearButton' value='clear'>");
 				$("#controllerDiv")
 						.append(
-								"<input type='button' id='controllerUpdateButton' value='update'>");
+								"<input type='button' class='default-btn' id='controllerUpdateButton' value='update'>");
 				$("#controllerDiv").append('<table id="controllerTable"></table>');
-				var height = 600;
+				$("#controllerDiv").append('<div id="controllerPager"></table>');
+				var height = "auto";
 
 				$("#controllerTable").jqGrid(
 						{

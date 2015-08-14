@@ -343,7 +343,7 @@ ENS.tree.contextOption = [ {
 	children : []
 }, {
 	menu_id : ENS.tree.OUTPUT_REPORT_SCHEDULE_TYPE,
-	menu_name : "Scheduling Report",
+	menu_name : "Periodic Report",
 	executeClass : "ENS.SchedulingReportDialogView",
 	showTreeTypes : [ ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
 	executeOption : {
@@ -363,7 +363,7 @@ ENS.tree.contextOption = [ {
 	children : []
 },{
 	menu_id : ENS.tree.DELETE_REPORT_SCHEDULE_TYPE,
-	menu_name : "Delete Scheduling Report",
+	menu_name : "Delete Periodic Report",
 	executeClass : "",
 	showTreeTypes : [ ENS.tree.type.REPORT_SCHEDULE ],
 	executeOption : {

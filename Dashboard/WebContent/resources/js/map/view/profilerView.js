@@ -98,15 +98,15 @@ ENS.profilerView = wgp.AbstractView
 				});
 				$("#profilerDiv")
 						.append(
-								"<input type='button' id='reloadButton' value='reload'>");
+								"<input type='button' class='default-btn' id='reloadButton' value='reload'>");
 				$("#profilerDiv").append(
-						"<input type='button' id='resetButton' value='reset'>");
+						"<input type='button' class='default-btn' id='resetButton' value='reset'>");
 				$("#profilerDiv")
 						.append(
-								"<input type='button' id='updateButton' value='update'>");
+								"<input type='button' class='default-btn' id='updateButton' value='update'>");
 				$("#profilerDiv")
 				.append(
-						"<input type='button' id='downloadButton' value='download'>");
+						"<input type='button' class='default-btn' id='downloadButton' value='download'>");
 				$("#profilerDiv").append('<table id="profilerTable"></table>');
 				$("#profilerDiv").append('<div id="profilerPager"></table>');
 				var height = "auto";
