@@ -10,9 +10,9 @@ ENS.profilerView = wgp.AbstractView
 					"profileValueChanged" ],
 			initialize : function(argument, treeSettings) {
 				var instance = this;
-				this.tableMargin = 20;
-				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+				this.tableMargin = 50;
+				this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+						- this.tableMargin);
 				this.tableColModel = this.createTableColModel();
 
 				var appView = new ENS.AppView();
@@ -94,11 +94,17 @@ ENS.profilerView = wgp.AbstractView
 			render : function() {
 				$("#" + this.id).append('<div id="profilerDiv"></div>');
 				$("#profilerDiv").css({
-					"margin-left" : 5
+					"margin-left" : 5,
+					"margin-top" : 5
 				});
 				$("#profilerDiv")
 						.append(
 								"<input type='button' class='default-btn' id='reloadButton' value='reload'>");
+				
+				$("#reloadButton").css({
+					"margin-left": this.tableWidth - 290 + "px"
+				});
+				
 				$("#profilerDiv").append(
 						"<input type='button' class='default-btn' id='resetButton' value='reset'>");
 				$("#profilerDiv")

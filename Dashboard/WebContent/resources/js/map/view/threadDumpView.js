@@ -6,9 +6,9 @@ ENS.threadDumpView = wgp.AbstractView
 					"threadDumpInfo" ],
 			initialize : function(argument, treeSettings) {
 				var instance = this;
-				this.tableMargin = 20;
-				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+				this.tableMargin = 50;
+				this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+						- this.tableMargin);
 				this.tableColModel = this.createTableColModel();
 				var appView = new ENS.AppView();
 				this.appView = appView;
@@ -73,16 +73,12 @@ ENS.threadDumpView = wgp.AbstractView
 						.append("<div class='clear-float'></div>");
 				$("#button").css(
 						{
-							"margin-right" : $("#contents_area_content")
-									.width()
-									- (this.tableWidth + 5),
-							"float" : "right"
+							"margin-left" : this.tableWidth - 136 + "px",
 						});
 				$("#threadDumpDiv").append(
 						'<table id="threadDumpTable"></table>');
 				$("#threadDumpDiv")
 						.append('<div id="threadDumpPager"></table>');
-				var height = "auto";
 				$("#threadDumpTable").jqGrid({
 					datatype : "local",
 					data : "",
@@ -94,7 +90,7 @@ ENS.threadDumpView = wgp.AbstractView
 					rowList : [ 20, 50, 100 ],
 					pgbuttons : true,
 					pginput : true,
-					height : height,
+					height : "auto",
 					width : this.tableWidth,
 					sortname : "date",
 					sortorder : "desc",
@@ -163,10 +159,10 @@ ENS.threadDumpView = wgp.AbstractView
 			createTableColModel : function() {
 				var tableColModel = [ {
 					name : "date",
-					width : parseInt(0.33 * this.tableWidth)
+					width : parseInt(0.32 * this.tableWidth)
 				}, {
 					name : "detail",
-					width : parseInt(0.33 * this.tableWidth),
+					width : parseInt(0.32 * this.tableWidth),
 					formatter : ENS.Utility.makeAnchor,
 					editoptions : {
 						"onclick" : "ENS.threadDump.dialog",
@@ -174,7 +170,7 @@ ENS.threadDumpView = wgp.AbstractView
 					}
 				}, {
 					name : "download",
-					width : parseInt(0.33 * this.tableWidth),
+					width : parseInt(0.31 * this.tableWidth),
 					formatter : ENS.Utility.makeAnchor,
 					editoptions : {
 						"onclick" : "ENS.threadDump.download",
@@ -190,7 +186,6 @@ ENS.threadDumpView = wgp.AbstractView
 				return tableColModel;
 			},
 			changedData : function(threadDumpInfo) {
-				$("#threadDumpTable").jqGrid("setGridHeight", 500);
 				var changed = threadDumpInfo;
 				if (changed != null) {
 					changed = changed.replace(/>/g, "&gt;").replace(/</g,

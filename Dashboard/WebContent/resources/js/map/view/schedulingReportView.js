@@ -8,9 +8,9 @@ ENS.schedulingReportView = wgp.AbstractView
 			
 				var appView = new ENS.AppView();
 				this.treeSettings = treeSettings;
-				this.tableMargin = 20;
-				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+				this.tableMargin = 50;
+				this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+						- this.tableMargin);
 
 				// 空のテーブルを作成
 				this.createTabelColModel();

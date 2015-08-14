@@ -3,9 +3,8 @@ ENS.perfDoctorView = wgp.AbstractView.extend({
 			"Method Name", "Detail", "Download", "Logfile", "detailResult" ],
 	initialize : function(argument, treeSettings) {
 
-		this.tableMargin = 20;
-		this.tableWidth = parseInt($("#" + this.id).width() - this.tableMargin
-				* 4);
+		this.tableMargin = 50;
+		this.tableWidth = parseInt($("#persArea_drop_0_1").width() - this.tableMargin);
 		this.tableColModel = this.createTableColModel();
 
 		var appView = new ENS.AppView();

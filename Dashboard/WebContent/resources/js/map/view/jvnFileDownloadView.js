@@ -1,9 +1,9 @@
 ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 	initialize : function(argument, treeSettings) {
 		this.treeSettings = treeSettings;
-		this.tableMargin = 20;
-		this.tableWidth = parseInt($("#" + this.id).width()
-				- this.tableMargin * 4);
+		this.tableMargin = 50;
+		this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+				- this.tableMargin);
 		this.render();
 	},
 	render : function() {
@@ -88,8 +88,7 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 		$downloadButton.attr("class", "default-btn");
 		$downloadButton.html("Download");
 		$downloadButton.css({
-			"margin-right" : $("#contents_area_content").width()- (this.tableWidth + 5),
-			"float" : "right"
+			"margin-left" : this.tableWidth - 86 + "px",
 		});
 		
 		$downloadDiv.append($downloadForm);
