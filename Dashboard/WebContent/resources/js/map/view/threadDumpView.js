@@ -170,7 +170,7 @@ ENS.threadDumpView = wgp.AbstractView
 					}
 				}, {
 					name : "download",
-					width : parseInt(0.31 * this.tableWidth),
+					width : parseInt(0.315 * this.tableWidth),
 					formatter : ENS.Utility.makeAnchor,
 					editoptions : {
 						"onclick" : "ENS.threadDump.download",

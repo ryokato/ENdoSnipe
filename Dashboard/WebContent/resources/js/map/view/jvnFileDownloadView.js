@@ -191,7 +191,7 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 			            },
 			            {
 			            	name: "threadName",
-			            	width: parseInt(instance.tableWidth * 0.19)
+			            	width: parseInt(instance.tableWidth * 0.192)
 			            }
 		            ],
 					colNames : ["log id","log file name", "Start Time", "End Time", "Caller Class", "Callee Method", "Processing Time", "Thread Name"],
