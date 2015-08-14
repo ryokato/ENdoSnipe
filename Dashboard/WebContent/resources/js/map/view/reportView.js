@@ -8,9 +8,9 @@ ENS.reportView = wgp.AbstractView
 				var treeId = treeSettings.treeId;
 				appView.addView(this, treeId + ENS.URL.PERFDOCTOR_POSTFIX_ID);
 
-				this.tableMargin = 20;
+				this.tableMargin = 50;
 				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+						- this.tableMargin);
 
 				// 空のテーブルを作成
 				this.createTabelColModel();
@@ -104,7 +104,7 @@ ENS.reportView = wgp.AbstractView
 					}
 				}, {
 					name : "Delete",
-					width : parseInt(this.tableWidth * 0.097),
+					width : parseInt(this.tableWidth * 0.087),
 					formatter : ENS.Utility.makeAnchor,
 					editoptions : {
 						"onclick" : "ENS.report.deleteNode",
