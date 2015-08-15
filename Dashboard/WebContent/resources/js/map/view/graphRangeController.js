@@ -395,6 +395,9 @@ ENS.graphRangeController.prototype._createChangeModeIcon = function(){
 		$editMode.attr("title", "Operate Mode");
 		$editMode.attr("src", contextPath+"/resources/images/map/operateModeIcon.png");
 		$editMode.click(function(){
+			// 編集モードの場合、操作した内容を保存するか確認する。
+			window.resourceDashboardListView.saveOperation();
+			
 			var $selector = $("#"+ENS.graphRange.ID_DASHBOARD_NAME);
 			var dashboardName = $selector.val();
 			$("#dashboardMode").val(ENS.dashboard.mode.OPERATE);
