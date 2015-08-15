@@ -679,7 +679,7 @@ ENS.DashboardElementPropertyTextboxTab = ENS.DashboardElementPropertyTextTab.ext
 				textAnchorAttribute.type,
 				this.property.textAnchor,
 				textAnchorAttribute.selection);
-		var textAnchorRow = $("<div class='dashboardPropertyItem'></div>");
+		var textAnchorRow = $("<div class='dashboardPropertyFontItem'></div>");
 		textAnchorRow.append(textAnchorSpan).append(textAnchorSelect);
 		parentDiv.append(textAnchorRow);
 		return parentDiv;
