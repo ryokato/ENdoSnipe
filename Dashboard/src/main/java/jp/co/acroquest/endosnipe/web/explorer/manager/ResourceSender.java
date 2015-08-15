@@ -39,6 +39,7 @@ import jp.co.acroquest.endosnipe.common.entity.ResourceData;
 import jp.co.acroquest.endosnipe.web.explorer.dto.MeasurementValueDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.MultipleMeasurementValueDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.TreeMenuDto;
+import jp.co.acroquest.endosnipe.web.explorer.util.ResourceNameUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -242,7 +243,8 @@ public class ResourceSender
         for (String groupId : listeners)
         {
             // 正規表現で一致する場合、または完全一致する場合
-            if (itemName.matches(groupId) || itemName.equals(groupId))
+            if (itemName.matches(ResourceNameUtil.getRegularName(groupId))
+                    || itemName.equals(groupId))
             {
                 groupIdList.add(groupId);
 

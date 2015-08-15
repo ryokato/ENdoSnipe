@@ -44,6 +44,7 @@ import jp.co.acroquest.endosnipe.web.explorer.form.TermDataForm;
 import jp.co.acroquest.endosnipe.web.explorer.manager.DatabaseManager;
 import jp.co.acroquest.endosnipe.web.explorer.service.JvnFileEntryJudge;
 import jp.co.acroquest.endosnipe.web.explorer.service.MeasurementValueService;
+import jp.co.acroquest.endosnipe.web.explorer.util.ResourceNameUtil;
 import net.arnx.jsonic.JSON;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,7 +103,7 @@ public class TermDataController
 
         StringBuilder patternStr = new StringBuilder();
         Map<String, List<MeasurementValueDto>> measurementValueMap;
-        if (isLikeSearch(dataGroupIdList))
+        if (ResourceNameUtil.isLikeSearch(dataGroupIdList))
         {
             // 検索用のlikeパターンを作成する。
             for (String dataId : dataGroupIdList)
@@ -129,7 +130,7 @@ public class TermDataController
                 }
                 patternStr.append(dataId);
                 patternStr.append('|');
-                patternStr.append(dataId.replaceAll("([\\[\\](){}.+*^$|\\\\?-])", "\\\\$1"));
+                patternStr.append(ResourceNameUtil.getRegularName(dataId));
             }
 
             long startTime = Long.valueOf(termDataForm.getStartTime());
@@ -175,23 +176,6 @@ public class TermDataController
         }
 
         return responseDataList;
-    }
-
-    /**
-     * LIKE検索が行えるかを判定する。
-     * 
-     * @param dataGroupIdList 検索条件
-     * @return LIKE検索が行えるかどうか。
-     */
-    private boolean isLikeSearch(final List<String> dataGroupIdList)
-    {
-        if (dataGroupIdList == null || dataGroupIdList.size() > 1)
-        {
-            return false;
-        }
-
-        String str = dataGroupIdList.get(0).replace(".*", "");
-        return str.replaceAll("[\\[\\]{}.+*^$|\\\\?-]", "").length() == str.length();
     }
 
     /**
