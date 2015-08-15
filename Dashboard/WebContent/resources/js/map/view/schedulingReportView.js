@@ -69,7 +69,7 @@ ENS.schedulingReportView = wgp.AbstractView
 					width : this.tableWidth * 0.25
 				}, {
 					name : "targetMeasurementName",
-					width : this.tableWidth * 0.34
+					width : this.tableWidth * 0.343
 				}, {
 					name : "term",
 					width : this.tableWidth * 0.08
