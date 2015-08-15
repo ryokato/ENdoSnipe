@@ -25,11 +25,11 @@ ENS.SchedulingReportDialogView = ENS.DialogView
 															"#schedulingReportName")
 															.val();
 													if (schedulingReportName === "") {
-														alert("Please input 'Scheduling Report Name'.");
+														alert("Please input 'Periodic Report Name'.");
 														return;
 													} else if (schedulingReportName
 															.match(/[\\\/]/)) {
-														alert("Don't use '/'or'\\' in 'Scheduling Report Name'.");
+														alert("Don't use '/'or'\\' in 'Periodic Report Name'.");
 														return;
 													}
 													var schedulingTime = $(
@@ -224,7 +224,7 @@ ENS.SchedulingReportDialogView = ENS.DialogView
 				$('#schedulingReportTime')
 						.append(
 								"Time:&nbsp;<select id=schedulingReportSelectedTimeId name=schedulingReportSelectedTimeId><option value=>Hours</option></select>");
-				for (index = 1; index < 25; index++) {
+				for (index = 0; index < 24; index++) {
 					if (index < 10) {
 						$('#schedulingReportSelectedTimeId').append(
 								"<option value='" + 0 + index + "'>" + 0

@@ -133,7 +133,7 @@ ENS.schedulingReportParentElem = {
 ENS.schedulingReportParentView = {
 		viewClassName : "wgp.MultiAreaView",
 		rootView : appView,
-		tabTitle : "Scheduling Report",
+		tabTitle : "Periodic Report",
 		collection : [ ENS.schedulingReportParentElem ]
 	};
 
@@ -183,7 +183,7 @@ ENS.schedulingReportNodeParentElem = {
 ENS.schedulingReportNodeParentView = {
 		viewClassName : "wgp.MultiAreaView",
 		rootView : appView,
-		tabTitle : "Scheduling Report",
+		tabTitle : "Periodic Report",
 		collection : [ ENS.schedulingReportParentElem ]
 	};
 ENS.ResourceDashboardField = {

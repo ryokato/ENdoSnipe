@@ -3,9 +3,9 @@ ENS.controllerView = wgp.AbstractView
 			tableColNames : [ "Property", "Current Value", "Update Value", "Property Detail"],
 			initialize : function(argument, treeSettings) {
 				var instance = this;
-				this.tableMargin = 20;
-				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+				this.tableMargin = 50;
+				this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+						- this.tableMargin);
 				this.tableColModel = this.createTableColModel();
 
 				var appView = new ENS.AppView();
@@ -48,18 +48,24 @@ ENS.controllerView = wgp.AbstractView
 			render : function() {
 				$("#" + this.id).append('<div id="controllerDiv"></div>');
 				$("#controllerDiv").css({
-					"margin-left" : 5
+					"margin-left" : 5,
+					"margin-top" : 5
 				});
 				$("#controllerDiv")
 						.append(
-								"<input type='button' id='controllerReloadButton' value='reload'>");
+								"<input type='button' class='default-btn' id='controllerReloadButton' value='reload'>");
+				$("#controllerReloadButton").css({
+					"margin-left": this.tableWidth - 198 + "px"
+				});
+				
 				$("#controllerDiv").append(
-						"<input type='button' id='controllerClearButton' value='clear'>");
+						"<input type='button' class='default-btn' id='controllerClearButton' value='clear'>");
 				$("#controllerDiv")
 						.append(
-								"<input type='button' id='controllerUpdateButton' value='update'>");
+								"<input type='button' class='default-btn' id='controllerUpdateButton' value='update'>");
 				$("#controllerDiv").append('<table id="controllerTable"></table>');
-				var height = 600;
+				$("#controllerDiv").append('<div id="controllerPager"></table>');
+				var height = "auto";
 
 				$("#controllerTable").jqGrid(
 						{
@@ -154,7 +160,7 @@ ENS.controllerView = wgp.AbstractView
 						},
 						{
 							name : "propertyDetail",
-							width : parseInt(this.tableWidth * 0.55)
+							width : parseInt(this.tableWidth * 0.5)
 						}];
 				return tableColModel;
 			}

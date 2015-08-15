@@ -1,20 +1,23 @@
 ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 	initialize : function(argument, treeSettings) {
 		this.treeSettings = treeSettings;
-		this.tableMargin = 20;
-		this.tableWidth = parseInt($("#" + this.id).width()
-				- this.tableMargin * 4);
+		this.tableMargin = 50;
+		this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+				- this.tableMargin);
 		this.render();
 	},
 	render : function() {
 		var instance = this;
-		var $br = $("<br/>");
+		var $br = $("<div class='clear-float'></div>");
 
 		var $downloadDiv = $("<div id='jvnFileDownload'>Javelin Log File Download</div>").append($br.clone(true));
 		$downloadDiv.css("font-size", "0.8em");
+		$downloadDiv.css("margin-left", 5);
+		$downloadDiv.css("margin-top", 10);
 
 		var $divStartDate = $("<div></div>");
 		$divStartDate.css("float", "left");
+		$divStartDate.css("margin-top", 5);
 		
 		var $startDatePicker = $("<input/>");
 		$startDatePicker.attr("name", "start");
@@ -28,6 +31,8 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 		});
 
 		var $divEndDate = $("<div></div>");
+		$divEndDate.css("float", "left");
+		$divEndDate.css("margin-top", 5);
 		
 		var $endDatePicker = $("<input/>");
 		$endDatePicker.attr("name", "end");
@@ -48,13 +53,15 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 		$divEndDate.append($endDatePicker);
 
 		$downloadDiv.append($divEndDate);
-		$downloadDiv.append($br.clone(true));
 		
 		var $searchButton = $("<button/>");
 		$searchButton.attr("id", "jvnFileDownloadSearch");
+		$searchButton.attr("class", "default-btn");
 		$searchButton.attr("name", "search");
 		$searchButton.attr("type", "button");
-		$searchButton.css("margin-bottom", "10px");
+		$searchButton.attr("float", "left");
+		$searchButton.css("margin-left", "10px");
+		$searchButton.css("margin-top", "1.5px");
 		$searchButton.html("Search");
 		$downloadDiv.append($searchButton);
 
@@ -78,12 +85,10 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 		$downloadButton.attr("id", "jvnFileDownloadExecute");
 		$downloadButton.attr("name", "download");
 		$downloadButton.attr("type", "button");
+		$downloadButton.attr("class", "default-btn");
 		$downloadButton.html("Download");
 		$downloadButton.css({
-			"margin-right" : $("#contents_area_content").width()- (this.tableWidth + 5),
-			"width" : 150,
-			"height" : 30,
-			"float" : "right"
+			"margin-left" : this.tableWidth - 86 + "px",
 		});
 		
 		$downloadDiv.append($downloadForm);
@@ -186,7 +191,7 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 			            },
 			            {
 			            	name: "threadName",
-			            	width: parseInt(instance.tableWidth * 0.19)
+			            	width: parseInt(instance.tableWidth * 0.192)
 			            }
 		            ],
 					colNames : ["log id","log file name", "Start Time", "End Time", "Caller Class", "Callee Method", "Processing Time", "Thread Name"],

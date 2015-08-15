@@ -86,7 +86,7 @@
 			$('#persArea_bar_2_0').hide();
 
 			perspectiveView.dropView("persArea_drop_0_0", "range_area", "");
-			perspectiveView.dropView("persArea_drop_1_0", "contents_area", "DashboardView");
+			perspectiveView.dropView("persArea_drop_1_0", "contents_area", "");
 			
 			$("#persArea_drop_0_0").addClass("ui-resizable-disabled");
 
@@ -146,9 +146,9 @@
 			// TODO WGPを改修し、barを非表示にする。
 			$('#persArea_bar_1_0').hide();
 
-			perspectiveView.dropView("persArea_drop_0_0", "tree_area", "GraphTree");
-			perspectiveView.dropView("persArea_drop_0_1", "range_area", "DashboardView");
-			perspectiveView.dropView("persArea_drop_1_0", "contents_area", "DashboardView");
+			perspectiveView.dropView("persArea_drop_0_0", "tree_area", "");
+			perspectiveView.dropView("persArea_drop_0_1", "range_area", "");
+			perspectiveView.dropView("persArea_drop_1_0", "contents_area", "");
 			
 			$("#persArea_drop_0_0").addClass("ui-resizable-disabled");
 			$("#persArea_drop_0_1").addClass("ui-resizable-disabled");
