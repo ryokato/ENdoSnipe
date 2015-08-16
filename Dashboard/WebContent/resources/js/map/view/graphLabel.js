@@ -1,11 +1,11 @@
 ENS.graphLabel = {};
 
 // グラフラベルの横幅
-ENS.graphLabel.LABEL_WIDTH = 500;
+ENS.graphLabel.LABEL_WIDTH = 720;
 // カーソルとグラフラベルのトップオフセット
 ENS.graphLabel.LABEL_TOP_OFFSET = 5;
 // カーソルとグラフラベルのサイドオフセット
-ENS.graphLabel.LABEL_LEFT_OFFSET = 10;
+ENS.graphLabel.LABEL_LEFT_OFFSET = -60;
 // 最大系列表示文字数
 ENS.graphLabel.MAX_LABEL_LENGTH = 200;
 // グラフのフルパスのタイトル
@@ -59,7 +59,7 @@ ENS.graphLabel.setEventListener = function($labelDiv, $graphDiv) {
 				}
 
 				// ラベルが画面右端に到達している場合、ラベルをカーソルの左側に移動させる
-				if (cLeft + cWidth - ENS.graphLabel.LABEL_WIDTH < e.pageX) {
+				if (cLeft + cWidth - ENS.graphLabel.LABEL_WIDTH - ENS.graphLabel.LABEL_LEFT_OFFSET < e.pageX) {
 					labelPos.left = labelPos.left
 							- (ENS.graphLabel.LABEL_LEFT_OFFSET * 2 + ENS.graphLabel.LABEL_WIDTH);
 				}
