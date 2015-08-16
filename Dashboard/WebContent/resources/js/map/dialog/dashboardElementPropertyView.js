@@ -489,8 +489,7 @@ ENS.BackgroundPropertyTab = ENS.DashboardElementPropertyTab.extend({
 		var fillColorInput =
 			this.createSettingItem("fill", fillAttribute.type, this.property.fill);
 		var fillRow = $("<div class='dashboardPropertyItem'></div>");
-		fillRow.append(fillColorSpan).append(fillColorInput);
-		fillColorSpan.prepend(fillColorRadio);
+		fillRow.append(fillColorRadio).append(fillColorSpan).append(fillColorInput);
 		parentDiv.append(fillRow);
 
 		var imageRadio = $("<input type='radio' name='objectType' value='"+ raphaelMapConstants.IMAGE_TYPE_NAME +"'>");
@@ -504,8 +503,7 @@ ENS.BackgroundPropertyTab = ENS.DashboardElementPropertyTab.extend({
 		var imageInput =
 			this.createSettingItem("src", "select", this.property.src, imageDataList);
 		var imageRow = $("<div class='dashboardPropertyItem'></div>");
-		imageRow.append(imageSpan).append(imageInput);
-		imageSpan.prepend(imageRadio);
+		imageRow.append(imageRadio).append(imageSpan).append(imageInput);
 		parentDiv.append(imageRow);
 
 		parentDiv.on("change", "input[name='objectType']:radio", function(event){
@@ -653,7 +651,7 @@ ENS.DashboardElementPropertyTextTab = ENS.DashboardElementPropertyTab.extend({
 				fontAttribute.type,
 				this.property.fontFamily,
 				fontAttribute.selection);
-		var fontRow = $("<div class='dashboardPropertyFontItem'></div>");
+		var fontRow = $("<div class='dashboardPropertyItem'></div>");
 		fontRow.append(fontSpan).append(fontSizeSelect);
 		parentDiv.append(fontRow);
 
@@ -679,7 +677,7 @@ ENS.DashboardElementPropertyTextboxTab = ENS.DashboardElementPropertyTextTab.ext
 				textAnchorAttribute.type,
 				this.property.textAnchor,
 				textAnchorAttribute.selection);
-		var textAnchorRow = $("<div class='dashboardPropertyFontItem'></div>");
+		var textAnchorRow = $("<div class='dashboardPropertyItem'></div>");
 		textAnchorRow.append(textAnchorSpan).append(textAnchorSelect);
 		parentDiv.append(textAnchorRow);
 		return parentDiv;
