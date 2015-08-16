@@ -88,6 +88,9 @@ public class SMTPSender implements AlarmObserver
     /** メーラーを表す名前。 */
     private static final String X_MAILER = "ENdoSnipe Mail Sender.";
 
+    /** シグナル名を取得する為の置換キーワード。 */
+    private static final String KEYWORD_SIGNAL_NAME = "signalName";
+
     /** IPアドレスを取得する為の置換キーワード。 */
     private static final String KEYWORD_IP_ADDRESS = "ipAddress";
 
@@ -126,6 +129,21 @@ public class SMTPSender implements AlarmObserver
 
     /** 認証オブジェクト */
     private Authenticator authenticator_;
+
+    /** シグナルのレベル1 */
+    private static final int SIGNAL_LEVEL_1 = 1;
+
+    /** シグナルのレベル2 */
+    private static final int SIGNAL_LEVEL_2 = 2;
+
+    /** シグナルのレベル3 */
+    private static final int SIGNAL_LEVEL_3 = 3;
+
+    /** シグナルのレベル4 */
+    private static final int SIGNAL_LEVEL_4 = 4;
+
+    /** シグナルのレベル5 */
+    private static final int SIGNAL_LEVEL_5 = 5;
 
     /**
      * DataCollectorConfigから設定情報を読み込み、SMTPSenderを初期化する。
@@ -308,18 +326,65 @@ public class SMTPSender implements AlarmObserver
 
         // 文字列置換を行う
         KeywordConverter conv = KeywordConverterFactory.createDollarBraceConverter();
+        String signalName = data.getSignalName();
+        int position = signalName.lastIndexOf("/");
+        if (position > 0)
+        {
+            signalName = signalName.substring(position + 1);
+        }
+        conv.addConverter(KEYWORD_SIGNAL_NAME, signalName);
         conv.addConverter(KEYWORD_IP_ADDRESS, data.getIpAddress());
         conv.addConverter(KEYWORD_PORT_NUMBER, data.getPort());
         conv.addConverter(KEYWORD_DATABASE_NAME, data.getDatabaseName());
         conv.addConverter(KEYWORD_ALARM_THRESHOLD, alarmThreshold);
         conv.addConverter(KEYWORD_ALARM_VALUE, data.getAlarmValue());
         conv.addConverter(KEYWORD_ALARM_INTERVAL, String.valueOf(data.getEscalationPeriod()));
-        conv.addConverter(KEYWORD_ALARM_LEVEL, data.getSignalLevel());
+        conv.addConverter(KEYWORD_ALARM_LEVEL, getSignalValue(data));
         conv.addConverter(KEYWORD_DATE, this.dateFormatter_.format(date));
         conv.addConverter(KEYWORD_TIME, this.timeFormatter_.format(date));
         conv.addConverter(KEYWORD_TIMEMILLIS, this.millisFormatter_.format(date));
 
         return conv.convert(template);
+    }
+
+    /**
+     * シグナルのアラームレベルを返す。
+     * @param alarmEntry {@link AlarmEntry}
+     * @return　シグナルのアラームレベル
+     */
+    private String getSignalValue(final AlarmEntry alarmEntry)
+    {
+        if (alarmEntry.getSignalLevel() == SIGNAL_LEVEL_3)
+        {
+            if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_1)
+            {
+                return "WARNING";
+            }
+            else if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_2)
+            {
+                return "CRITICAL";
+            }
+        }
+        else if (alarmEntry.getSignalLevel() == SIGNAL_LEVEL_5)
+        {
+            if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_1)
+            {
+                return "INFO";
+            }
+            else if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_2)
+            {
+                return "WARNING";
+            }
+            else if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_3)
+            {
+                return "ERROR";
+            }
+            else if (alarmEntry.getSignalValue() == SIGNAL_LEVEL_4)
+            {
+                return "CRITICAL";
+            }
+        }
+        return "";
     }
 
     /**

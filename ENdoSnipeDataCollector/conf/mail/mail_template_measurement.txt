@@ -1,17 +1,14 @@
-y1.Œ»Ûz
-@ƒŠƒ\[ƒXó‘Ô•Ï‰»ƒCƒxƒ“ƒgi${eventName}j‚ª”­¶‚µ‚Ü‚µ‚½B
+ã€1.ç¾è±¡ã€‘
+ã€€${signalName}ã§é–¾å€¤è¶…é/å›å¾©ã‚’æ¤œå‡ºã—ã¾ã—ãŸã€‚
 
-y2.áŠQŒŸoî•ñz
-@IPƒAƒhƒŒƒX@@@@@@F${ipAddress}
-@ƒ|[ƒg”Ô†@@@@@@F${portNumber}
-@ƒf[ƒ^ƒx[ƒX–¼@@@@F${databaseName}
-@“ú@@@@@@@@@F${date} ${timeMillis}
-@ƒCƒxƒ“ƒg–¼@@@@@@F${eventName}
-@itemID@@@@@@@@F${itemID}
-@alarmThreshold@@@@F${alarmThreshold}
-@alarmValue@@@@@@F${alarmValue}
-@alarmInterval @@@@F${alarmInterval}
-@alarmLevel@@@@@@F${alarmLevel}
+ã€2.éšœå®³æ¤œå‡ºæƒ…å ±ã€‘
+ã€€IPã‚¢ãƒ‰ãƒ¬ã‚¹ã€€ã€€ã€€ã€€ã€€ã€€ï¼š${ipAddress}
+ã€€ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹åã€€ã€€ã€€ã€€ï¼š${databaseName}
+ã€€æ—¥æ™‚ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ã€€ï¼š${date} ${timeMillis}
+ã€€alarmThresholdã€€ã€€ã€€ã€€ï¼š${alarmThreshold}
+ã€€alarmValueã€€ã€€ã€€ã€€ã€€ã€€ï¼š${alarmValue}
+ã€€alarmInterval ã€€ã€€ã€€ã€€ï¼š${alarmInterval}
+ã€€alarmLevelã€€ã€€ã€€ã€€ã€€ã€€ï¼š${alarmLevel}
 
 
-ˆÈã
+ä»¥ä¸Š

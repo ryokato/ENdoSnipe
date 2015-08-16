@@ -776,7 +776,8 @@ public class ConfigurationReader
             {
                 // メールテンプレート設定(閾値超過/件名)
                 String name =
-                    key.substring(0, key.length() - SMTP_TEMPLATE_FAILURE_SUBJECT_SUFFIX.length());
+                    key.substring(SMTP_TEMPLATE_PREFIX.length(), key.length()
+                        - SMTP_TEMPLATE_FAILURE_SUBJECT_SUFFIX.length());
                 MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_FAILURE);
                 entity.subject = value;
             }
@@ -784,7 +785,8 @@ public class ConfigurationReader
             {
                 // メールテンプレート設定(閾値超過/本文)
                 String name =
-                    key.substring(0, key.length() - SMTP_TEMPLATE_FAILURE_BODY_SUFFIX.length());
+                    key.substring(SMTP_TEMPLATE_PREFIX.length(), key.length()
+                        - SMTP_TEMPLATE_FAILURE_BODY_SUFFIX.length());
                 MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_FAILURE);
                 try
                 {
@@ -799,7 +801,8 @@ public class ConfigurationReader
             {
                 // メールテンプレート設定(閾値回復/件名)
                 String name =
-                    key.substring(0, key.length() - SMTP_TEMPLATE_RECOVER_SUBJECT_SUFFIX.length());
+                    key.substring(SMTP_TEMPLATE_PREFIX.length(), key.length()
+                        - SMTP_TEMPLATE_RECOVER_SUBJECT_SUFFIX.length());
                 MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_RECOVER);
                 entity.subject = value;
             }
@@ -807,7 +810,8 @@ public class ConfigurationReader
             {
                 // メールテンプレート設定(閾値回復/本文)
                 String name =
-                    key.substring(0, key.length() - SMTP_TEMPLATE_RECOVER_BODY_SUFFIX.length());
+                    key.substring(SMTP_TEMPLATE_PREFIX.length(), key.length()
+                        - SMTP_TEMPLATE_RECOVER_BODY_SUFFIX.length());
                 MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_RECOVER);
                 try
                 {
