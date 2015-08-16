@@ -27,6 +27,7 @@ ENS.graphLabel.modify = function($div) {
 ENS.graphLabel._setAttr = function($label) {
 	$label.addClass("ensLabel");
 	$label.css("width", ENS.graphLabel.LABEL_WIDTH + "px");
+	$label.css("word-break", "break-all");
 	$label.hide();
 };
 
