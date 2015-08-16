@@ -25,42 +25,32 @@
 
 .dashboardPropertyItem{
 	clear:both;
-	height: 30px;
+	height: 35px;
 }
 
 .dashboardPropertyItem div{
-	width: 200px;
-	height: 20px;
-	float: left;
-	margin-left: 10px;
-}
-
-.dashboardPropertyItem input{
 	width: 80px;
-	height: 20px;
-}
-
-.dashboardPropertyItem select{
-	width: 80px;
-	height: 20px;
-}
-.dashboardPropertyItem > .number{
-	text-align: right;
-}
-
-.dashboardPropertyFontItem {
-	clear:both;
-	height : 35px;
-}
-
-.dashboardPropertyFontItem div{
-	width: 200px;
 	height: 25px;
 	float: left;
 	margin-left: 10px;
 }
 
-.dashboardPropertyFontItem select{
+.dashboardPropertyItem input{
 	width: 200px;
-	height : 25px;
+	height: 25px;
+}
+
+.dashboardPropertyItem input[type=radio]{
+	width: 50px;
+	height: 25px;
+	float: left;
+	margin-top: auto;
+}
+
+.dashboardPropertyItem select{
+	width: 200px;
+	height: 25px;
+}
+.dashboardPropertyItem > .number{
+	text-align: right;
 }
