@@ -83,6 +83,9 @@ public class AlarmEntry
 
     private SignalDefinitionDto definition_;
 
+    /** メール送信するかどうか */
+    private boolean sendMail_;
+
     /**
      * コンストラクタ。
      */
@@ -323,11 +326,19 @@ public class AlarmEntry
         return definition_;
     }
 
+    /**
+     * 各レベルの閾値を取得する。
+     * @return 各レベルの閾値
+     */
     public String getPatternValue()
     {
         return patternValue_;
     }
 
+    /**
+     * 各レベルの閾値を設定する。
+     * @param patternValue 各レベルの閾値
+     */
     public void setPatternValue(final String patternValue)
     {
         patternValue_ = patternValue;
@@ -358,6 +369,24 @@ public class AlarmEntry
     public void setDefinition(final SignalDefinitionDto definition)
     {
         definition_ = definition;
+    }
+
+    /**
+     * メール送信するかどうか。
+     * @return true:メールを送信する、false：メールを送信しない
+     */
+    public boolean isSendMail()
+    {
+        return sendMail_;
+    }
+
+    /**
+     * メール送信するかどうあかを設定する。
+     * @param sendMail true:メールを送信する、false：メールを送信しない
+     */
+    public void setSendMail(final boolean sendMail)
+    {
+        sendMail_ = sendMail;
     }
 
 }

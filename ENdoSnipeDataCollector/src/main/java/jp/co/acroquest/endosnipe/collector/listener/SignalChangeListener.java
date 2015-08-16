@@ -70,9 +70,9 @@ public class SignalChangeListener extends AbstractTelegramListener implements Te
 
     private static final int ITEM_VALUE_PATTERN_VALUE = 5;
 
-    /**
-     * Summary Signal List
-     */
+    private static final int ITEM_VALUE_SEND_MAIL = 6;
+
+    /** Summary Signal List */
     private static List<SummarySignalDefinitionDto> summaryDtoList__ = null;
 
     private final ArrayList<SummarySignalDefinitionDto> updatedSummarySignals_ =
@@ -153,6 +153,7 @@ public class SignalChangeListener extends AbstractTelegramListener implements Te
         String level = (String)itemValues[ITEM_VALUE_LEVEL];
         String escalationPeriod = (String)itemValues[ITEM_VALUE_ESCALATION_PERIOD];
         String patternValue = (String)itemValues[ITEM_VALUE_PATTERN_VALUE];
+        boolean sendMail = Boolean.valueOf((String)itemValues[ITEM_VALUE_SEND_MAIL]);
 
         try
         {
@@ -164,6 +165,7 @@ public class SignalChangeListener extends AbstractTelegramListener implements Te
             signalDefinition.level = Integer.parseInt(level);
             signalDefinition.escalationPeriod = Double.parseDouble(escalationPeriod);
             signalDefinition.patternValue = patternValue;
+            signalDefinition.sendMail = sendMail;
 
             SignalDefinitionDto signalDefinitionDto = new SignalDefinitionDto(signalDefinition);
 

@@ -45,6 +45,9 @@ public class SummarySignalDefinitionDto
     /** SummarySignalのmessage。 */
     public int priority_;
 
+    /** send mail. */
+    private boolean sendMail_;
+
     /**
      * コンストラクタ。
      */
@@ -52,6 +55,7 @@ public class SummarySignalDefinitionDto
     {
         //nothing
     }
+
     /**
      * Argument コンストラクタ。
      * @param summarySignalDefinition summarysignal
@@ -65,8 +69,9 @@ public class SummarySignalDefinitionDto
         this.signalList_ = summarySignalDefinition.signalList;
         this.errorMessage_ = summarySignalDefinition.errorMessage;
         this.priority_ = summarySignalDefinition.priority;
-
+        this.sendMail_ = summarySignalDefinition.sendMail;
     }
+
     /**
      * SummarySignalのpriorityを取得する。
      * 
@@ -76,6 +81,7 @@ public class SummarySignalDefinitionDto
     {
         return priority_;
     }
+
     /**
      * SummarySignalのpriorityを設定する。
      * 
@@ -86,6 +92,7 @@ public class SummarySignalDefinitionDto
     {
         this.priority_ = priority;
     }
+
     /**
      * SummarySignalのIdを取得する。
      * 
@@ -95,6 +102,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalId_;
     }
+
     /**
      * SummarySignalのIdを設定する。
      * 
@@ -105,6 +113,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalId_ = summarySignalId;
     }
+
     /**
      * SummarySignalのNameを取得する。
      * 
@@ -114,6 +123,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalName_;
     }
+
     /**
      * SummarySignalのNameを設定する。
      * 
@@ -124,6 +134,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalName_ = summarySignalName;
     }
+
     /**
      * SummarySignalのTypeを取得する。
      * 
@@ -133,6 +144,7 @@ public class SummarySignalDefinitionDto
     {
         return summmarySignalType_;
     }
+
     /**
      * SummarySignalのTypeを設定する。
      * 
@@ -143,6 +155,7 @@ public class SummarySignalDefinitionDto
     {
         this.summmarySignalType_ = summmarySignalType;
     }
+
     /**
      * SummarySignalのSignalListを取得する。
      * 
@@ -152,6 +165,7 @@ public class SummarySignalDefinitionDto
     {
         return signalList_;
     }
+
     /**
      * SummarySignalのSignalListを設定する。
      * 
@@ -162,6 +176,7 @@ public class SummarySignalDefinitionDto
     {
         this.signalList_ = signalList;
     }
+
     /**
      * SummarySignalのStatusを取得する。
      * 
@@ -171,6 +186,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalStatus_;
     }
+
     /**
      * SummarySignalのStatusを設定する。
      * 
@@ -181,6 +197,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalStatus_ = summarySignalStatus;
     }
+
     /**
      * SummarySignalのMessageを取得する。
      * 
@@ -190,6 +207,7 @@ public class SummarySignalDefinitionDto
     {
         return errorMessage_;
     }
+
     /**
      * SummarySignalのMessageを設定する。
      * 
@@ -201,7 +219,23 @@ public class SummarySignalDefinitionDto
         this.errorMessage_ = errorMessage;
     }
 
-   
+    /**
+     * メール送信フラグを取得する。
+     * @return メール送信フラグ
+     */
+    public boolean isSendMail()
+    {
+        return sendMail_;
+    }
+
+    /**
+     * メール送信フラグを設定する。
+     * @param sendMail メール送信フラグ
+     */
+    public void setSendMail(boolean sendMail)
+    {
+        sendMail_ = sendMail;
+    }
 
     @Override
     public String toString()
@@ -210,7 +244,7 @@ public class SummarySignalDefinitionDto
             + ", summarySignalName=" + summarySignalName_ + ", summmarySignalType="
             + summmarySignalType_ + ", signalList=" + signalList_ + ", summarySignalStatus="
             + summarySignalStatus_ + ", errorMessage=" + errorMessage_ + ", priority=" + priority_
-            + "]";
+            + ", sendMail=" + sendMail_ + "]";
     }
 
 }

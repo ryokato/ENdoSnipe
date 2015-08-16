@@ -52,6 +52,8 @@ import jp.co.acroquest.endosnipe.collector.log.JavelinLogUtil;
 import jp.co.acroquest.endosnipe.collector.manager.SignalStateManager;
 import jp.co.acroquest.endosnipe.collector.manager.SummarySignalStateManager;
 import jp.co.acroquest.endosnipe.collector.notification.AlarmEntry;
+import jp.co.acroquest.endosnipe.collector.notification.AlarmObserver;
+import jp.co.acroquest.endosnipe.collector.notification.AlarmObserverFactory;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmData;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmProcessor;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmThresholdProcessor;
@@ -187,6 +189,9 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
 
     /** 測定値の閾値下回り時のメッセージフォーマット */
     private static final String FALLS_TAT_MESSAGES = "APP.MTRC.FALL_TAT_message";
+
+    /** アラーム通知を行う通知オブジェクト生成 */
+    private final AlarmObserverFactory alarmObserverFactory_ = new AlarmObserverFactory();
 
     /**
      * 初期化を行います。
@@ -1222,6 +1227,12 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
             for (AlarmEntry alarmEntry : alarmEntryList)
             {
                 addSignalStateChangeEvent(alarmEntry);
+                List<AlarmObserver> observerList =
+                    alarmObserverFactory_.getAlarmObserverList(alarmEntry);
+                for (AlarmObserver observer : observerList)
+                {
+                    observer.send(alarmEntry);
+                }
             }
         }
 
@@ -1682,6 +1693,15 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
         }
         long prevMeasurementValue = Long.valueOf(measurementDetail.value).longValue();
         return prevMeasurementValue;
+    }
+
+    /**
+     * メールの送信を行う。
+     * @param alarmEntry {@link AlarmEntry}
+     */
+    private void sendMail(final AlarmEntry alarmEntry)
+    {
+
     }
 
 }

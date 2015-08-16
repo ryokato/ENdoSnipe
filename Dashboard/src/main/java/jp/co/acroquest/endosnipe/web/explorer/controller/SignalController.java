@@ -76,9 +76,6 @@ public class SignalController
     @Autowired
     protected TreeMenuService treeMenuService;
 
-    /** クラスタ名を表す変数 */
-    private static final String CLUSTER_NAME = "${ClusterName}";
-
     /**
      * コンストラクタ。
      */

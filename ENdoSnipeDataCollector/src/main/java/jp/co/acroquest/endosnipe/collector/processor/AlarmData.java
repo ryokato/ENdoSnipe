@@ -206,6 +206,7 @@ public class AlarmData
                 alarmEntry.setEscalationPeriod(escalationPeriod);
                 alarmEntry.setSignalValue(targetLevel);
                 alarmEntry.setSendAlarm(true);
+                alarmEntry.setSendMail(signalDefinition.isSendMail());
                 alarmEntry.setSignalLevel(signalDefinition.getLevel());
                 setAlarmLevel(targetLevel.intValue());
                 removeList.add(targetLevel);
@@ -305,6 +306,7 @@ public class AlarmData
                 alarmEntry.setEscalationPeriod(escalationPeriod);
                 alarmEntry.setSignalValue(targetLevel);
                 alarmEntry.setSendAlarm(true);
+                alarmEntry.setSendMail(signalDefinition.isSendMail());
                 alarmEntry.setSignalLevel(signalDefinition.getLevel());
                 setAlarmLevel(targetLevel.intValue());
                 break;

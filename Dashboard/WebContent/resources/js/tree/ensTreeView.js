@@ -125,12 +125,13 @@ ENS.treeView = wgp.TreeView
 							targetTag = $("#tree_area > ul > li").last();
 						} else {
 							addPlace = "last";
-							var nodes = this.collection.where({ treeId : parentTreeId});
-							if(nodes.length > 0) {
+							var nodes = this.collection.where({
+								treeId : parentTreeId
+							});
+							if (nodes.length > 0) {
 								targetTag = this.getTreeNode(nodes[0].id,
 										idAttribute);
-							}
-							else {
+							} else {
 								targetTag = this.getTreeNode(parentTreeId,
 										idAttribute);
 							}
@@ -583,7 +584,8 @@ ENS.treeView = wgp.TreeView
 					matchingPattern : $("#matchingPattern").val(),
 					level : $("#signalPatternValue select").val(),
 					patternValue : this.createPatternValue_(),
-					escalationPeriod : escalationPeriod
+					escalationPeriod : escalationPeriod,
+					sendMail : $("#signalAlertMail").prop("checked")
 				};
 
 				var sendData = {
@@ -605,7 +607,8 @@ ENS.treeView = wgp.TreeView
 					matchingPattern : $("#matchingPattern").val(),
 					level : $("#signalPatternValue select").val(),
 					patternValue : this.createPatternValue_(),
-					escalationPeriod : escalationPeriod
+					escalationPeriod : escalationPeriod,
+					sendMail : $("#signalAlertMail").prop("checked")
 				};
 
 				var sendData = {
@@ -749,11 +752,12 @@ ENS.treeView = wgp.TreeView
 
 				// ラジオボタンで「Graph Selection」を指定した場合
 				var measurementItem = "";
-				if($('#multipleResourceGraphSelection').attr("checked")){
-					var measurementList = $("#multipleResourceGraphLstBox2>option")
-					.map(function() {
-						return $(this).val();
-					});
+				if ($('#multipleResourceGraphSelection').attr("checked")) {
+					var measurementList = $(
+							"#multipleResourceGraphLstBox2>option").map(
+							function() {
+								return $(this).val();
+							});
 
 					measurementItem = measurementList.get(0);
 					for ( var i = 1; i < measurementList.length; i++) {
@@ -763,8 +767,9 @@ ENS.treeView = wgp.TreeView
 				}
 
 				var measurementItemPattern = "";
-				if($('#multipleResourceGraphRegExpression').attr("checked")){
-					measurementItemPattern = $("#multipleResourceGraphItems").val();
+				if ($('#multipleResourceGraphRegExpression').attr("checked")) {
+					measurementItemPattern = $("#multipleResourceGraphItems")
+							.val();
 				}
 
 				// 複数グラフ定義を作成する
@@ -1393,6 +1398,10 @@ ENS.treeView = wgp.TreeView
 				$("#patternValue_4").val("");
 				$("#patternValue_5").val("");
 				$("#escalationPeriod").val(ENS.tree.DEFAULT_ESCALATION_PERIOD);
+				$signalAlert = $("#signalAlertMailArea input[name='signalAlertMail']");
+				$.each($signalAlert, function(index, data) {
+					data.checked = false;
+				});
 			},
 			/**
 			 * レポートダイアログをクリアする。
@@ -1450,19 +1459,19 @@ ENS.treeView = wgp.TreeView
 
 				// 正規表現パターンが指定されていない場合は系列直接指定であるため、
 				// 被選択内容を生成する。
-				if(multipleResourceGraphDefinition.measurementItemPattern.length === 0){
+				if (multipleResourceGraphDefinition.measurementItemPattern.length === 0) {
 
 					var measurementList = multipleResourceGraphDefinition.measurementItemIdList
-					.split(",");
+							.split(",");
 					for ( var i = 0; i < measurementList.length; i++) {
 						$('#multipleResourceGraphLstBox2').append(
-						"<option value='" + measurementList[i] + "'>"
-								+ measurementList[i] + "</option>");
+								"<option value='" + measurementList[i] + "'>"
+										+ measurementList[i] + "</option>");
 					}
 				}
 
-				$("#multipleResourceGraphItems")
-				.val(multipleResourceGraphDefinition.measurementItemPattern);
+				$("#multipleResourceGraphItems").val(
+						multipleResourceGraphDefinition.measurementItemPattern);
 
 			},
 
@@ -1614,10 +1623,10 @@ ENS.treeView = wgp.TreeView
 					}
 					appView.syncData([ treeModel.get("id") ]);
 				}
-				
+
 				// 画面に反映する。(WGP内の実装では、初期化が正しく判定されないのでここで実装する)
 				this.render(wgp.constants.RENDER_TYPE.ADD, treeModel);
-				
+
 				// シグナルの場合はリアルタイム更新開始処理を行う。
 				if (ENS.tree.type.SIGNAL == treeType) {
 					appView.syncData([ treeModel.get("id") ]);

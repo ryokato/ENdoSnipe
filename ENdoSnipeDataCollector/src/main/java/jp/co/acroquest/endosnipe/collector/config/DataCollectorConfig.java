@@ -193,6 +193,9 @@ public class DataCollectorConfig
     /** メールサーバのデフォルト値。 */
     private static final String DEF_SMTP_SERVER = "mail.example.com";
 
+    /** メールポートのデフォルト値。 */
+    private static final int DEF_SMTP_PORT = 587;
+
     /** メールのエンコーディング設定デフォルト値。 */
     private static final String DEF_SMTP_ENCODING = "iso-2022-jp";
 
@@ -201,15 +204,6 @@ public class DataCollectorConfig
 
     /** 送信先メールアドレス設定デフォルト値。 */
     private static final String DEF_SMTP_TO = "endosnipe@example.com";
-
-    /** メールSubjectのデフォルト値。 */
-    private static final String DEF_SMTP_SUBJECT = "[javelin] ${eventName} is occurred.";
-
-    /** メールテンプレート(jvnアラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_JVN = "mai_template_jvn.txt";
-
-    /** メールテンプレート(計測値アラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_MEASUREMENT = "mai_template_measurement.txt";
 
     //--------------------
     // SMTP settings
@@ -220,6 +214,15 @@ public class DataCollectorConfig
     /** メールサーバ */
     private String smtpServer_ = DEF_SMTP_SERVER;
 
+    /** メールサーバのポート番号 */
+    private int smtpPort_ = DEF_SMTP_PORT;
+
+    /** メールサーバのユーザ名 */
+    private String smtpUser_ = "";
+
+    /** メールサーバのパスワード */
+    private String smtpPassword_ = "";
+
     /** メールのエンコーディング */
     private String smtpEncoding_ = DEF_SMTP_ENCODING;
 
@@ -229,18 +232,18 @@ public class DataCollectorConfig
     /** 送信先メールアドレス */
     private String smtpTo_ = DEF_SMTP_TO;
 
-    /** メールSubject */
-    private String smtpSubject_ = DEF_SMTP_SUBJECT;
-
-    /** メールテンプレート(jvnアラーム用) */
-    private String smtpTemplateJvn_ = DEF_SMTP_TEMPLATE_JVN;
-
-    /** メールテンプレート(計測値アラーム用) */
-    private String smtpTemplateMeasurement_ = DEF_SMTP_TEMPLATE_MEASUREMENT;
-
     /** メールテンプレート（キー：設定項目名、値：テンプレートファイル名） */
-    private final Map<String, MailTemplateEntity> smtpTemplateMap_ =
-        new HashMap<String, MailTemplateEntity>();
+    private final Map<String, Map<String, MailTemplateEntity>> smtpTemplateMap_ =
+        new HashMap<String, Map<String, MailTemplateEntity>>();
+
+    /** 閾値超過を表す定数 */
+    public static final String SMTP_FAILURE = "failure";
+
+    /** 閾値回復を表す定数 */
+    public static final String SMTP_RECOVER = "recover";
+
+    /** テンプレートのデフォルト名 */
+    private static final String SMTP_TEMPLATE_DEFAULT = "default";
 
     //--------------------
     // SNMP settings(default)
@@ -666,6 +669,60 @@ public class DataCollectorConfig
     }
 
     /**
+     * メールサーバのポート番号を取得する。
+     * @return ポート番号
+     */
+    public int getSmtpPort()
+    {
+        return smtpPort_;
+    }
+
+    /**
+     * メールサーバのポート番号を設定する。
+     * @param smtpPort ポート番号
+     */
+    public void setSmtpPort(final int smtpPort)
+    {
+        smtpPort_ = smtpPort;
+    }
+
+    /**
+     * メールサーバのユーザ名を取得する。
+     * @return ユーザ名
+     */
+    public String getSmtpUser()
+    {
+        return smtpUser_;
+    }
+
+    /**
+     * メールサーバのユーザ名を設定する。
+     * @param smtpUser ユーザ名
+     */
+    public void setSmtpUser(final String smtpUser)
+    {
+        smtpUser_ = smtpUser;
+    }
+
+    /**
+     * メールサーバのパスワードを取得する。
+     * @return パスワード
+     */
+    public String getSmtpPassword()
+    {
+        return smtpPassword_;
+    }
+
+    /**
+     * メールサーバのパスワードを設定する。
+     * @param smtpPassword パスワード
+     */
+    public void setSmtpPassword(final String smtpPassword)
+    {
+        smtpPassword_ = smtpPassword;
+    }
+
+    /**
      * 送信元メールアドレスを取得する。
      * 
      * @return 送信元メールアドレスの設定
@@ -706,89 +763,49 @@ public class DataCollectorConfig
     }
 
     /**
-     * メールテンプレート(jvnアラーム用)を取得する。
-     * 
-     * @return メールテンプレート(jvnアラーム用)の設定
-     */
-    public String getSmtpTemplateJvn()
-    {
-        return smtpTemplateJvn_;
-    }
-
-    /**
-     *　メールテンプレート(jvnアラーム用)を設定する。
-     * 
-     * @param smtpTemplateJvn メールテンプレート(jvnアラーム用)の設定
-     */
-    public void setSmtpTemplateJvn(final String smtpTemplateJvn)
-    {
-        smtpTemplateJvn_ = smtpTemplateJvn;
-    }
-
-    /**
-     * メールテンプレート(計測値アラーム用)を取得する。
-     * 
-     * @return メールテンプレート(計測値アラーム用)の設定
-     */
-    public String getSmtpTemplateMeasurement()
-    {
-        return smtpTemplateMeasurement_;
-    }
-
-    /**
-     *　メールテンプレート(計測値アラーム用)を設定する。
-     * 
-     * @param smtpTemplateMeasurement メールテンプレート(計測値アラーム用)の設定
-     */
-    public void setSmtpTemplateMeasurement(final String smtpTemplateMeasurement)
-    {
-        smtpTemplateMeasurement_ = smtpTemplateMeasurement;
-    }
-
-    /**
      * メールテンプレートファイル名を取得する。
      *
      * @param name テンプレート名
+     * @param type 閾値超過、回復を表す文字列
+     * @param useDefault デフォルトの値を使うかどうか
      * @return テンプレートファイル名
      */
-    public MailTemplateEntity getSmtpTemplate(final String name)
+    public MailTemplateEntity getSmtpTemplate(final String name, final String type,
+        final boolean useDefault)
     {
         if (name == null)
         {
             return null;
         }
-        return this.smtpTemplateMap_.get(name);
+        Map<String, MailTemplateEntity> templateMap = this.smtpTemplateMap_.get(name);
+        if (useDefault)
+        {
+            templateMap = this.smtpTemplateMap_.get(SMTP_TEMPLATE_DEFAULT);
+        }
+        if (templateMap == null)
+        {
+            return null;
+        }
+        return templateMap.get(type);
     }
 
     /**
      * メールテンプレートファイル名を設定する。
      *
      * @param name テンプレート名
+     * @param type 閾値超過、回復を表す文字列
      * @param template テンプレートファイル名
      */
-    public void setSmtpTemplate(final String name, final MailTemplateEntity template)
+    public void addSmtpTemplate(final String name, final String type,
+        final MailTemplateEntity template)
     {
-        this.smtpTemplateMap_.put(name, template);
-    }
-
-    /**
-     * メールSubjectを取得する。
-     * 
-     * @return メールSubjectの設定
-     */
-    public String getSmtpSubject()
-    {
-        return smtpSubject_;
-    }
-
-    /**
-     *　メールSubjectを設定する。
-     * 
-     * @param smtpSubject メールSubjectの設定
-     */
-    public void setSmtpSubject(final String smtpSubject)
-    {
-        smtpSubject_ = smtpSubject;
+        Map<String, MailTemplateEntity> mailTemplateMap = this.smtpTemplateMap_.get(name);
+        if (mailTemplateMap == null)
+        {
+            mailTemplateMap = new HashMap<String, MailTemplateEntity>();
+            this.smtpTemplateMap_.put(name, mailTemplateMap);
+        }
+        mailTemplateMap.put(type, template);
     }
 
     /**

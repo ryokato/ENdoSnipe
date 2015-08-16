@@ -317,6 +317,7 @@ public class SummarySignalStateManager
         summarySignalInfo.errorMessage = definitionDto.getErrorMessage();
         summarySignalInfo.priority = definitionDto.getPriority();
         summarySignalInfo.summarySignalStatus = definitionDto.getSummarySignalStatus();
+        summarySignalInfo.sendMail = definitionDto.isSendMail();
         return summarySignalInfo;
     }
 

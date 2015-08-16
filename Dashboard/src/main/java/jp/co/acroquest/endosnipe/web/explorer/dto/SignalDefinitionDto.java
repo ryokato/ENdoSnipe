@@ -35,6 +35,9 @@ public class SignalDefinitionDto
     /** 閾値判定の結果。 */
     private Integer signalValue_;
 
+    /** メール送信フラグ */
+    private Boolean sendMail_;
+
     /**
      * コンストラクタ。
      */
@@ -207,6 +210,24 @@ public class SignalDefinitionDto
     public void setSignalMap(final Map<Integer, Double> signalMap)
     {
         this.signalMap_ = signalMap;
+    }
+
+    /**
+     * メール送信フラグを取得する。
+     * @return メール送信フラグ(true:メール送信する、false：メール送信しない)
+     */
+    public Boolean getSendMail()
+    {
+        return sendMail_;
+    }
+
+    /**
+     * メール送信フラグを設定する。
+     * @param sendMail メール送信フラグ(true:メール送信する、false：メール送信しない)
+     */
+    public void setSendMail(final Boolean sendMail)
+    {
+        sendMail_ = sendMail;
     }
 
 }

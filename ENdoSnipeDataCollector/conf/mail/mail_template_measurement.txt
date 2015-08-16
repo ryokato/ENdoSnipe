@@ -1,0 +1,17 @@
+【1.現象】
+　リソース状態変化イベント（${eventName}）が発生しました。
+
+【2.障害検出情報】
+　IPアドレス　　　　　　：${ipAddress}
+　ポート番号　　　　　　：${portNumber}
+　データベース名　　　　：${databaseName}
+　日時　　　　　　　　　：${date} ${timeMillis}
+　イベント名　　　　　　：${eventName}
+　itemID　　　　　　　　：${itemID}
+　alarmThreshold　　　　：${alarmThreshold}
+　alarmValue　　　　　　：${alarmValue}
+　alarmInterval 　　　　：${alarmInterval}
+　alarmLevel　　　　　　：${alarmLevel}
+
+
+以上

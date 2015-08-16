@@ -25,6 +25,9 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.collector.config;
 
+import static jp.co.acroquest.endosnipe.collector.config.DataCollectorConfig.SMTP_FAILURE;
+import static jp.co.acroquest.endosnipe.collector.config.DataCollectorConfig.SMTP_RECOVER;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -132,7 +135,7 @@ import jp.co.acroquest.endosnipe.data.db.DatabaseType;
  */
 public class ConfigurationReader
 {
-    private static final ENdoSnipeLogger logger_ = ENdoSnipeLogger
+    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
         .getLogger(ConfigurationReader.class);
 
     /** DataCollectorConfig */
@@ -140,12 +143,6 @@ public class ConfigurationReader
 
     /** 改行文字。 */
     private static final String LS = System.getProperty("line.separator");
-
-    /** ホスト名を表す接頭辞 */
-    private static final String SERVER_HOST = "server.host.";
-
-    /** ポート番号を表す接頭辞 */
-    private static final String SERVER_PORT = "server.port.";
 
     /** ホスト名を表す接頭辞 */
     private static final String AGENT_HOST = "javelin.host.";
@@ -256,6 +253,15 @@ public class ConfigurationReader
     /** メールサーバを指定する設定項目名。 */
     private static final String SMTP_SERVER = SMTP_PREFIX + "server";
 
+    /** メールサーバのポート番号を指定する設定項目名。 */
+    private static final String SMTP_PORT = SMTP_PREFIX + "port";
+
+    /** メールサーバのユーザ名を指定する設定項目名。 */
+    private static final String SMTP_USER = SMTP_PREFIX + "user";
+
+    /** メールサーバのパスワードを指定する設定項目名。 */
+    private static final String SMTP_PASSWORD = SMTP_PREFIX + "password";
+
     /** メールのエンコーディングを指定する設定項目名。 */
     private static final String SMTP_ENCODING = SMTP_PREFIX + "encoding";
 
@@ -265,26 +271,20 @@ public class ConfigurationReader
     /** 送信先メールアドレスを指定する設定項目名。 */
     private static final String SMTP_TO = SMTP_PREFIX + "to";
 
-    /** メールのSubjectを指定する設定項目名。 */
-    private static final String SMTP_SUBJECT = SMTP_PREFIX + "subject";
-
     /** メールテンプレートを指定する設定項目の接頭辞。 */
     public static final String SMTP_TEMPLATE_PREFIX = SMTP_PREFIX + "template.";
 
-    /** メールの件名テンプレートを指定する設定項目の接尾辞。 */
-    private static final String SMTP_TEMPLATE_SUBJECT_SUFFIX = ".subject";
+    /** 閾値超過メールの件名テンプレートを指定する設定項目の接尾辞。 */
+    private static final String SMTP_TEMPLATE_FAILURE_SUBJECT_SUFFIX = ".failure.subject";
 
-    /** メールの本文テンプレートを指定する設定項目の接尾辞。 */
-    private static final String SMTP_TEMPLATE_BODY_SUFFIX = ".body";
+    /** 閾値超過メールの本文テンプレートを指定する設定項目の接尾辞。 */
+    private static final String SMTP_TEMPLATE_FAILURE_BODY_SUFFIX = ".failure.body";
 
-    /** メールテンプレート(jvnアラーム用)を指定する設定項目名。 */
-    private static final String SMTP_TEMPLATE_JVN = SMTP_TEMPLATE_PREFIX + "jvn";
+    /** 閾値回復メールの件名テンプレートを指定する設定項目の接尾辞。 */
+    private static final String SMTP_TEMPLATE_RECOVER_SUBJECT_SUFFIX = ".recover.subject";
 
-    /** メールテンプレート(計測値アラーム用)を指定する設定項目名。 */
-    private static final String SMTP_TEMPLATE_MEASUREMENT = SMTP_TEMPLATE_PREFIX + "measurement";
-
-    public static final String SMTP_TEMPLATE_COLLECT_COMPLETED = SMTP_TEMPLATE_PREFIX
-        + "collectCompleted";
+    /** 閾値回復メールの本文テンプレートを指定する設定項目の接尾辞。 */
+    private static final String SMTP_TEMPLATE_RECOVER_BODY_SUFFIX = ".recover.body";
 
     //--------------------
     // SNMP settings
@@ -475,8 +475,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            AgentSetting.DEF_PORT);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           AgentSetting.DEF_PORT);
             }
         }
         else if (key.startsWith(ACCEPT_PORT))
@@ -487,8 +487,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            AgentSetting.DEF_ACCEPT_PORT);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           AgentSetting.DEF_ACCEPT_PORT);
             }
         }
         else if (key.startsWith(DATABASE_NAME))
@@ -500,7 +500,7 @@ public class ConfigurationReader
             }
             else
             {
-                logger_.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
+                LOGGER.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
                 throw new InitializeException("Invalid Unit.");
             }
         }
@@ -514,8 +514,8 @@ public class ConfigurationReader
             {
                 String defaultValue =
                     AgentSetting.DEF_PERIOD + AgentSetting.DEF_PERIOD_UNIT.toString();
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            defaultValue);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           defaultValue);
             }
         }
         else if (key.startsWith(MEASUREMENT_LOG_STRAGE_PERIOD))
@@ -528,8 +528,8 @@ public class ConfigurationReader
             {
                 String defaultValue =
                     AgentSetting.DEF_PERIOD + AgentSetting.DEF_PERIOD_UNIT.toString();
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            defaultValue);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           defaultValue);
             }
         }
     }
@@ -612,8 +612,8 @@ public class ConfigurationReader
             if (databaseType == null)
             {
                 databaseType = DatabaseType.H2;
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            databaseType.toString());
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           databaseType.toString());
             }
             config.setDatabaseType(databaseType);
         }
@@ -631,14 +631,13 @@ public class ConfigurationReader
         }
         else if (key.equals(DATABASE_NAME))
         {
-            // database.name = xxx
             if (isValidDBName(value))
             {
                 config.setDatabaseName(value);
             }
             else
             {
-                logger_.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
+                LOGGER.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
                 throw new InitializeException("Invalid Unit.");
             }
         }
@@ -662,8 +661,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_RESOURCE_INTERVAL);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_RESOURCE_INTERVAL);
             }
         }
         else if (RESOURCE_MONITORING.equals(key))
@@ -686,7 +685,7 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
+                LOGGER.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
                 throw new InitializeException(ex);
             }
         }
@@ -710,8 +709,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_LOG_SPLIT_SIZE);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_LOG_SPLIT_SIZE);
             }
         }
         else if (LOG_SPLIT_THRESHOLD.equals(key))
@@ -722,8 +721,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_LOG_SPLIT_THRESHOLD);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_LOG_SPLIT_THRESHOLD);
             }
         }
         // SMTP settings
@@ -739,13 +738,25 @@ public class ConfigurationReader
             }
             else
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_SEND_MAIL);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_SEND_MAIL);
             }
         }
         else if (SMTP_SERVER.equals(key))
         {
             config.setSmtpServer(value);
+        }
+        else if (SMTP_PORT.equals(key))
+        {
+            config.setSmtpPort(Integer.parseInt(value));
+        }
+        else if (SMTP_USER.equals(key))
+        {
+            config.setSmtpUser(value);
+        }
+        else if (SMTP_PASSWORD.equals(key))
+        {
+            config.setSmtpPassword(value);
         }
         else if (SMTP_FROM.equals(key))
         {
@@ -755,45 +766,56 @@ public class ConfigurationReader
         {
             config.setSmtpTo(value);
         }
-        else if (SMTP_TEMPLATE_JVN.equals(key))
-        {
-            config.setSmtpTemplateJvn(value);
-        }
-        else if (SMTP_TEMPLATE_MEASUREMENT.equals(key))
-        {
-            config.setSmtpTemplateMeasurement(value);
-        }
         else if (SMTP_ENCODING.equals(key))
         {
             config.setSmtpEncoding(value);
         }
-        else if (SMTP_SUBJECT.equals(key))
-        {
-            config.setSmtpSubject(value);
-        }
         else if (key.startsWith(SMTP_TEMPLATE_PREFIX))
         {
-            // メールテンプレート設定
-            if (key.endsWith(SMTP_TEMPLATE_SUBJECT_SUFFIX))
+            if (key.endsWith(SMTP_TEMPLATE_FAILURE_SUBJECT_SUFFIX))
             {
-                // 件名
+                // メールテンプレート設定(閾値超過/件名)
                 String name =
-                    key.substring(0, key.length() - SMTP_TEMPLATE_SUBJECT_SUFFIX.length());
-                MailTemplateEntity entity = getMailTemplateEntity(config, name);
+                    key.substring(0, key.length() - SMTP_TEMPLATE_FAILURE_SUBJECT_SUFFIX.length());
+                MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_FAILURE);
                 entity.subject = value;
             }
-            else if (key.endsWith(SMTP_TEMPLATE_BODY_SUFFIX))
+            else if (key.endsWith(SMTP_TEMPLATE_FAILURE_BODY_SUFFIX))
             {
-                // 本文
-                String name = key.substring(0, key.length() - SMTP_TEMPLATE_BODY_SUFFIX.length());
-                MailTemplateEntity entity = getMailTemplateEntity(config, name);
+                // メールテンプレート設定(閾値超過/本文)
+                String name =
+                    key.substring(0, key.length() - SMTP_TEMPLATE_FAILURE_BODY_SUFFIX.length());
+                MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_FAILURE);
                 try
                 {
                     entity.body = readTemplate(value);
                 }
                 catch (IOException ex)
                 {
-                    logger_.log(LogMessageCodes.FAIL_READ_MAIL_TEMPLATE, value);
+                    LOGGER.log(LogMessageCodes.FAIL_READ_MAIL_TEMPLATE, value);
+                }
+            }
+            else if (key.endsWith(SMTP_TEMPLATE_RECOVER_SUBJECT_SUFFIX))
+            {
+                // メールテンプレート設定(閾値回復/件名)
+                String name =
+                    key.substring(0, key.length() - SMTP_TEMPLATE_RECOVER_SUBJECT_SUFFIX.length());
+                MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_RECOVER);
+                entity.subject = value;
+            }
+            else if (key.endsWith(SMTP_TEMPLATE_RECOVER_BODY_SUFFIX))
+            {
+                // メールテンプレート設定(閾値回復/本文)
+                String name =
+                    key.substring(0, key.length() - SMTP_TEMPLATE_RECOVER_BODY_SUFFIX.length());
+                MailTemplateEntity entity = getMailTemplateEntity(config, name, SMTP_RECOVER);
+                try
+                {
+                    entity.body = readTemplate(value);
+                }
+                catch (IOException ex)
+                {
+                    LOGGER.log(LogMessageCodes.FAIL_READ_MAIL_TEMPLATE, value);
                 }
             }
         }
@@ -810,8 +832,8 @@ public class ConfigurationReader
             }
             else
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_SEND_TRAP);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_SEND_TRAP);
             }
         }
         else if (MANAGERS.equals(key))
@@ -826,8 +848,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_TRAP_PORT);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_TRAP_PORT);
             }
         }
         else if (TRAP_COMMUNITY.equals(key))
@@ -850,8 +872,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_BATCH_SIZE);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_BATCH_SIZE);
             }
 
         }
@@ -863,8 +885,8 @@ public class ConfigurationReader
             }
             catch (NumberFormatException ex)
             {
-                logger_.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
-                            DataCollectorConfig.DEF_CACHE_SIZE);
+                LOGGER.log(LogMessageCodes.FAIL_READ_PARAMETER_USE_DEFAULT, configFilePath_, key,
+                           DataCollectorConfig.DEF_CACHE_SIZE);
             }
 
         }
@@ -924,13 +946,13 @@ public class ConfigurationReader
      * @return 設定オブジェクト
      */
     private static MailTemplateEntity getMailTemplateEntity(final DataCollectorConfig config,
-        final String name)
+        final String name, final String type)
     {
-        MailTemplateEntity entity = config.getSmtpTemplate(name);
+        MailTemplateEntity entity = config.getSmtpTemplate(name, type, false);
         if (entity == null)
         {
             entity = new MailTemplateEntity();
-            config.setSmtpTemplate(name, entity);
+            config.addSmtpTemplate(name, type, entity);
         }
         return entity;
     }
@@ -965,7 +987,7 @@ public class ConfigurationReader
         }
         catch (NumberFormatException ex)
         {
-            logger_.log(LogMessageCodes.FAIL_GET_AGENT_ID, key);
+            LOGGER.log(LogMessageCodes.FAIL_GET_AGENT_ID, key);
         }
         return hostNum;
     }
