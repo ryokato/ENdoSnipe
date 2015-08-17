@@ -1168,7 +1168,6 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
 
         {
             SignalDefinitionDto signalDefinition = signalDefinitionEntry.getValue();
-            String itemName = signalDefinition.getMatchingPattern();
             long signalId = signalDefinition.getSignalId();
 
             //現在のアラーム通知状況を取得

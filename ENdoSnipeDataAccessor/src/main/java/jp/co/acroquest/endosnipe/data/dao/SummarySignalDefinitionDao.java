@@ -82,7 +82,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 summarySignalInfo.signalList = summarySignalList;
                 summarySignalInfo.summarySignalType = rs.getInt(4);
                 summarySignalInfo.priority = rs.getInt(5);
-                summarySignalInfo.sendMail = rs.getBoolean(6);
                 result.add(summarySignalInfo);
             }
         }
@@ -136,7 +135,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 summarySignalInfo.signalList = summarySignalList;
                 summarySignalInfo.summarySignalType = rs.getInt(4);
                 summarySignalInfo.priority = rs.getInt(5);
-                summarySignalInfo.sendMail = rs.getBoolean(6);
                 // CHECKSTYLE:ON
                 result.add(summarySignalInfo);
             }
@@ -169,7 +167,7 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
             conn = getConnection(dataBaseName);
             String sql =
                 "insert into " + SUMMARY_SIGNAL_DEFINITION
-                    + "(SUMMARY_SIGNAL_NAME, TARGET_SIGNAL_ID,SIGNAL_TYPE, PRIORITY_NO, SEND_MAIL)"
+                    + "(SUMMARY_SIGNAL_NAME, TARGET_SIGNAL_ID,SIGNAL_TYPE, PRIORITY_NO)"
                     + " values (?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, summarySignalDefinition.getSummarySignalName());
@@ -191,7 +189,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
             pstmt.setString(2, signalList);
             pstmt.setInt(SUMMARY_SIGNAL_INDEX1, summarySignalDefinition.getSummarySignalType());
             pstmt.setInt(SUMMARY_SIGNAL_INDEX2, summarySignalDefinition.getPriority());
-            pstmt.setBoolean(5, summarySignalDefinition.sendMail);
             pstmt.execute();
         }
         finally
@@ -286,7 +283,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 summarySignalInfo.signalList = summarySignalList;
                 summarySignalInfo.summarySignalType = rs.getInt(4);
                 summarySignalInfo.priority = rs.getInt(5);
-                summarySignalInfo.sendMail = rs.getBoolean(6);
                 result.add(summarySignalInfo);
             }
         }
@@ -368,7 +364,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 summarySignalInfo.signalList = summarySignalList;
                 summarySignalInfo.summarySignalType = rs.getInt(4);
                 summarySignalInfo.priority = rs.getInt(5);
-                summarySignalInfo.sendMail = rs.getBoolean(6);
                 result.put(summarySignalInfo.summarySignalName, summarySignalInfo);
             }
         }
@@ -417,7 +412,7 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 sql =
                     "update "
                         + SUMMARY_SIGNAL_DEFINITION
-                        + " SET SUMMARY_SIGNAL_NAME=?, TARGET_SIGNAL_ID=?,SIGNAL_TYPE=?, PRIORITY_NO=?,SEND_MAIL=? where SUMMARY_SIGNAL_NAME=?";
+                        + " SET SUMMARY_SIGNAL_NAME=?, TARGET_SIGNAL_ID=?,SIGNAL_TYPE=?, PRIORITY_NO=? where SUMMARY_SIGNAL_NAME=?";
 
                 pstmt = conn.prepareStatement(sql);
 
@@ -440,7 +435,6 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
                 pstmt.setInt(3, summarySignalDefinitionDto.getSummmarySignalType());
                 pstmt.setInt(4, summarySignalDefinitionDto.getPriority());
                 pstmt.setString(5, summarySignalDefinitionDto.getSummarySignalName());
-                pstmt.setBoolean(6, summarySignalDefinitionDto.isSendMail());
 
             }
 

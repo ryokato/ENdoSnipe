@@ -74,6 +74,7 @@ public class SignalStateChangeListener extends AbstractTelegramListener
         int[] levels = null;
         String[] patternValues = null;
         String[] matchingPatterns = null;
+        String[] sendMails = null;
         // String[] alarmTypes = null;
 
         for (Body body : resourceAlarmBodys)
@@ -121,6 +122,11 @@ public class SignalStateChangeListener extends AbstractTelegramListener
             {
                 signalValues = getIntValues(loopCount, measurementItemValues);
             }
+            // 閾値判定結果に対する処理
+            else if (TelegramConstants.ITEMNAME_SEND_MAIL.equals(itemNameInTelegram))
+            {
+                sendMails = getStringValues(loopCount, measurementItemValues);
+            }
             // アラーム種類の項目に対する処理
             //else if (TelegramConstants.ITEMNAME_ALARM_TYPE.equals(itemNameInTelegram))
             //{
@@ -139,6 +145,7 @@ public class SignalStateChangeListener extends AbstractTelegramListener
             signalDefinitionDto.setPatternValue(patternValues[cnt]);
             signalDefinitionDto.setMatchingPattern(matchingPatterns[cnt]);
             signalDefinitionDto.setSignalValue(signalValues[cnt]);
+            signalDefinitionDto.setSendMail(Boolean.valueOf(sendMails[cnt]));
             SignalTreeMenuDto signalTreeMenu = SignalUtil.createSignalMenu(signalDefinitionDto);
 
             signalTreeMenuDtoList.add(signalTreeMenu);

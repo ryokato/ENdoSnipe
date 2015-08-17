@@ -53,7 +53,7 @@
 		MATCHING_PATTERN = #{matchingPattern},
 		LEVEL = #{level},
 		PATTERN_VALUE = #{patternValue},
-		ESCALATION_PERIOD = #{escalationPeriod}
+		ESCALATION_PERIOD = #{escalationPeriod},
 		SEND_MAIL = #{sendMail}
 		where SIGNAL_ID
 		= #{signalId}

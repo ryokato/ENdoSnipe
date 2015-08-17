@@ -11,7 +11,6 @@
 		<result property="targetSignalId" column="TARGET_SIGNAL_ID" />
 		<result property="summarySignalType" column="SIGNAL_TYPE" />
 		<result property="priorityNo" column="PRIORITY_NO" />
-		<result property="sendMail" column="SEND_MAIL" />
 	</resultMap>
 
 	<select id="selectAll" resultMap="SummarySignalInfoMap">
@@ -30,9 +29,9 @@
 	<insert id="insert"
 		parameterType="jp.co.acroquest.endosnipe.web.explorer.entity.SummarySignalInfo">
 		insert into SUMMARY_SIGNAL_DEFINITION
-		(SUMMARY_SIGNAL_NAME,TARGET_SIGNAL_ID,SIGNAL_TYPE,PRIORITY_NO,SEND_MAIL)
+		(SUMMARY_SIGNAL_NAME,TARGET_SIGNAL_ID,SIGNAL_TYPE,PRIORITY_NO)
 		values
-		(#{summarySignalName},#{targetSignalId},#{summarySignalType},#{priorityNo},#{sendMail})
+		(#{summarySignalName},#{targetSignalId},#{summarySignalType},#{priorityNo})
 	</insert>
 
 	<select id="selectSequenceNum" resultType="int">

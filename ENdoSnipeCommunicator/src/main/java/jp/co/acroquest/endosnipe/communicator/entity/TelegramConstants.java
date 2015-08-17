@@ -727,6 +727,9 @@ public interface TelegramConstants
     /** 項目名（閾値判定パターン） */
     String ITEMNAME_MATCHING_PATTERN = "matchingPattern";
 
+    /** 項目名（メール送信有無) */
+    String ITEMNAME_SEND_MAIL = "sendMail";
+
     /** 項目名(シグナル定義追加) */
     String ITEMNAME_SIGNAL_ADD = "signalAdd";
 
@@ -831,7 +834,7 @@ public interface TelegramConstants
 
     /** クラス名、メソッド名のセパレータ */
     String CLASSMETHOD_SEPARATOR = "###CLASSMETHOD_SEPARATOR###";
-    
+
     /** 項目名(ストール検出回数) */
     String ITEMNAME_JAVAPROCESS_METHOD_STALL_COUNT = "javaprocess.method.stall.count";
 }

@@ -230,26 +230,24 @@ public class TemplateCreator
         throws PatternSyntaxException
     {
         //リソースIDが空文字でない場合は何もしない
-        Property signalProperty = property.getSignal();
-        if (!BLANK.equals(signalProperty.getResourceId()))
+        if (!BLANK.equals(property.getResourceId()))
         {
             return;
         }
 
-        String treeName =
-                ResourceConvertUtil.getTreeName(name, Resource.OBJ_NAME_SIGNAL, signalProperty);
+        String treeName = ResourceConvertUtil.getTreeName(name, Resource.OBJ_NAME_SIGNAL, property);
 
         //単一シグナルを生成
-        if (SIGNAL_TYPE_SINGLE.equals(signalProperty.getObjectType()))
+        if (SIGNAL_TYPE_SINGLE.equals(property.getObjectType()))
         {
-            createSingleSignal(signalProperty, treeName);
+            createSingleSignal(property, treeName);
             return;
         }
 
         //サマリシグナルを生成
-        if (SIGNAL_TYPE_SUMMARY.equals(signalProperty.getObjectType()))
+        if (SIGNAL_TYPE_SUMMARY.equals(property.getObjectType()))
         {
-            createSummarySignal(signalProperty, treeName);
+            createSummarySignal(property, treeName);
             return;
         }
     }
@@ -321,6 +319,7 @@ public class TemplateCreator
         signalInfo.level = signalProperty.getLevel();
         signalInfo.matchingPattern = signalProperty.getTarget();
         signalInfo.patternValue = signalProperty.getThreshold();
+        signalInfo.sendMail = signalProperty.isSendMail();
         signalInfo.signalName = treeName;
 
         // シグナル名に ${ClusterName} を含まない場合はそのまま登録する

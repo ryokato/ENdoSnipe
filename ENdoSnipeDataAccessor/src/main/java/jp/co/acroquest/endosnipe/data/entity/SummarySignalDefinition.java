@@ -42,9 +42,6 @@ public class SummarySignalDefinition
     /**  priority of summarySignal */
     public int priority;
     
-    /** send mail */
-    public boolean sendMail;
-
     /**
      * constructor
      */

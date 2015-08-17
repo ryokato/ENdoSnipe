@@ -45,9 +45,6 @@ public class SummarySignalDefinitionDto
     /** SummarySignalのmessage。 */
     public int priority_;
 
-    /** send mail. */
-    private boolean sendMail_;
-
     /**
      * コンストラクタ。
      */
@@ -69,7 +66,6 @@ public class SummarySignalDefinitionDto
         this.signalList_ = summarySignalDefinition.signalList;
         this.errorMessage_ = summarySignalDefinition.errorMessage;
         this.priority_ = summarySignalDefinition.priority;
-        this.sendMail_ = summarySignalDefinition.sendMail;
     }
 
     /**
@@ -219,24 +215,6 @@ public class SummarySignalDefinitionDto
         this.errorMessage_ = errorMessage;
     }
 
-    /**
-     * メール送信フラグを取得する。
-     * @return メール送信フラグ
-     */
-    public boolean isSendMail()
-    {
-        return sendMail_;
-    }
-
-    /**
-     * メール送信フラグを設定する。
-     * @param sendMail メール送信フラグ
-     */
-    public void setSendMail(boolean sendMail)
-    {
-        sendMail_ = sendMail;
-    }
-
     @Override
     public String toString()
     {
@@ -244,7 +222,7 @@ public class SummarySignalDefinitionDto
             + ", summarySignalName=" + summarySignalName_ + ", summmarySignalType="
             + summmarySignalType_ + ", signalList=" + signalList_ + ", summarySignalStatus="
             + summarySignalStatus_ + ", errorMessage=" + errorMessage_ + ", priority=" + priority_
-            + ", sendMail=" + sendMail_ + "]";
+            + "]";
     }
 
 }

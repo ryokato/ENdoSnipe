@@ -176,6 +176,10 @@ public class SMTPSender implements AlarmObserver
             LOGGER.log(LogMessageCodes.NO_SEND_INFORMATION_MESSAGE);
             return;
         }
+        if (!this.config_.isSendMail())
+        {
+            return;
+        }
 
         try
         {
@@ -286,7 +290,7 @@ public class SMTPSender implements AlarmObserver
      */
     private String createSubject(final AlarmEntry entry, final Date date)
     {
-        String name = entry.getSignalName();
+        String name = getSimpleSignalName(entry);
         String type = entry.getAlarmType().name().toLowerCase();
         MailTemplateEntity entity = this.config_.getSmtpTemplate(name, type, true);
         String subjectTemplate = entity.subject;
@@ -308,6 +312,10 @@ public class SMTPSender implements AlarmObserver
         String type = entry.getAlarmType().name().toLowerCase();
         MailTemplateEntity entity = this.config_.getSmtpTemplate(name, type, true);
         String bodyTemplate = entity.body;
+        if (bodyTemplate == null)
+        {
+            return "";
+        }
         return convertTemplate(bodyTemplate, entry, date);
     }
 
@@ -326,12 +334,7 @@ public class SMTPSender implements AlarmObserver
 
         // 文字列置換を行う
         KeywordConverter conv = KeywordConverterFactory.createDollarBraceConverter();
-        String signalName = data.getSignalName();
-        int position = signalName.lastIndexOf("/");
-        if (position > 0)
-        {
-            signalName = signalName.substring(position + 1);
-        }
+        String signalName = getSimpleSignalName(data);
         conv.addConverter(KEYWORD_SIGNAL_NAME, signalName);
         conv.addConverter(KEYWORD_IP_ADDRESS, data.getIpAddress());
         conv.addConverter(KEYWORD_PORT_NUMBER, data.getPort());
@@ -345,6 +348,21 @@ public class SMTPSender implements AlarmObserver
         conv.addConverter(KEYWORD_TIMEMILLIS, this.millisFormatter_.format(date));
 
         return conv.convert(template);
+    }
+
+    /**
+     * シグナル名の末尾部分を取得する。
+     * @param entry {@link AlarmEntry}
+     */
+    private String getSimpleSignalName(final AlarmEntry entry)
+    {
+        String signalName = entry.getSignalName();
+        int position = signalName.lastIndexOf("/");
+        if (position > 0)
+        {
+            signalName = signalName.substring(position + 1);
+        }
+        return signalName;
     }
 
     /**

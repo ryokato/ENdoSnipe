@@ -1303,7 +1303,8 @@ ENS.treeView = wgp.TreeView
 					icon : ENS.tree.SIGNAL_ICON_0,
 					type : ENS.tree.type.SIGNAL,
 					matchingPattern : signalDefinition.matchingPattern,
-					signalDashboard : signalDefinition.signalDashboard
+					signalDashboard : signalDefinition.signalDashboard,
+					sendMail : signalDefinition.sendMail
 				};
 
 				return treeOption;
@@ -1563,6 +1564,12 @@ ENS.treeView = wgp.TreeView
 
 				var escalationPeriod = $("#escalationPeriod").val(
 						(signalDefinition.escalationPeriod - 0) / 1000);
+				var sendMail = signalDefinition.sendMail;
+				if (sendMail === true) {
+					$('#signalAlertMail').prop('checked', true);
+				} else {
+					$('#signalAlertMail').prop('checked', false);
+				}
 			},
 			getIcon : function(signalDefinition) {
 				var icon = "";
