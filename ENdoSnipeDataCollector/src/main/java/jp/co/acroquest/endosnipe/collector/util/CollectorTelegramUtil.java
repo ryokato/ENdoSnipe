@@ -37,8 +37,8 @@ import jp.co.acroquest.endosnipe.communicator.entity.Body;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
-import jp.co.acroquest.endosnipe.data.dto.SummarySignalDefinitionDto;
 import jp.co.acroquest.endosnipe.data.dto.SignalDefinitionDto;
+import jp.co.acroquest.endosnipe.data.dto.SummarySignalDefinitionDto;
 
 /**
  * データコレクターで用いる電文のユーティリティ
@@ -48,7 +48,7 @@ import jp.co.acroquest.endosnipe.data.dto.SignalDefinitionDto;
 public class CollectorTelegramUtil
 {
     /**  閾値超過アラームの電文本体のサイズ */
-    public static final int RESPONSEALARM_BODY_SIZE = 8;
+    public static final int RESPONSEALARM_BODY_SIZE = 9;
 
     /** 電文本体の位置(閾値判定定義ID) */
     private static final int BODY_COUNT_SIGNAL_ID = 0;
@@ -74,6 +74,9 @@ public class CollectorTelegramUtil
 
     /** 電文本体の位置 */
     private static final int BODY_COUNT_ALARM_TYPE = 7;
+
+    /** 電文本体の位置(メール送信有無) */
+    private static final int BODY_COUNT_SEND_MAIL = 8;
 
     /** size of telegram for summary signal */
     public static final int RESPONSEALARM_BODY_ADD_SUMMARY_SIGNAL_SIZE = 6;
@@ -170,6 +173,12 @@ public class CollectorTelegramUtil
                        alarmEntrySize);
         String[] alarmTypeItems = new String[alarmEntrySize];
 
+        // メール送信有無
+        Body sendMailBody =
+            createBody(TelegramConstants.ITEMNAME_SEND_MAIL, ItemType.ITEMTYPE_STRING,
+                       alarmEntrySize);
+        String[] sendMailItems = new String[alarmEntrySize];
+
         // 計測ID、アラーム種類のBodyにAlarmEntryの結果を格納する。
         for (int cnt = 0; cnt < alarmEntrySize; cnt++)
         {
@@ -184,7 +193,7 @@ public class CollectorTelegramUtil
             signalValues[cnt] = alarmEntry.getSignalValue();
             AlarmType alarmType = alarmEntry.getAlarmType();
             alarmTypeItems[cnt] = String.valueOf(alarmType);
-
+            sendMailItems[cnt] = String.valueOf(alarmEntry.isSendMail());
         }
         signalIdsBody.setObjItemValueArr(signalIds);
         signalNamesBody.setObjItemValueArr(signalNames);
@@ -194,6 +203,7 @@ public class CollectorTelegramUtil
         matchingPatternsBody.setObjItemValueArr(matchingPatterns);
         signalValueBody.setObjItemValueArr(signalValues);
         alarmTypeBody.setObjItemValueArr(alarmTypeItems);
+        sendMailBody.setObjItemValueArr(sendMailItems);
 
         responseTelegram.setObjHeader(responseHeader);
 
@@ -205,6 +215,7 @@ public class CollectorTelegramUtil
         responseBodys[BODY_COUNT_MATCHING_PATTERN] = matchingPatternsBody;
         responseBodys[BODY_COUNT_SIGNAL_VALUE] = signalValueBody;
         responseBodys[BODY_COUNT_ALARM_TYPE] = alarmTypeBody;
+        responseBodys[BODY_COUNT_SEND_MAIL] = sendMailBody;
 
         responseTelegram.setObjBody(responseBodys);
 

@@ -3,7 +3,7 @@
  * 
  * The MIT License (MIT)
  * 
- * Copyright (c) 2012 Acroquest Technology Co.,Ltd.
+ * Copyright (c) 2015 Acroquest Technology Co.,Ltd.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,51 +23,41 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package jp.co.acroquest.endosnipe.web.explorer.entity;
+package jp.co.acroquest.endosnipe.collector.notification.smtp;
+
+import javax.mail.Authenticator;
+import javax.mail.PasswordAuthentication;
 
 /**
- * シグナル定義テーブルに対するエンティティクラスです。<br />
- * 
- * @author miyasaka
- * 
+ * SMTPの認証オブジェクト
+ * @author fujii
+ *
  */
-public class SignalInfo
+public class SMTPAuthenticator extends Authenticator
 {
-    /** シグナル定義テーブルのID。 */
-    public long signalId;
+    /** ユーザ名 */
+    private final String username_;
 
-    /** シグナル名。 */
-    public String signalName;
-
-    /** マッチングパターン。 */
-    public String matchingPattern;
-
-    /** 設定できる閾値の上限レベル。 */
-    public int level;
-
-    /** 各レベルの閾値。 */
-    public String patternValue;
-
-    /** エスカレーション期間。 */
-    public double escalationPeriod;
-
-    /** メール送信フラグ */
-    public boolean sendMail;
+    /** パスワード */
+    private final String password_;
 
     /**
-     * {@link SignalInfo} オブジェクトを生成します。<br />
+     * コンストラクタです。
+     * @param username ユーザ名
+     * @param passowrd パスワード
      */
-    public SignalInfo()
+    public SMTPAuthenticator(final String username, final String passowrd)
     {
-        this.signalId = -1;
+        this.username_ = username;
+        this.password_ = passowrd;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public String toString()
+    public PasswordAuthentication getPasswordAuthentication()
     {
-        return String.format("SignalID%d SignalName:%s MatchingPattern:%s Level:%d "
-                                     + "PatternValue:%s escalationPeriod:%f SendMail:%s", signalId,
-                             signalName,
-                             matchingPattern, level, patternValue, escalationPeriod, sendMail);
+        return new PasswordAuthentication(username_, password_);
     }
 }

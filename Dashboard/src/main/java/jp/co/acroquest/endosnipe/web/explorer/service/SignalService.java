@@ -424,6 +424,7 @@ public class SignalService
         signalInfo.level = definitionDto.getLevel();
         signalInfo.patternValue = definitionDto.getPatternValue();
         signalInfo.escalationPeriod = definitionDto.getEscalationPeriod();
+        signalInfo.sendMail = definitionDto.getSendMail();
 
         return signalInfo;
     }
@@ -446,6 +447,7 @@ public class SignalService
         definitionDto.setLevel(signalInfo.level);
         definitionDto.setPatternValue(signalInfo.patternValue);
         definitionDto.setEscalationPeriod(signalInfo.escalationPeriod);
+        definitionDto.setSendMail(signalInfo.sendMail);
 
         String[] valueArray = SIGNAL_SPLIT_PATTERN.split(signalInfo.patternValue);
         Map<Integer, Double> signalMap = new HashMap<Integer, Double>();

@@ -12,6 +12,7 @@
 		<result property="level" column="LEVEL" />
 		<result property="patternValue" column="PATTERN_VALUE" />
 		<result property="escalationPeriod" column="ESCALATION_PERIOD" />
+		<result property="sendMail" column="SEND_MAIL" />
 	</resultMap>
 	
 	<resultMap id="ChildDirectoryMap" type="jp.co.acroquest.endosnipe.web.explorer.entity.ChildResourceInfo">
@@ -40,9 +41,9 @@
 	<insert id="insert"
 		parameterType="jp.co.acroquest.endosnipe.web.explorer.entity.SignalInfo">
 		insert into SIGNAL_DEFINITION
-		(SIGNAL_NAME,MATCHING_PATTERN,LEVEL,PATTERN_VALUE,ESCALATION_PERIOD)
+		(SIGNAL_NAME,MATCHING_PATTERN,LEVEL,PATTERN_VALUE,ESCALATION_PERIOD, SEND_MAIL)
 		values
-		(#{signalName},#{matchingPattern},#{level},#{patternValue},#{escalationPeriod})
+		(#{signalName},#{matchingPattern},#{level},#{patternValue},#{escalationPeriod},#{sendMail})
 	</insert>
 
 	<update id="update"
@@ -51,9 +52,9 @@
 		SIGNAL_NAME = #{signalName},
 		MATCHING_PATTERN = #{matchingPattern},
 		LEVEL = #{level},
-		PATTERN_VALUE =
-		#{patternValue},
-		ESCALATION_PERIOD = #{escalationPeriod}
+		PATTERN_VALUE = #{patternValue},
+		ESCALATION_PERIOD = #{escalationPeriod},
+		SEND_MAIL = #{sendMail}
 		where SIGNAL_ID
 		= #{signalId}
 	</update>

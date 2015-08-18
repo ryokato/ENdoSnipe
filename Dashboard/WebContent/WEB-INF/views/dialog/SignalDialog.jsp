@@ -69,6 +69,9 @@
 			</div>
 			<div id="signalEscalationPeriodUnit">s</div>
 		</div>
+		<div id="signalAlertMailArea" class="dialogContentArea">
+		<input type="checkbox" name="signalAlertMail" id="signalAlertMail" value="true"><label for="signalAlertMail">Send Mail</label></input>
+		</div>
 	</div>
 </body>
 </html>
