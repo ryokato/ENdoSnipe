@@ -32,7 +32,6 @@
 	<classpathentry kind="lib" path="lib/dependency/tomcat-coyote.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/s2-framework-2.4.34.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/slf4j-log4j12-1.5.10.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wgp.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-dbcp-1.2.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-digester3-3.2.jar"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/commons-pool-1.4.jar"/>
@@ -77,5 +76,7 @@
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
 	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/websocket-api.jar"/>
+	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/wgp-2.0.0.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
