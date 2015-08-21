@@ -107,7 +107,7 @@ public class ExplorerNotifyServlet extends HttpServlet
             ENdoSnipeLogger.getLogger(ExplorerNotifyServlet.class);
 
     /** テンプレートディレクトリのパス */
-    private static final String TEMPLATE_DIR = "WEB-INF" + File.separator + "classes"
+    private static final String TEMPLATE_DIR = "/WEB-INF" + File.separator + "classes"
             + File.separator + "dashboard" + File.separator + "template";
 
     /** テンプレートファイルの拡張子 */

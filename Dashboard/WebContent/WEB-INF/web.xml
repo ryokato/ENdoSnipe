@@ -58,11 +58,6 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>wgpWebSocketServlet</servlet-name>
-		<servlet-class>org.wgp.servlet.WgpWebSocketServlet</servlet-class>
-	</servlet>
-
-	<servlet>
 		<servlet-name>JvnDownloadServlet</servlet-name>
 		<servlet-class>jp.co.acroquest.endosnipe.web.explorer.servlet.JvnDownloadServlet</servlet-class>
 	</servlet>
@@ -80,11 +75,6 @@
 	<servlet-mapping>
 		<servlet-name>ExplorerNotifyServlet</servlet-name>
 		<url-pattern>/ExplorerNotifyServlet</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>wgpWebSocketServlet</servlet-name>
-		<url-pattern>/webSocketServlet</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

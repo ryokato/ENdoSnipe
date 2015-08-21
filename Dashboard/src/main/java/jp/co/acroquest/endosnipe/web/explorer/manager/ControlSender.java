@@ -33,9 +33,9 @@ import jp.co.acroquest.endosnipe.communicator.PropertyEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.wgp.manager.MessageInboundManager;
 import org.wgp.manager.WgpDataManager;
-import org.wgp.servlet.WgpMessageInbound;
+import org.wgp.manager.WgpSessionManager;
+import org.wgp.servlet.WgpSession;
 
 /**
  * コントロールビューへの通知を行うクラス。
@@ -66,12 +66,12 @@ public class ControlSender
      */
     public void send(final List<PropertyEntry> propertyData, final String agentName)
     {
-        MessageInboundManager inboundManager = MessageInboundManager.getInstance();
-        List<WgpMessageInbound> inboundList = inboundManager.getMessageInboundList();
+        WgpSessionManager sessionManager = WgpSessionManager.getInstance();
+        List<WgpSession> sessionList = sessionManager.getSessionList();
 
-        for (WgpMessageInbound inbound : inboundList)
+        for (WgpSession session : sessionList)
         {
-            sendWgpData(propertyData, this.wgpDataManager, inbound, agentName);
+            sendWgpData(propertyData, this.wgpDataManager, session, agentName);
         }
     }
 
@@ -80,12 +80,11 @@ public class ControlSender
      *
      * @param propertyData プロパティ情報
      * @param dataManager WGPオブジェクト
-     * @param inbound クライアント
+     * @param session クライアント
      * @param agentName 通知元Javelinエージェント名
      */
     private void sendWgpData(final List<PropertyEntry> propertyData,
-            final WgpDataManager dataManager, final WgpMessageInbound inbound,
-            final String agentName)
+            final WgpDataManager dataManager, final WgpSession session, final String agentName)
     {
         String dataGroupId = agentName + "/property";
         dataManager.initDataMap(dataGroupId, new HashMap<String, Object>());

@@ -52,7 +52,7 @@
 	libraryPathList.add("wgp");
 	libraryPathList.add("pagination");
 	String libraryJsDirectoryPath = config.getServletContext()
-			.getRealPath("resources/lib");
+			.getRealPath("/resources/lib");
 	File libraryJsDirectory = new File(libraryJsDirectoryPath);
 	FileNameFilter libraryNameFilter = new FileNameFilter(null, null, "js");
 
