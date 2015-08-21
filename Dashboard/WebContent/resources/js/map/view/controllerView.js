@@ -1,6 +1,7 @@
 ENS.controllerView = wgp.AbstractView
 		.extend({
-			tableColNames : [ "Property", "Current Value", "Update Value", "Property Detail"],
+			tableColNames : [ "Property", "Current Value", "Update Value",
+					"Property Detail" ],
 			initialize : function(argument, treeSettings) {
 				var instance = this;
 				this.tableMargin = 50;
@@ -20,27 +21,33 @@ ENS.controllerView = wgp.AbstractView
 					instance._reload();
 				});
 
-				$("#controllerClearButton").on("click", function() {
-					var rowIDs = $("#controllerTable").getDataIDs();
-					$.each(rowIDs, function(i, item) {
-						$("#controllerTable").setCell(item, 'updateValue', undefined, "", "");
-					});
-				});
+				$("#controllerClearButton").on(
+						"click",
+						function() {
+							var rowIDs = $("#controllerTable").getDataIDs();
+							$.each(rowIDs, function(i, item) {
+								$("#controllerTable").setCell(item,
+										'updateValue', undefined, "", "");
+							});
+						});
 
-				$("#controllerUpdateButton").on("click", function() {
-					instance.collection.models = [];
-					ENS.tree.agentName = instance.treeSettings.treeId;
-					var changedCells = JSON.stringify($("#controllerTable").getChangedCells());
-					var settings = {
-							data : {
-								agentName : ENS.tree.agentName,
-								propertyList : changedCells
-							},
-							url : ENS.tree.CONTROLLER_UPDATE
-					};
-					var ajaxHandler = new wgp.AjaxHandler();
-					ajaxHandler.requestServerAsync(settings);
-				});
+				$("#controllerUpdateButton").on(
+						"click",
+						function() {
+							instance.collection.models = [];
+							ENS.tree.agentName = instance.treeSettings.treeId;
+							var changedCells = JSON.stringify($(
+									"#controllerTable").getChangedCells());
+							var settings = {
+								data : {
+									agentName : ENS.tree.agentName,
+									propertyList : changedCells
+								},
+								url : ENS.tree.CONTROLLER_UPDATE
+							};
+							var ajaxHandler = new wgp.AjaxHandler();
+							ajaxHandler.requestServerAsync(settings);
+						});
 
 				this.id = argument.id;
 				this._reload();
@@ -55,38 +62,40 @@ ENS.controllerView = wgp.AbstractView
 						.append(
 								"<input type='button' class='default-btn' id='controllerReloadButton' value='reload'>");
 				$("#controllerReloadButton").css({
-					"margin-left": this.tableWidth - 198 + "px"
+					"margin-left" : this.tableWidth - 198 + "px"
 				});
-				
-				$("#controllerDiv").append(
-						"<input type='button' class='default-btn' id='controllerClearButton' value='clear'>");
+
+				$("#controllerDiv")
+						.append(
+								"<input type='button' class='default-btn' id='controllerClearButton' value='clear'>");
 				$("#controllerDiv")
 						.append(
 								"<input type='button' class='default-btn' id='controllerUpdateButton' value='update'>");
-				$("#controllerDiv").append('<table id="controllerTable"></table>');
-				$("#controllerDiv").append('<div id="controllerPager"></table>');
+				$("#controllerDiv").append(
+						'<table id="controllerTable"></table>');
+				$("#controllerDiv")
+						.append('<div id="controllerPager"></table>');
 				var height = "auto";
 
-				$("#controllerTable").jqGrid(
-						{
-							datatype : "local",
-							data : "",
-							colModel : this.tableColModel,
-							colNames : this.tableColNames,
-							caption : "Properties of " + this.treeSettings.id,
-							pager : "controllerPager",
-							rowNum : 10000,
-							height : height,
-							width : this.tableWidth,
-							viewrecords : true,
-							rownumbers : true,
-							shrinkToFit : true,
-							cellEdit : true,
-							cmTemplate : {
-								title : false
-							},
-							cellsubmit : 'clientArray'
-						});
+				$("#controllerTable").jqGrid({
+					datatype : "local",
+					data : "",
+					colModel : this.tableColModel,
+					colNames : this.tableColNames,
+					caption : "Properties of " + this.treeSettings.id,
+					pager : "controllerPager",
+					rowNum : 10000,
+					height : height,
+					width : this.tableWidth,
+					viewrecords : true,
+					rownumbers : true,
+					shrinkToFit : true,
+					cellEdit : true,
+					cmTemplate : {
+						title : false
+					},
+					cellsubmit : 'clientArray'
+				});
 				$("#controllerTable").filterToolbar({
 					defaultSearch : 'cn'
 				});
@@ -109,7 +118,7 @@ ENS.controllerView = wgp.AbstractView
 				};
 				var ajaxHandler = new wgp.AjaxHandler();
 				ajaxHandler.requestServerAsync(settings);
-			},	
+			},
 			onAdd : function(element) {
 			},
 			onChange : function(element) {
@@ -123,45 +132,51 @@ ENS.controllerView = wgp.AbstractView
 				this.reloadTable();
 			},
 			reloadTable : function() {
-				var tableViewData = [];
+				var tmpTableViewData = [];
 				var instance = this;
 				_.each(this.collection.models, function(model, index) {
-					tableViewData.push(instance._parseModel(model));
+					tmpTableViewData.push(instance._parseModel(model));
 				});
-				
-				tableViewData.sort(
-						function(data1, data2) {
-							var order1 = parseInt(data1.sortOrder, 10);
-							var order2 = parseInt(data2.sortOrder, 10);
-							return order1 - order2;
-						}
-				);
 
+				tmpTableViewData.sort(function(data1, data2) {
+					var order1 = parseInt(data1.sortOrder, 10);
+					var order2 = parseInt(data2.sortOrder, 10);
+					return order1 - order2;
+				});
+				var cnt;
+				var lastSortOrder = "0";
+				var tableViewData = [];
+				var propertyObj;
+				for (cnt = 0; cnt < tmpTableViewData.length; cnt++) {
+					propertyObj = tmpTableViewData[cnt];
+					// 同一ソート番号を持つデータが存在する場合は古い要素を削除。
+					if (lastSortOrder == propertyObj.sortOrder) {
+						tableViewData.pop();
+						lastSortOrder = propertyObj.sortOrder;
+					}
+					tableViewData.push(propertyObj);
+				}
 				$("#controllerTable").clearGridData().setGridParam({
 					data : tableViewData
 				}).trigger("reloadGrid");
 			},
 			createTableColModel : function() {
-				var tableColModel = [
-						{
-							name : "property",
-							width : parseInt(this.tableWidth * 0.25),
-							key : true
-						},
-						{
-							name : "currentValue",
-							width : parseInt(this.tableWidth * 0.1)
-						},
-						{
-							name : "updateValue",
-							width : parseInt(this.tableWidth * 0.1),
-							editable : true,
-							edittype : "text"
-						},
-						{
-							name : "propertyDetail",
-							width : parseInt(this.tableWidth * 0.5)
-						}];
+				var tableColModel = [ {
+					name : "property",
+					width : parseInt(this.tableWidth * 0.25),
+					key : true
+				}, {
+					name : "currentValue",
+					width : parseInt(this.tableWidth * 0.1)
+				}, {
+					name : "updateValue",
+					width : parseInt(this.tableWidth * 0.1),
+					editable : true,
+					edittype : "text"
+				}, {
+					name : "propertyDetail",
+					width : parseInt(this.tableWidth * 0.5)
+				} ];
 				return tableColModel;
 			}
 		});
