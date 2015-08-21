@@ -124,12 +124,6 @@ public class TermDataController
             // 検索用の正規表現パターンを作成する。
             for (String dataId : dataGroupIdList)
             {
-                if (patternStr.length() > 0)
-                {
-                    patternStr.append('|');
-                }
-                patternStr.append(dataId);
-                patternStr.append('|');
                 patternStr.append(ResourceNameUtil.getRegularName(dataId));
             }
 
