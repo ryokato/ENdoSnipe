@@ -79,6 +79,7 @@ public class SqlPlanDao extends AbstractDao implements TableNames
      * 
      * @param database データベース名
      * @param sqlPlan 挿入するSQL実行計画
+     * @return 更新レコード数
      * @throws SQLException SQL 実行時に例外が発生した場合
      */
     public static int update(final String database, final SqlPlan sqlPlan)

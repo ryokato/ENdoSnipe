@@ -44,12 +44,12 @@ import jp.co.acroquest.endosnipe.data.entity.SqlPlan;
  * @author miyasaka
  *
  */
-public class SqlPlanNotifyListener extends AbstractTelegramListener
-    implements TelegramListener, LogMessageCodes, AgentNameListener
+public class SqlPlanNotifyListener extends AbstractTelegramListener implements TelegramListener,
+    LogMessageCodes, AgentNameListener
 {
     /** ロガー。 */
-    private static final ENdoSnipeLogger LOGGER =
-        ENdoSnipeLogger.getLogger(JvnFileNotifyListener.class);
+    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
+        .getLogger(SqlPlanNotifyListener.class);
 
     /** DB名。 */
     private String databaseName_ = "";
