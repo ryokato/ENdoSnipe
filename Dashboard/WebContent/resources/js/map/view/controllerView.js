@@ -34,14 +34,30 @@ ENS.controllerView = wgp.AbstractView
 				$("#controllerUpdateButton").on(
 						"click",
 						function() {
+							var selRow;
 							instance.collection.models = [];
 							ENS.tree.agentName = instance.treeSettings.treeId;
-							var changedCells = JSON.stringify($(
-									"#controllerTable").getChangedCells());
+							var changedCells = $("#controllerTable")
+									.getChangedCells();
+							var selrowId = $("#controllerTable").getGridParam(
+									'selrow');
+							if (selrowId != null) {
+								selRow = $("#controllerTable").getRowData(
+										selrowId);
+								if (selRow.updateValue.indexOf("<input") == 0) {
+									$selRow = $(selRow);
+									var id = $selRow.attr("id");
+									selRow.updateValue = $("#" + id).val();
+								}
+								changedCells.push(selRow);
+							}
+							if (changedCells.length === 0) {
+								return;
+							}
 							var settings = {
 								data : {
 									agentName : ENS.tree.agentName,
-									propertyList : changedCells
+									propertyList : JSON.stringify(changedCells)
 								},
 								url : ENS.tree.CONTROLLER_UPDATE
 							};
