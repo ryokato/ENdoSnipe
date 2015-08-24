@@ -1,20 +1,20 @@
 /*******************************************************************************
  * ENdoSnipe 5.0 - (https://github.com/endosnipe)
- * 
+ *
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2013 Acroquest Technology Co.,Ltd.
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,16 +40,16 @@ import jp.co.acroquest.endosnipe.data.entity.SqlPlan;
 
 /**
  * SQL実行計画通知電文を受信するためのクラスです。<br />
- * 
+ *
  * @author miyasaka
  *
  */
-public class SqlPlanNotifyListener extends AbstractTelegramListener implements TelegramListener,
-    LogMessageCodes, AgentNameListener
+public class SqlPlanNotifyListener extends AbstractTelegramListener
+    implements TelegramListener, LogMessageCodes, AgentNameListener
 {
     /** ロガー。 */
-    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
-        .getLogger(JvnFileNotifyListener.class);
+    private static final ENdoSnipeLogger LOGGER =
+        ENdoSnipeLogger.getLogger(JvnFileNotifyListener.class);
 
     /** DB名。 */
     private String databaseName_ = "";
@@ -76,7 +76,11 @@ public class SqlPlanNotifyListener extends AbstractTelegramListener implements T
 
             try
             {
-                SqlPlanDao.insert(databaseName_, sqlPlan);
+                int count = SqlPlanDao.update(databaseName_, sqlPlan);
+                if (count == 0)
+                {
+                    SqlPlanDao.insert(databaseName_, sqlPlan);
+                }
             }
             catch (SQLException ex)
             {
@@ -101,7 +105,7 @@ public class SqlPlanNotifyListener extends AbstractTelegramListener implements T
 
     /**
      * Agent名を取得する。
-     * 
+     *
      * @return Agent名
      */
     public String getAgentName()
@@ -111,7 +115,7 @@ public class SqlPlanNotifyListener extends AbstractTelegramListener implements T
 
     /**
      *  Agent名を設定する。
-     *  
+     *
      *  @param agentName Agent名
      */
     public void setAgentName(final String agentName)
@@ -121,7 +125,7 @@ public class SqlPlanNotifyListener extends AbstractTelegramListener implements T
 
     /**
       * DB名を設定する。
-      * 
+      *
       * @param databaseName DB名
       */
     public void setDatabaseName(final String databaseName)
@@ -131,7 +135,7 @@ public class SqlPlanNotifyListener extends AbstractTelegramListener implements T
 
     /**
      * SqlPlanEntryオブジェクトをSqlPlanオブジェクトに変更する。
-     * 
+     *
      * @param entry 変換対象のSqlPlanEntryオブジェクト
      * @return SqlPlanオブジェクト
      */
