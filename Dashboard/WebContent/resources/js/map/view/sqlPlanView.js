@@ -59,10 +59,10 @@ ENS.sqlPlanView = wgp.AbstractView
 					} ],
 					"sqlExecutePlan" : [ {
 						name : "gettingPlanTime",
-						width : 70
+						width : 150
 					}, {
 						name : "executePlan",
-						width : this.tableWidth - 110
+						width : this.tableWidth - 160
 					} ],
 					"stackTrace" : [ {
 						name : "stackTrace",
@@ -96,7 +96,6 @@ ENS.sqlPlanView = wgp.AbstractView
 			createSqlExecutePlanTable : function(divId) {
 				$("#" + divId).append(
 						'<table id="sqlExecutePlanTable"></table>');
-				$("#" + divId).append('<div id="sqlExecutePlanPager"></table>');
 
 				$("#sqlExecutePlanTable").jqGrid({
 					datatype : "local",
@@ -104,7 +103,6 @@ ENS.sqlPlanView = wgp.AbstractView
 					colModel : this.tableColModelsList["sqlExecutePlan"],
 					colNames : this.tableColNamesList["sqlExecutePlan"],
 					caption : "Query Plan",
-					pager : "sqlExecutePlanPager",
 					rowNum : 5,
 					rowList : [ 5, 3, 1 ],
 					pgbuttons : true,
@@ -114,7 +112,7 @@ ENS.sqlPlanView = wgp.AbstractView
 					sortname : "stackTrace",
 					sortorder : "desc",
 					viewrecords : true,
-					rownumbers : true,
+					rownumbers : false,
 					shrinkToFit : false,
 					cellEdit : true,
 					cmTemplate: { title: false }
@@ -126,7 +124,6 @@ ENS.sqlPlanView = wgp.AbstractView
 
 				$("#sqlExecutePlanTable").css('font-size', '13px');
 				$("#sqlExecutePlanTable").css('word-break', 'break-all');
-				$("#sqlExecutePlanPager").css('font-size', '13px');
 			},
 			createStackTraceTable : function(divId) {
 				$("#" + divId).append('<table id="stackTraceTable"></table>');
@@ -139,7 +136,6 @@ ENS.sqlPlanView = wgp.AbstractView
 					colNames : this.tableColNamesList["stackTrace"],
 					caption : "Stack Trace",
 					pager : "stackTracePager",
-					rowNum : 5,
 					rowList : [ 5, 3, 1 ],
 					pgbuttons : true,
 					pginput : true,
