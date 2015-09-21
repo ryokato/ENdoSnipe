@@ -56,6 +56,7 @@ import jp.co.acroquest.endosnipe.communicator.TelegramSender;
 import jp.co.acroquest.endosnipe.communicator.accessor.ConnectNotifyAccessor;
 import jp.co.acroquest.endosnipe.communicator.accessor.SystemResourceGetter;
 import jp.co.acroquest.endosnipe.communicator.entity.Body;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
@@ -110,14 +111,15 @@ public class JavelinServer implements TelegramSender, TelegramConstants
     /**
      * サーバを開始する。
      * 
-     * @param port ポート番号
+     * @param setting {@link CommunicatorSetting}
      * @param queue データキュー
      * @param dbName 接続するデータベース名。
      * @param resourceGetter システムリソース取得
      * @param behaviorMode DataCollectorの動作モード
      */
-    public void start(final int port, final JavelinDataQueue queue, final String dbName,
-        final SystemResourceGetter resourceGetter, final BehaviorMode behaviorMode)
+    public void start(final CommunicatorSetting setting, final JavelinDataQueue queue,
+        final String dbName, final SystemResourceGetter resourceGetter,
+        final BehaviorMode behaviorMode)
     {
         dbName_ = dbName;
         queue_ = queue;
@@ -205,7 +207,7 @@ public class JavelinServer implements TelegramSender, TelegramConstants
             }
         });
 
-        server_.start(port);
+        server_.start(setting);
     }
 
     /**

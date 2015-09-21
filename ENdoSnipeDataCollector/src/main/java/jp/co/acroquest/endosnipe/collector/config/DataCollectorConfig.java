@@ -103,6 +103,21 @@ public class DataCollectorConfig
     /** 待ち受けポート */
     private int acceptPort_ = DEF_ACCEOT_PORT;
 
+    /** SSL通信：SSLを行うかどうか（Javelin） */
+    private boolean sslEnable_ = false;
+
+    /** SSL通信：keyStoreのパス */
+    private String sslKeyStore_ = "";
+
+    /** SSL通信：keyStoreのパスワード */
+    private String sslKeyStorePass_ = "";
+
+    /** SSL通信：trustStoreのパス */
+    private String sslTrustStore_ = "";
+
+    /** SSL通信：trustStoreのパスワード */
+    private String sslTrustStorePass_ = "";
+
     /** Javelinログの最大蓄積期間 */
     private String jvnLogStoragePeriod_ = DEF_MEASUREMENT_LOG_STORAGE_PERIOD;
 
@@ -960,6 +975,96 @@ public class DataCollectorConfig
     public void setAcceptPort(final int acceptPort)
     {
         acceptPort_ = acceptPort;
+    }
+
+    /**
+     * SSL通信：SSLを行うかどうかを取得する。
+     * @return SSL通信：SSLを行うかどうか
+     */
+    public boolean isSslEnable()
+    {
+        return sslEnable_;
+    }
+
+    /**
+     * SSL通信：SSLを行うかどうかを設定する。
+     * @param sslEnable SSL通信：SSLを行うかどうか
+     */
+    public void setSslEnable(final boolean sslEnable)
+    {
+        sslEnable_ = sslEnable;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを取得する。
+     * @return SSL通信：keyStoreのパス
+     */
+    public String getSslKeyStore()
+    {
+        return sslKeyStore_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを設定する。
+     * @param sslKeyStore SSL通信：keyStoreのパス
+     */
+    public void setSslKeyStore(final String sslKeyStore)
+    {
+        sslKeyStore_ = sslKeyStore;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @return sslKeyStore SSL通信：keyStoreのパスワード
+     */
+    public String getSslKeyStorePass()
+    {
+        return sslKeyStorePass_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @param sslKeyStorePass SSL通信：keyStoreのパスワード
+     */
+    public void setSslKeyStorePass(final String sslKeyStorePass)
+    {
+        sslKeyStorePass_ = sslKeyStorePass;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを取得する。
+     * @return SSL通信：trustStoreのパス
+     */
+    public String getSslTrustStore()
+    {
+        return sslTrustStore_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを設定する。
+     * @param sslTrustStore SSL通信：trustStoreのパス
+     */
+    public void setSslTrustStore(final String sslTrustStore)
+    {
+        sslTrustStore_ = sslTrustStore;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを取得する。
+     * @return SSL通信：trustStoreのパスワード
+     */
+    public String getSslTrustStorePass()
+    {
+        return sslTrustStorePass_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを設定する。
+     * @param sslTrustStorePass SSL通信：trustStoreのパスワード
+     */
+    public void setSslTrustStorePass(final String sslTrustStorePass)
+    {
+        sslTrustStorePass_ = sslTrustStorePass;
     }
 
     /**

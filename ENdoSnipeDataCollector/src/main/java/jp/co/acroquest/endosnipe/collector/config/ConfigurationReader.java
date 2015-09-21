@@ -198,6 +198,21 @@ public class ConfigurationReader
     /** 待ち受けポート */
     private static final String SERVER_ACCEPT_PORT = "accept.port";
 
+    /** SSL通信：SSL通信を行うかどうか */
+    private static final String SERVER_SSL_ENABLE = "ssl.enable";
+
+    /** SSL通信：キーストアのパス */
+    private static final String SERVER_SSL_KEYSTORE = "ssl.keystore";
+
+    /** SSL通信：キーストアのパスワード */
+    private static final String SERVER_SSL_KEYSTORE_PASS = "ssl.keystore.pass";
+
+    /** SSL通信：トラストストアのパス */
+    private static final String SERVER_SSL_TRUSTSTORE = "ssl.truststore";
+
+    /** SSL通信：トラストストアのパスワード */
+    private static final String SERVER_SSL_TRUSTSTORE_PASS = "ssl.truststore.pass";
+
     /** Javelinログの最大蓄積期間 (共通設定) */
     private static final String COMMON_JVN_LOG_STORAGE_PERIOD = "javelin.log.storage.period";
 
@@ -688,6 +703,26 @@ public class ConfigurationReader
                 LOGGER.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, configFilePath_, key);
                 throw new InitializeException(ex);
             }
+        }
+        else if (SERVER_SSL_ENABLE.equals(key))
+        {
+            config.setSslEnable(Boolean.valueOf(value));
+        }
+        else if (SERVER_SSL_KEYSTORE.equals(key))
+        {
+            config.setSslKeyStore(value);
+        }
+        else if (SERVER_SSL_KEYSTORE_PASS.equals(key))
+        {
+            config.setSslKeyStorePass(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE.equals(key))
+        {
+            config.setSslTrustStore(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE_PASS.equals(key))
+        {
+            config.setSslTrustStorePass(value);
         }
         else if (COMMON_JVN_LOG_STORAGE_PERIOD.equals(key))
         {

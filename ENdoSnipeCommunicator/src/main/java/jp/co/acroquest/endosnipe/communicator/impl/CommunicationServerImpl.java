@@ -39,6 +39,7 @@ import jp.co.acroquest.endosnipe.communicator.CommunicationServer;
 import jp.co.acroquest.endosnipe.communicator.CommunicatorListener;
 import jp.co.acroquest.endosnipe.communicator.TelegramListener;
 import jp.co.acroquest.endosnipe.communicator.TelegramUtil;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
 import jp.co.acroquest.endosnipe.communicator.impl.JavelinClientThread.JavelinClientThreadListener;
@@ -51,18 +52,16 @@ import jp.co.acroquest.endosnipe.communicator.impl.JavelinClientThread.JavelinCl
 public class CommunicationServerImpl implements Runnable, CommunicationServer, TelegramConstants
 {
     /** ロガークラス */
-    private static final ENdoSnipeLogger LOGGER =
-            ENdoSnipeLogger.getLogger(CommunicationServerImpl.class);
-
+    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
+        .getLogger(CommunicationServerImpl.class);
 
     private static final int MAX_SOCKET = 1000;
 
     /** ポート番号の最大値 */
     private static final int MAX_PORT = 65535;
-    
+
     /** サーバソケット */
     ServerSocket objServerSocket_ = null;
-
 
     /** クライアントのリスト */
     protected List<JavelinClientThread> clientList_ = new ArrayList<JavelinClientThread>();
@@ -74,11 +73,11 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
     private boolean isListening_ = false;
 
     /** Javelinと通信を行うポート */
-    private int port_;
+    private CommunicatorSetting setting_;
 
     /** Javelinと通信を行う初期ポート番号 */
     private int startPort_;
-    
+
     /** 通信用スレッド名 */
     private String acceptThreadName_ = "JavelinAcceptThread";
 
@@ -94,11 +93,11 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
     private long waitForThreadStart_;
 
     private int bindInterval_;
-    
+
     private boolean discard_;
-    
+
     private String[] listeners_;
-    
+
     /** CommunicationServerの状態変化を通知するリスナのリスト */
     private final List<CommunicatorListener> listenerList_;
 
@@ -112,7 +111,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
     {
         return this.discard_;
     }
-    
+
     /**
      * @return listeners
      */
@@ -121,7 +120,6 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         return this.listeners_;
     }
 
-    
     /**
      * サーバインスタンスを生成します。
      *
@@ -132,7 +130,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * @param listeners 利用するTelegramListener名
      */
     public CommunicationServerImpl(boolean isRange, int rangeMax, long waitForThreadStart,
-            int bindInterval, String[] listeners)
+        int bindInterval, String[] listeners)
     {
         this.isRange_ = isRange;
         this.rangeMax_ = rangeMax;
@@ -142,7 +140,6 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         this.listenerList_ = new ArrayList<CommunicatorListener>();
     }
 
-    
     /**
      * サーバインスタンスを生成します。
      *
@@ -154,7 +151,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * @param threadName 通信用スレッド名
      */
     public CommunicationServerImpl(boolean isRange, int rangeMax, long waitForThreadStart,
-            int bindInterval, String[] listeners, String threadName)
+        int bindInterval, String[] listeners, String threadName)
     {
         this(isRange, rangeMax, waitForThreadStart, bindInterval, listeners);
         this.acceptThreadName_ = threadName;
@@ -180,21 +177,21 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * {@inheritDoc}
      */
     @SuppressWarnings("deprecation")
-	public void start(int port)
+    public void start(CommunicatorSetting setting)
     {
         if (this.objServerSocket_ != null)
         {
             return;
         }
 
-        this.startPort_ = port;
-        this.port_ = this.startPort_;
+        this.startPort_ = setting.port;
+        this.setting_ = setting;
 
         if (this.isRange_ == true)
         {
             String key = "";
             String message = "";
-            if (isPortNumValid(this.port_, this.rangeMax_) == true)
+            if (isPortNumValid(setting.port, this.rangeMax_) == true)
             {
                 key = "javelin.communicate.JavelinAcceptThread.initRange";
                 message = CommunicatorMessages.getMessage(key, this.startPort_, this.rangeMax_);
@@ -226,17 +223,17 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * {@inheritDoc}
      */
     @SuppressWarnings("deprecation")
-	public void stop()
+    public void stop()
     {
         this.isRunning_ = false;
-        
+
         if (this.isListening_ == false)
         {
             try
             {
                 //　通信用ポートBind待ち状態のために、割り込みを行う
                 Thread acceptThread = this.acceptThread_;
-                if(acceptThread != null)
+                if (acceptThread != null)
                 {
                     acceptThread.interrupt();
                 }
@@ -246,7 +243,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
                 LOGGER.warn(ex);
             }
         }
-        
+
         if (this.isListening_)
         {
             // 待ち受けソケットを閉じることにより、accept()でSocketExceptionが
@@ -274,7 +271,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
     {
         return false;
     }
-    
+
     /**
      * クライアントにTelegramを送信する。
      * 
@@ -287,7 +284,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         {
             return;
         }
-        
+
         boolean isSweep = false;
 
         List<byte[]> byteList = TelegramUtil.createTelegram(telegram);
@@ -309,22 +306,21 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
                         continue;
                     }
                 }
-                
+
                 if (client.isClosed())
                 {
                     isSweep = true;
                     continue;
                 }
-                
+
                 client.sendAlarm(bytes);
                 if (LOGGER.isDebugEnabled())
                 {
                     client.logTelegram(telegram, bytes);
                 }
             }
-        }                    
-        
-        
+        }
+
         if (isSweep == true)
         {
             sweepClient();
@@ -343,7 +339,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * 通信用スレッドを実行する。
      */
     @SuppressWarnings("deprecation")
-	public void run()
+    public void run()
     {
         try
         {
@@ -365,10 +361,10 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         {
             try
             {
-                this.objServerSocket_ = new ServerSocket(this.port_);
+                this.objServerSocket_ = new ServerSocket(setting_.port);
 
                 key = "javelin.communicate.JavelinAcceptThread.start";
-                message = CommunicatorMessages.getMessage(key, this.port_);
+                message = CommunicatorMessages.getMessage(key, setting_.port);
                 LOGGER.info(message);
                 this.isListening_ = true;
             }
@@ -376,21 +372,20 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
             {
                 int interval = this.bindInterval_;
                 key = "javelin.communicate.JavelinAcceptThread.restart";
-                message = CommunicatorMessages.getMessage(key, this.port_, interval);
+                message = CommunicatorMessages.getMessage(key, setting_.port, interval);
                 LOGGER.warn(message);
                 if (this.isRange_ == true)
                 {
                     // ポート番号を１増やして再接続を行う。
                     // 接続範囲を超えた場合には、javelin.bind.intervalの間スリープした後、処理を再度実行する。 
-                    this.port_++;
-                    if (this.port_ > this.rangeMax_)
+                    setting_.port++;
+                    if (setting_.port > this.rangeMax_)
                     {
                         key = "javelin.communicate.JavelinAcceptThread.overRange";
                         message =
-                                CommunicatorMessages.getMessage(key, this.rangeMax_,
-                                                                this.startPort_);
+                            CommunicatorMessages.getMessage(key, this.rangeMax_, this.startPort_);
                         LOGGER.info(message);
-                        this.port_ = this.startPort_;
+                        setting_.port = this.startPort_;
                     }
                 }
                 sleep();
@@ -443,10 +438,11 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
     }
 
     @SuppressWarnings("deprecation")
-	private void accept(final ThreadGroup group) throws SocketException
+    private void accept(final ThreadGroup group)
+        throws SocketException
     {
         Socket clientSocket = null;
-        
+
         String key = "";
         String message = "";
         try
@@ -488,15 +484,15 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         key = "javelin.communicate.commonMessage.clientConnect";
         message = CommunicatorMessages.getMessage(key, clientIP);
         LOGGER.info(message);
-        
+
         // クライアントからの要求受付用に、処理スレッドを起動する。
         JavelinClientThread clientRunnable;
         try
         {
             clientRunnable = createJavelinClientThread(clientSocket);
             Thread objHandleThread =
-                    new Thread(group, clientRunnable,
-                               acceptThreadName_ + "-JavelinClientThread-" + clientCount);
+                new Thread(group, clientRunnable, acceptThreadName_ + "-JavelinClientThread-"
+                    + clientCount);
             objHandleThread.setDaemon(true);
             objHandleThread.start();
 
@@ -510,7 +506,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
         {
             LOGGER.warn("クライアント通信スレッドの生成に失敗しました。", ioe);
         }
-        
+
         // 接続完了をリスナに通知
         String hostName = clientIP.getHostName();
         String ip = clientIP.getHostAddress();
@@ -541,7 +537,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
      * ポートが既に開かれている場合に待機する。
      */
     @SuppressWarnings("deprecation")
-	private void sleep()
+    private void sleep()
     {
         int interval = this.bindInterval_;
 
@@ -604,7 +600,7 @@ public class CommunicationServerImpl implements Runnable, CommunicationServer, T
             this.listenerList_.add(listener);
         }
     }
-    
+
     /**
      * 切断されたことを各リスナへ通知します。<br />
      *

@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.communicator.CommunicationClient;
 import jp.co.acroquest.endosnipe.communicator.CommunicationFactory;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.data.dao.MeasurementInfoDao;
 import jp.co.acroquest.endosnipe.data.db.DBManager;
@@ -375,8 +376,10 @@ public class ExplorerNotifyServlet extends HttpServlet
                 CommunicationClient client =
                         CommunicationFactory.getCommunicationClient("DataCollector-ClientThread-"
                                 + clientId);
-
-                client.init(javelinHost, javelinPort);
+                CommunicatorSetting communicateSetting = new CommunicatorSetting();
+                communicateSetting.port = javelinPort;
+                communicateSetting.sslEnable = false;
+                client.init(javelinHost, communicateSetting);
                 client.addTelegramListener(new CollectorListener(agentId, setting.databaseName_));
                 client.addTelegramListener(new AlarmNotifyListener(agentId));
                 client.addTelegramListener(new SignalStateChangeListener());
@@ -404,8 +407,10 @@ public class ExplorerNotifyServlet extends HttpServlet
 
             CommunicationClient client =
                     CommunicationFactory.getCommunicationClient("DataCollector-JavelinNotify-Thread");
-            client.init(dbConfig.getServerModeAgentSetting().acceptHost_,
-                        dbConfig.getServerModeAgentSetting().acceptPort_);
+            CommunicatorSetting communicateSetting = new CommunicatorSetting();
+            communicateSetting.port = dbConfig.getServerModeAgentSetting().acceptPort_;
+            communicateSetting.sslEnable = false;
+            client.init(dbConfig.getServerModeAgentSetting().acceptHost_, communicateSetting);
             ConnectNotifyData connectNotify = new ConnectNotifyData();
             connectNotify.setKind(ConnectNotifyData.KIND_CONTROLLER);
             connectNotify.setPurpose(ConnectNotifyData.PURPOSE_GET_DATABASE);
