@@ -64,7 +64,8 @@ public class ResourceDataUtilTest extends TestCase
      * @param time 時刻
      * @return MeasurementDataオブジェクト
      */
-    private MeasurementData createMeasurementData(final int type, final String name, final long time)
+    private MeasurementData
+        createMeasurementData(final int type, final String name, final long time)
     {
         MeasurementData measurementData = new MeasurementData();
         measurementData.measurementType = type;
@@ -111,7 +112,7 @@ public class ResourceDataUtilTest extends TestCase
         currData.addMeasurementData(data);
 
         ResourceData additionalData =
-                ResourceDataUtil.createAdditionalPreviousData(prevData, currData);
+            ResourceDataUtil.createAdditionalPreviousData(prevData, currData, prevData);
 
         if (additionalData.getMeasurementMap().size() == 0)
         {
@@ -142,7 +143,7 @@ public class ResourceDataUtilTest extends TestCase
         currData.addMeasurementData(data);
 
         ResourceData additionalData =
-                ResourceDataUtil.createAdditionalPreviousData(prevData, currData);
+            ResourceDataUtil.createAdditionalPreviousData(prevData, currData, prevData);
         data = additionalData.getMeasurementMap().get("項目1");
         detail = data.getMeasurementDetailMap().get("項目2");
 
@@ -176,7 +177,7 @@ public class ResourceDataUtilTest extends TestCase
         currData.addMeasurementData(data);
 
         ResourceData additionalData =
-                ResourceDataUtil.createAdditionalPreviousData(prevData, currData);
+            ResourceDataUtil.createAdditionalPreviousData(prevData, currData, prevData);
         data = additionalData.getMeasurementMap().get("項目2");
         detail = data.getMeasurementDetailMap().get("項目2");
 
@@ -209,13 +210,12 @@ public class ResourceDataUtilTest extends TestCase
         currData.addMeasurementData(data);
 
         ResourceData additionalData =
-                ResourceDataUtil.createAdditionalPreviousData(prevData, currData);
+            ResourceDataUtil.createAdditionalPreviousData(prevData, currData, prevData);
         data = additionalData.getMeasurementMap().get("項目1");
         MeasurementDetail detail2 = data.getMeasurementDetailMap().get("項目2");
         MeasurementDetail detail3 = data.getMeasurementDetailMap().get("項目3");
 
-        assertTrue((detail2 != null) &&
-                   (detail3 != null));
+        assertTrue((detail2 != null) && (detail3 != null));
     }
 
     /**

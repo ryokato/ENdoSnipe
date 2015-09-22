@@ -138,10 +138,11 @@ public class ResourceDataUtil
      * それらについて、グラフの始まりを表すために追加すべきデータ（値が0のもの）を作成し、返します。<br>
      * @param prevData 前回のデータ
      * @param currData 今回のデータ
+     * @param prevData2 前々回のデータ
      * @return グラフの始まりを表すために追加すべきデータ。
      */
     public static ResourceData createAdditionalPreviousData(final ResourceData prevData,
-        final ResourceData currData)
+        final ResourceData currData, final ResourceData prevData2)
     {
         ResourceData additionalData = new ResourceData();
         // 時刻は前回のものを用いる。
@@ -158,11 +159,7 @@ public class ResourceDataUtil
         {
             MeasurementData currMeasurementData = measurementMapEntry.getValue();
             MeasurementData prevMeasurementData =
-                prevData.getMeasurementMap().get(measurementMapEntry.getKey());
-            if (prevMeasurementData == null)
-            {
-                prevMeasurementData = new MeasurementData();
-            }
+                getPrevMeasurementData(prevData, prevData2, measurementMapEntry);
             MeasurementData additionalMeasurementData = new MeasurementData();
             additionalMeasurementData.measurementType = currMeasurementData.measurementType;
             additionalMeasurementData.itemName = currMeasurementData.itemName;
@@ -201,6 +198,33 @@ public class ResourceDataUtil
         }
 
         return additionalData;
+    }
+
+    /**
+     * 前回の計測値を返す。前回の計測値が見つからない場合は、前々回の値を返す。
+     * @param prevData 前回の計測値
+     * @param prevData2 前々回の計測値
+     * @param measurementMapEntry
+     * @return 前回の計測値。
+     */
+    private static MeasurementData getPrevMeasurementData(final ResourceData prevData,
+        final ResourceData prevData2, final Map.Entry<String, MeasurementData> measurementMapEntry)
+    {
+        MeasurementData prevMeasurementData =
+            prevData.getMeasurementMap().get(measurementMapEntry.getKey());
+        if (prevMeasurementData != null)
+        {
+            return prevMeasurementData;
+        }
+        if (prevData2 != null)
+        {
+            prevMeasurementData = prevData2.getMeasurementMap().get(measurementMapEntry.getKey());
+            if (prevMeasurementData != null)
+            {
+                return prevMeasurementData;
+            }
+        }
+        return new MeasurementData();
     }
 
     /**

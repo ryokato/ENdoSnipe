@@ -152,6 +152,10 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
     private final Map<String, ResourceData> prevConvertedResourceDataMap_ =
         new HashMap<String, ResourceData>();
 
+    /** 前々回の計測値(積算を差分に直したもの) */
+    private final Map<String, ResourceData> prevConvertedResourceDataMap2_ =
+        new HashMap<String, ResourceData>();
+
     /**
      * Javelinから接続されたときのイベント。
      * 接続データを受け取った時にセットされ、接続前の、全てが0のデータを書き込む際に用いられる。
@@ -594,10 +598,12 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
             // 可変数系列で新たなデータが加わっている場合、グラフの始まりを表すデータを追加する。
             String prevDataKey = resourceData.clientId;
             ResourceData prevData = this.prevConvertedResourceDataMap_.get(prevDataKey);
+            ResourceData prevData2 = this.prevConvertedResourceDataMap2_.get(prevDataKey);
             if (prevData != null)
             {
                 ResourceData additionalData =
-                    ResourceDataUtil.createAdditionalPreviousData(prevData, resourceData);
+                    ResourceDataUtil
+                        .createAdditionalPreviousData(prevData, resourceData, prevData2);
 
                 if (additionalData.getMeasurementMap().size() > 0)
                 {
@@ -633,6 +639,9 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
                     && resourceData.getMeasurementMap().size() != 0)
                 {
                     this.prevResourceDataMap_.put(prevDataKey, resourceData);
+                    this.prevConvertedResourceDataMap2_.put(prevDataKey,
+                                                            prevConvertedResourceDataMap_
+                                                                .get(prevDataKey));
                     this.prevConvertedResourceDataMap_.put(prevDataKey, convertedResourceData);
                 }
 
