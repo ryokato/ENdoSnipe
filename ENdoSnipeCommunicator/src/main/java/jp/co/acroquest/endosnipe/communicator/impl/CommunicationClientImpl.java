@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.security.KeyStore;
 import java.util.ArrayList;
@@ -46,6 +47,8 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -83,6 +86,9 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
 
     /** 通信ソケット */
     private SocketChannel socketChannel_ = null;
+
+    /** SSL通信用 */
+    private SSLEngine sslEnginle_ = null;
 
     /** 出力ストリーム */
     private PrintStream objPrintStream_ = null;
@@ -354,9 +360,15 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
                         PrintStream objPrintStream = CommunicationClientImpl.this.objPrintStream_;
                         if (objPrintStream != null)
                         {
-                            objPrintStream.write(byteOutputArr);
-                            objPrintStream.flush();
-
+                            if (sslEnginle_ != null)
+                            {
+                                sendTelegramSsl(byteOutputArr);
+                            }
+                            else
+                            {
+                                objPrintStream.write(byteOutputArr);
+                                objPrintStream.flush();
+                            }
                             // 強制終了が行われたとき、再接続を行う
                             if (objPrintStream.checkError())
                             {
@@ -376,6 +388,125 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
                 }
             }
         });
+    }
+
+    private void sendTelegramSsl(byte[] byteOutputArr)
+        throws IOException
+    {
+        SSLSession session = sslEnginle_.getSession();
+        ByteBuffer myAppData = ByteBuffer.allocate(session.getApplicationBufferSize());
+        ByteBuffer myNetData = ByteBuffer.allocate(session.getPacketBufferSize());
+        ByteBuffer peerNetData = ByteBuffer.allocate(session.getPacketBufferSize());
+
+        doHandshake(socketChannel_, sslEnginle_, myNetData, peerNetData);
+
+        myAppData.put(byteOutputArr);
+        myAppData.flip();
+
+        while (myAppData.hasRemaining())
+        {
+            // Generate SSL/TLS encoded data (handshake or application data)
+            SSLEngineResult res = sslEnginle_.wrap(myAppData, myNetData);
+
+            // Process status of call
+            if (res.getStatus() == SSLEngineResult.Status.OK)
+            {
+                myAppData.compact();
+
+                // Send SSL/TLS encoded data to peer
+                while (myNetData.hasRemaining())
+                {
+                   socketChannel_.write(myNetData);
+                }
+            }
+        }
+    }
+
+    private void doHandshake(SocketChannel socketChannel, SSLEngine engine, ByteBuffer myNetData,
+        ByteBuffer peerNetData)
+        throws IOException
+    {
+
+        // Create byte buffers to use for holding application data
+        int appBufferSize = engine.getSession().getApplicationBufferSize();
+        ByteBuffer myAppData = ByteBuffer.allocate(appBufferSize);
+        ByteBuffer peerAppData = ByteBuffer.allocate(appBufferSize);
+
+        // Begin handshake
+        engine.beginHandshake();
+        SSLEngineResult.HandshakeStatus hs = engine.getHandshakeStatus();
+
+        // Process handshaking message
+        while (hs != SSLEngineResult.HandshakeStatus.FINISHED
+            && hs != SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING)
+        {
+
+            switch (hs)
+            {
+
+            case NEED_UNWRAP:
+                // Receive handshaking data from peer
+                if (socketChannel.read(peerNetData) < 0)
+                {
+                    // Handle closed channel
+                }
+
+                // Process incoming handshaking data
+                peerNetData.flip();
+                SSLEngineResult res = engine.unwrap(peerNetData, peerAppData);
+                peerNetData.compact();
+                hs = res.getHandshakeStatus();
+
+                // Check status
+                switch (res.getStatus())
+                {
+                case OK:
+                    // Handle OK status
+                    break;
+
+                // Handle other status: BUFFER_UNDERFLOW, BUFFER_OVERFLOW, CLOSED
+                }
+                break;
+
+            case NEED_WRAP:
+                // Empty the local network packet buffer.
+                myNetData.clear();
+
+                // Generate handshaking data
+                res = engine.wrap(myAppData, myNetData);
+                hs = res.getHandshakeStatus();
+
+                // Check status
+                switch (res.getStatus())
+                {
+                case OK:
+                    myNetData.flip();
+
+                    // Send the handshaking data to peer
+                    while (myNetData.hasRemaining())
+                    {
+                        if (socketChannel.write(myNetData) < 0)
+                        {
+                            // Handle closed channel
+                        }
+                    }
+                    break;
+
+                // Handle other status:  BUFFER_OVERFLOW, BUFFER_UNDERFLOW, CLOSED
+                }
+                break;
+
+            case NEED_TASK:
+                // Handle blocking tasks
+                break;
+
+            // Handle other status:  // FINISHED or NOT_HANDSHAKING
+            default:
+                break;
+            }
+        }
+
+        // Processes after handshaking
     }
 
     /**
@@ -585,10 +716,11 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         SSLContext sContext = SSLContext.getInstance("TLS");
         sContext.init(keyManagers, trustManagers, null);
 
-        SSLEngine engine = sContext.createSSLEngine(this.host_, setting_.port);
-        engine.setUseClientMode(true);
+        sslEnginle_ = sContext.createSSLEngine(this.host_, setting_.port);
+        sslEnginle_.setUseClientMode(true);
+        sslEnginle_.beginHandshake();
         SocketChannel socketChannel = SocketChannel.open(remote);
-        engine.beginHandshake();
+        socketChannel.configureBlocking(false);
         return socketChannel;
     }
 

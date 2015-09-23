@@ -33,6 +33,8 @@ import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,6 +44,8 @@ import java.util.Map;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManager;
@@ -81,6 +85,9 @@ public class DataCollectorServer implements CommunicationServer, Runnable
 
     /** サーバソケット */
     private ServerSocket serverSocket_ = null;
+
+    /** SSLEngine */
+    private SSLEngine sslEngine_ = null;
 
     /** クライアントIDをキーとしたクライアントのリスト */
     protected Map<String, DataCollectorClient> clientList_ =
@@ -295,6 +302,10 @@ public class DataCollectorServer implements CommunicationServer, Runnable
             SSLContext sContext = SSLContext.getInstance("TLS");
             sContext.init(keyManagers, trustManagers, null);
 
+            sslEngine_ = sContext.createSSLEngine();
+            sslEngine_.setUseClientMode(false);
+            sslEngine_.beginHandshake();
+
             SSLServerSocketFactory serverSocketFactory = sContext.getServerSocketFactory();
 
             serverSocket = (SSLServerSocket)serverSocketFactory.createServerSocket(setting_.port);
@@ -306,6 +317,93 @@ public class DataCollectorServer implements CommunicationServer, Runnable
             LOGGER.log(SSL_SERVER_SOCKET_CREATE_FAILURE, ex, ex.getMessage());
         }
         return serverSocket;
+    }
+
+    private void doHandshake(final SocketChannel socketChannel, final SSLEngine engine,
+        final ByteBuffer myNetData, final ByteBuffer peerNetData)
+        throws IOException
+    {
+
+        // Create byte buffers to use for holding application data
+        int appBufferSize = engine.getSession().getApplicationBufferSize();
+        ByteBuffer myAppData = ByteBuffer.allocate(appBufferSize);
+        ByteBuffer peerAppData = ByteBuffer.allocate(appBufferSize);
+
+        // Begin handshake
+        engine.beginHandshake();
+        SSLEngineResult.HandshakeStatus hs = engine.getHandshakeStatus();
+
+        // Process handshaking message
+        while (hs != SSLEngineResult.HandshakeStatus.FINISHED
+            && hs != SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING)
+        {
+
+            switch (hs)
+            {
+
+            case NEED_UNWRAP:
+                // Receive handshaking data from peer
+                if (socketChannel.read(peerNetData) < 0)
+                {
+                    // Handle closed channel
+                }
+
+                // Process incoming handshaking data
+                peerNetData.flip();
+                SSLEngineResult res = engine.unwrap(peerNetData, peerAppData);
+                peerNetData.compact();
+                hs = res.getHandshakeStatus();
+
+                // Check status
+                switch (res.getStatus())
+                {
+                case OK:
+                    // Handle OK status
+                    break;
+
+                // Handle other status: BUFFER_UNDERFLOW, BUFFER_OVERFLOW, CLOSED
+                }
+                break;
+
+            case NEED_WRAP:
+                // Empty the local network packet buffer.
+                myNetData.clear();
+
+                // Generate handshaking data
+                res = engine.wrap(myAppData, myNetData);
+                hs = res.getHandshakeStatus();
+
+                // Check status
+                switch (res.getStatus())
+                {
+                case OK:
+                    myNetData.flip();
+
+                    // Send the handshaking data to peer
+                    while (myNetData.hasRemaining())
+                    {
+                        if (socketChannel.write(myNetData) < 0)
+                        {
+                            // Handle closed channel
+                        }
+                    }
+                    break;
+
+                // Handle other status:  BUFFER_OVERFLOW, BUFFER_UNDERFLOW, CLOSED
+                }
+                break;
+
+            case NEED_TASK:
+                // Handle blocking tasks
+                break;
+
+            // Handle other status:  // FINISHED or NOT_HANDSHAKING
+            default:
+                break;
+            }
+        }
+
+        // Processes after handshaking
     }
 
     private void accept(final ThreadGroup group)
