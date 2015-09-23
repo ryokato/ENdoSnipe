@@ -88,7 +88,7 @@
 			<property>
 				<resourceId></resourceId>
 				<name>Heap Used:bytes</name>
-				<target>/${ClusterName}/.*/process/heap/used:bytes</target>
+				<target>/${ClusterName}/.*/process/heap/.*</target>
 			</property>
 		</resource>
 		<resource>
