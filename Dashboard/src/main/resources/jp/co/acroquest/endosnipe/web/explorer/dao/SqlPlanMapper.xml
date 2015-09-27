@@ -19,6 +19,7 @@
 		where
 		MEASUREMENT_ITEM_NAME
 		= #{measurementItemName}
+		ORDER BY GETTING_PLAN_TIME DESC
 	</select>
 
 </mapper>

@@ -236,11 +236,20 @@ ENS.threadDump.dialog = function(id) {
 	$("#threadDumpTime").append(threadDumpData.date);
 
 	var changed = threadDumpData.threadDumpInfo;
+	
+	// エスケープ処理で「<<」「>>」がタグとして認識されることを回避するために、文字列として追加する。
 	$("#threadDump").empty();
-	$("#threadDump").append('<pre>' + changed + '</pre>');
+	var pre = $('<pre></pre>');
+	var dumpList = changed.split("<br>");
+	$.each(dumpList, function(index, dumpData) {
+		pre.append($('<span></span>').text(dumpData));
+		pre.append("<br>");
+	})
+	
+	$("#threadDump").append(pre);
 	$("#threadDumpDialog").dialog({
 		modal : true,
 		width : 1200,
-		height : 800,
+		height : 800
 	});
 };

@@ -127,6 +127,9 @@ ENS.ResourceDashboardView = wgp.MapView.extend({
 
 			// コンテキストメニューとの関連付け
 			this.relateEditContextMenu(model);
+			
+			// 要素を配置したため、編集状態をONにする。
+			this.changedFlag = true;
 
 		}else{
 
