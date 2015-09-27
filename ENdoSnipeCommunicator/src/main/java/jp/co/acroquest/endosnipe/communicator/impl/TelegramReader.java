@@ -331,7 +331,6 @@ public class TelegramReader implements Runnable
         // read() は1回ですべてのデータを読み込むことができないため、すべてのデータを読み込むまで繰り返す
         int pos = offset;
         int remainLength = length;
-        int lastCount = 0;
         while (remainLength > 0)
         {
             int inputCount = in.read(data, pos, remainLength);
@@ -341,7 +340,6 @@ public class TelegramReader implements Runnable
             }
             pos += inputCount;
             remainLength -= inputCount;
-            lastCount = inputCount;
         }
     }
 
