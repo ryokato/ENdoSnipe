@@ -374,7 +374,7 @@ public class ExplorerNotifyServlet extends HttpServlet
                 String clientId = createClientId(javelinHost, javelinPort);
 
                 CommunicationClient client =
-                        CommunicationFactory.getCommunicationClient("DataCollector-ClientThread-"
+                        CommunicationFactory.getCommunicationClient("Dashboard-ClientThread-"
                                 + clientId);
                 CommunicatorSetting communicateSetting = new CommunicatorSetting();
                 communicateSetting.port = javelinPort;
@@ -406,10 +406,14 @@ public class ExplorerNotifyServlet extends HttpServlet
             List<CommunicationClient> clientList = connectionClient.getClientList();
 
             CommunicationClient client =
-                    CommunicationFactory.getCommunicationClient("DataCollector-JavelinNotify-Thread");
+                    CommunicationFactory.getCommunicationClient("Dashboard-Client-Thread");
             CommunicatorSetting communicateSetting = new CommunicatorSetting();
             communicateSetting.port = dbConfig.getServerModeAgentSetting().acceptPort_;
-            communicateSetting.sslEnable = false;
+            communicateSetting.sslEnable = dbConfig.isSslEnable();
+            communicateSetting.keyStore = dbConfig.getSslKeyStore();
+            communicateSetting.keyStorePass = dbConfig.getSslKeyStorePass();
+            communicateSetting.trustStore = dbConfig.getSslTrustStore();
+            communicateSetting.trustStorePass = dbConfig.getSslTrustStorePass();
             client.init(dbConfig.getServerModeAgentSetting().acceptHost_, communicateSetting);
             ConnectNotifyData connectNotify = new ConnectNotifyData();
             connectNotify.setKind(ConnectNotifyData.KIND_CONTROLLER);

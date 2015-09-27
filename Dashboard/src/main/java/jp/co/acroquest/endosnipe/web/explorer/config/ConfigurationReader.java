@@ -144,6 +144,21 @@ public class ConfigurationReader
     /** データベースのログインパスワードを表す接頭辞 */
     private static final String DATABASE_PASSWORD = "database.password";
 
+    /** SSL通信：SSL通信を行うかどうか */
+    private static final String SERVER_SSL_ENABLE = "ssl.enable";
+
+    /** SSL通信：キーストアのパス */
+    private static final String SERVER_SSL_KEYSTORE = "web.ssl.keystore";
+
+    /** SSL通信：キーストアのパスワード */
+    private static final String SERVER_SSL_KEYSTORE_PASS = "web.ssl.keystore.pass";
+
+    /** SSL通信：トラストストアのパス */
+    private static final String SERVER_SSL_TRUSTSTORE = "web.ssl.truststore";
+
+    /** SSL通信：トラストストアのパスワード */
+    private static final String SERVER_SSL_TRUSTSTORE_PASS = "web.ssl.truststore.pass";
+
     /** データベース名で使用できる文字を、正規表現で表したもの */
     private static final String DATABASE_NAME_USABLE_PATTERN = "[A-Za-z0-9#$%@=\\+\\-_~\\.]*";
 
@@ -385,6 +400,26 @@ public class ConfigurationReader
         else if (SERVER_MODE_ACCEPT_PORT.equals(key))
         {
             config.getServerModeAgentSetting().acceptPort_ = Integer.parseInt(value);
+        }
+        else if (SERVER_SSL_ENABLE.equals(key))
+        {
+            config.setSslEnable(Boolean.valueOf(value));
+        }
+        else if (SERVER_SSL_KEYSTORE.equals(key))
+        {
+            config.setSslKeyStore(value);
+        }
+        else if (SERVER_SSL_KEYSTORE_PASS.equals(key))
+        {
+            config.setSslKeyStorePass(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE.equals(key))
+        {
+            config.setSslTrustStore(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE_PASS.equals(key))
+        {
+            config.setSslTrustStorePass(value);
         }
     }
 

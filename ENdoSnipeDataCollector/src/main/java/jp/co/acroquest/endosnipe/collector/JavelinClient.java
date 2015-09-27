@@ -492,7 +492,7 @@ public class JavelinClient implements CommunicatorListener, LogMessageCodes
         final JvnFileNotifyListener jvnFileNotifyListener,
         final SystemResourceListener systemResourceListener)
     {
-        // 接続に成功するとSocketChannelからIPアドレスを取得できるため、
+        // 接続に成功するとSocketからIPアドレスを取得できるため、
         // そのときにJvnFileNotifyListenerにIPアドレスを登録する
         CommunicatorListener listener = new CommunicatorListener() {
             public void clientConnected(final String hostName, final String ipAddress,

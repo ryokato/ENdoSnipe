@@ -31,9 +31,6 @@ import java.io.PrintStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +43,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLEngineResult;
-import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
@@ -85,10 +80,7 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
     private final List<CommunicatorListener> listenerList_;
 
     /** 通信ソケット */
-    private SocketChannel socketChannel_ = null;
-
-    /** SSL通信用 */
-    private SSLEngine sslEnginle_ = null;
+    private Socket socket_ = null;
 
     /** 出力ストリーム */
     private PrintStream objPrintStream_ = null;
@@ -360,15 +352,8 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
                         PrintStream objPrintStream = CommunicationClientImpl.this.objPrintStream_;
                         if (objPrintStream != null)
                         {
-                            if (sslEnginle_ != null)
-                            {
-                                sendTelegramSsl(byteOutputArr);
-                            }
-                            else
-                            {
-                                objPrintStream.write(byteOutputArr);
-                                objPrintStream.flush();
-                            }
+                            objPrintStream.write(byteOutputArr);
+                            objPrintStream.flush();
                             // 強制終了が行われたとき、再接続を行う
                             if (objPrintStream.checkError())
                             {
@@ -390,133 +375,14 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         });
     }
 
-    private void sendTelegramSsl(byte[] byteOutputArr)
-        throws IOException
-    {
-        SSLSession session = sslEnginle_.getSession();
-        ByteBuffer myAppData = ByteBuffer.allocate(session.getApplicationBufferSize());
-        ByteBuffer myNetData = ByteBuffer.allocate(session.getPacketBufferSize());
-        ByteBuffer peerNetData = ByteBuffer.allocate(session.getPacketBufferSize());
-
-        doHandshake(socketChannel_, sslEnginle_, myNetData, peerNetData);
-
-        myAppData.put(byteOutputArr);
-        myAppData.flip();
-
-        while (myAppData.hasRemaining())
-        {
-            // Generate SSL/TLS encoded data (handshake or application data)
-            SSLEngineResult res = sslEnginle_.wrap(myAppData, myNetData);
-
-            // Process status of call
-            if (res.getStatus() == SSLEngineResult.Status.OK)
-            {
-                myAppData.compact();
-
-                // Send SSL/TLS encoded data to peer
-                while (myNetData.hasRemaining())
-                {
-                   socketChannel_.write(myNetData);
-                }
-            }
-        }
-    }
-
-    private void doHandshake(SocketChannel socketChannel, SSLEngine engine, ByteBuffer myNetData,
-        ByteBuffer peerNetData)
-        throws IOException
-    {
-
-        // Create byte buffers to use for holding application data
-        int appBufferSize = engine.getSession().getApplicationBufferSize();
-        ByteBuffer myAppData = ByteBuffer.allocate(appBufferSize);
-        ByteBuffer peerAppData = ByteBuffer.allocate(appBufferSize);
-
-        // Begin handshake
-        engine.beginHandshake();
-        SSLEngineResult.HandshakeStatus hs = engine.getHandshakeStatus();
-
-        // Process handshaking message
-        while (hs != SSLEngineResult.HandshakeStatus.FINISHED
-            && hs != SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING)
-        {
-
-            switch (hs)
-            {
-
-            case NEED_UNWRAP:
-                // Receive handshaking data from peer
-                if (socketChannel.read(peerNetData) < 0)
-                {
-                    // Handle closed channel
-                }
-
-                // Process incoming handshaking data
-                peerNetData.flip();
-                SSLEngineResult res = engine.unwrap(peerNetData, peerAppData);
-                peerNetData.compact();
-                hs = res.getHandshakeStatus();
-
-                // Check status
-                switch (res.getStatus())
-                {
-                case OK:
-                    // Handle OK status
-                    break;
-
-                // Handle other status: BUFFER_UNDERFLOW, BUFFER_OVERFLOW, CLOSED
-                }
-                break;
-
-            case NEED_WRAP:
-                // Empty the local network packet buffer.
-                myNetData.clear();
-
-                // Generate handshaking data
-                res = engine.wrap(myAppData, myNetData);
-                hs = res.getHandshakeStatus();
-
-                // Check status
-                switch (res.getStatus())
-                {
-                case OK:
-                    myNetData.flip();
-
-                    // Send the handshaking data to peer
-                    while (myNetData.hasRemaining())
-                    {
-                        if (socketChannel.write(myNetData) < 0)
-                        {
-                            // Handle closed channel
-                        }
-                    }
-                    break;
-
-                // Handle other status:  BUFFER_OVERFLOW, BUFFER_UNDERFLOW, CLOSED
-                }
-                break;
-
-            case NEED_TASK:
-                // Handle blocking tasks
-                break;
-
-            // Handle other status:  // FINISHED or NOT_HANDSHAKING
-            default:
-                break;
-            }
-        }
-
-        // Processes after handshaking
-    }
-
     /**
-     * ソケットチャネルを取得します。<br />
+     * ソケットを取得します。<br />
      * 
-     * @return ソケットチャネル
+     * @return ソケット
      */
-    public SocketChannel getChannel()
+    public Socket getSocket()
     {
-        return this.socketChannel_;
+        return this.socket_;
     }
 
     /**
@@ -572,10 +438,10 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
 
         try
         {
-            if (this.socketChannel_ != null)
+            if (this.socket_ != null)
             {
-                this.socketChannel_.close();
-                this.socketChannel_ = null;
+                this.socket_.close();
+                this.socket_ = null;
             }
 
             outputLog("IECC0205", this.threadName_);
@@ -606,16 +472,15 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
 
         try
         {
-
+            InetSocketAddress remote = new InetSocketAddress(this.host_, setting_.port);
             // サーバに接続する
-            SocketAddress remote = new InetSocketAddress(this.host_, setting_.port);
             if (setting_.sslEnable)
             {
-                this.socketChannel_ = createSslSocketChannel(remote);
+                this.socket_ = createSslSocket(remote);
             }
             else
             {
-                this.socketChannel_ = SocketChannel.open(remote);
+                this.socket_ = new Socket(remote.getAddress(), remote.getPort());
             }
             this.ipAddress_ = getIpAddress();
             // 接続中のメッセージ
@@ -639,16 +504,15 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         }
         try
         {
-            if (this.socketChannel_ == null)
+            if (this.socket_ == null)
             {
                 return false;
             }
-            this.objPrintStream_ =
-                new PrintStream(this.socketChannel_.socket().getOutputStream(), true);
+            this.objPrintStream_ = new PrintStream(this.socket_.getOutputStream(), true);
 
             this.telegramReader_ =
-                new TelegramReader(this, this.threadName_ + "-Sender",
-                                   this.socketChannel_.socket(), this.discard_, this.isOutputLog_);
+                new TelegramReader(this, this.threadName_ + "-Sender", this.socket_, this.discard_,
+                                   this.isOutputLog_);
         }
         catch (IOException objIOException)
         {
@@ -669,7 +533,7 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
 
             // DB名称を生成
             String agentName = this.connectNotify_.getAgentName();
-            InetAddress localAddress = this.socketChannel_.socket().getLocalAddress();
+            InetAddress localAddress = this.socket_.getLocalAddress();
             String ipAddr = localAddress.getHostAddress();
             String localhostName = localAddress.getHostName();
 
@@ -693,7 +557,7 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         return this.started_;
     }
 
-    private SocketChannel createSslSocketChannel(SocketAddress remote)
+    private Socket createSslSocket(InetSocketAddress remote)
         throws Exception
     {
         // KeyStoreの読み込み
@@ -716,12 +580,9 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         SSLContext sContext = SSLContext.getInstance("TLS");
         sContext.init(keyManagers, trustManagers, null);
 
-        sslEnginle_ = sContext.createSSLEngine(this.host_, setting_.port);
-        sslEnginle_.setUseClientMode(true);
-        sslEnginle_.beginHandshake();
-        SocketChannel socketChannel = SocketChannel.open(remote);
-        socketChannel.configureBlocking(false);
-        return socketChannel;
+        SSLSocketFactory socketFactory = sContext.getSocketFactory();
+        Socket socket = socketFactory.createSocket(remote.getAddress(), remote.getPort());
+        return socket;
     }
 
     /**
@@ -758,7 +619,7 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
      */
     public String getIpAddress()
     {
-        Socket socket = this.socketChannel_.socket();
+        Socket socket = this.socket_;
         String inetAddr = socket.getInetAddress().toString();
         int delimiterPos = inetAddr.indexOf('/');
         String ipAddress = inetAddr.substring(delimiterPos + 1);
@@ -789,8 +650,8 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         /*
          * String telegramStr = TelegramUtil.toPrintStr(response, length);
          * LOGGER.warn(message +
-         * this.socketChannel_.socket().getInetAddress().getHostAddress() + ":"
-         * + this.socketChannel_.socket().getPort() + SystemLogger.NEW_LINE +
+         * this.socket_.getInetAddress().getHostAddress() + ":"
+         * + this.socket_.getPort() + SystemLogger.NEW_LINE +
          * telegramStr);
          */
     }

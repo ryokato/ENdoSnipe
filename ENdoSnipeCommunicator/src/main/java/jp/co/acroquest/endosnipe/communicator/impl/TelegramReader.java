@@ -25,12 +25,14 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.communicator.impl;
 
+import static jp.co.acroquest.endosnipe.communicator.entity.Header.HEADER_LENGTH;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,24 +51,20 @@ import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
 public class TelegramReader implements Runnable
 {
     /** ロガークラス */
-    private static final ENdoSnipeLogger LOGGER =
-            ENdoSnipeLogger.getLogger(TelegramReader.class);
+    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger.getLogger(TelegramReader.class);
 
     private static final int SO_TIMEOUT = 10000;
 
     /***/
     private static final int READ_WAIT = 100;
 
-    private static final int RETRY_MAX = 5;
+    private static final int RETRY_MAX = 100;
 
     private volatile boolean isRunning_;
-    
+
     private volatile boolean isShutdown_ = false;
 
-    private SocketChannel channel_;
-
-    /** サーバ側からのデータのHead用変数 */
-    private final ByteBuffer headerBuffer_ = ByteBuffer.allocate(Header.HEADER_LENGTH);
+    private Socket socket_;
 
     /** 電文を転送するターゲットオブジェクトのリスト */
     private final List<TelegramListener> telegramListenerList_;
@@ -78,19 +76,19 @@ public class TelegramReader implements Runnable
     private static final int RETRY_INTERVAL = 10000;
 
     private int retryCount_ = 0;
-    
+
     /** ログ出力有無 */
     private boolean isOutputLog_ = true;
-    
+
     /** サーバとの通信用コネクション */
     private JavelinClientConnection clientConnection_;
-    
+
     /** 電文送信用スレッド名. */
     private String sendThreadName_;
 
     /** 電文送信用スレッド. */
     private Thread clientSendThread_;
-    
+
     /**
      * {@link TelegramReader} を構築します。<br />
      *
@@ -102,8 +100,9 @@ public class TelegramReader implements Runnable
      * @throws IOException 入出力例外が発生した場合
      */
     public TelegramReader(final CommunicationClientImpl communicationClient,
-            final String sendThreadName, final Socket objSocket,
-            final boolean discard, final boolean isOutputLog) throws IOException
+        final String sendThreadName, final Socket objSocket, final boolean discard,
+        final boolean isOutputLog)
+        throws IOException
     {
         this.clientConnection_ = new JavelinClientConnection(objSocket, discard);
 
@@ -143,7 +142,7 @@ public class TelegramReader implements Runnable
         this.clientSendThread_.start();
 
         this.retryCount_ = 0;
-        this.headerBuffer_.rewind();
+        //        this.headerBuffer_.rewind();
         while (this.isRunning_)
         {
             try
@@ -174,9 +173,9 @@ public class TelegramReader implements Runnable
             // CHECKSTYLE:ON
             return;
         }
-        this.channel_ = this.comminicationClient_.getChannel();
+        this.socket_ = this.comminicationClient_.getSocket();
 
-        if (this.channel_ == null)
+        if (this.socket_ == null)
         {
             setRunning(false);
             this.clientConnection_.close();
@@ -195,7 +194,7 @@ public class TelegramReader implements Runnable
         }
         catch (IOException ioe)
         {
-            if(isShutdown_ == false)
+            if (isShutdown_ == false)
             {
                 // 切断された
                 outputLog("WECC0201", ioe);
@@ -219,7 +218,7 @@ public class TelegramReader implements Runnable
                 try
                 {
                     Telegram response = listener.receiveTelegram(telegram);
-                    
+
                     // 応答電文がある場合のみ、応答を返す
                     if (response != null)
                     {
@@ -245,100 +244,68 @@ public class TelegramReader implements Runnable
      * @throws IOException 入出力例外が発生した場合
      */
     @SuppressWarnings("deprecation")
-	public byte[] readTelegramBytes()
+    public byte[] readTelegramBytes()
         throws IOException
     {
-        this.channel_.socket().setSoTimeout(SO_TIMEOUT);
+        this.socket_.setSoTimeout(SO_TIMEOUT);
         byte finalTelegram = TelegramConstants.HALFWAY_TELEGRAM;
 
         ByteArrayOutputStream resultStream = new ByteArrayOutputStream();
+
         do
         {
-            int readCount = 0;
-            while (readCount < Header.HEADER_LENGTH)
+            byte[] header = new byte[HEADER_LENGTH];
+            try
             {
-                int count = this.channel_.read(this.headerBuffer_);
-                if (count < 0)
+                readFull(this.socket_.getInputStream(), header, 0, Header.HEADER_LENGTH);
+            }
+            catch (SocketTimeoutException ex)
+            {
+                if (this.retryCount_ > RETRY_MAX)
                 {
                     throw new IOException();
                 }
-                else if (count == 0)
+                this.retryCount_++;
+                try
                 {
-                    if (this.retryCount_ > RETRY_MAX)
-                    {
-                        throw new IOException();
-                    }
-                    this.retryCount_++;
-                    try
-                    {
-                        Thread.sleep(READ_WAIT);
-                    }
-                    catch (InterruptedException ex)
-                    {
-                        LOGGER.warn(ex);
-                    }
-                    continue;
+                    Thread.sleep(READ_WAIT);
                 }
-
-                this.retryCount_ = 0;
-                readCount += count;
+                catch (InterruptedException iex)
+                {
+                    LOGGER.warn(iex);
+                }
+                continue;
             }
+            this.retryCount_ = 0;
+            ByteBuffer headerBuffer = ByteBuffer.wrap(header);
 
-            this.headerBuffer_.rewind();
-            int telegramLength = this.headerBuffer_.getInt();
-            this.headerBuffer_.getLong();
-            finalTelegram = this.headerBuffer_.get();
+            headerBuffer.rewind();
+            int telegramLength = headerBuffer.getInt();
+            headerBuffer.getLong();
+            finalTelegram = headerBuffer.get();
 
             // ヘッダ部しかない場合はそのまま返す。
-            if (telegramLength <= Header.HEADER_LENGTH)
+            if (telegramLength <= HEADER_LENGTH)
             {
-                this.headerBuffer_.rewind();
-                return this.headerBuffer_.array();
+                headerBuffer.rewind();
+                return headerBuffer.array();
             }
 
-            readCount = 0;
-            ByteBuffer bodyBuffer =
-                    ByteBuffer.allocate(telegramLength - headerBuffer_.array().length);
-            
+            int capacity = telegramLength - HEADER_LENGTH;
+
             if (resultStream.size() == 0)
             {
-                resultStream.write(this.headerBuffer_.array());
+                resultStream.write(headerBuffer.array());
             }
 
-            while (bodyBuffer.remaining() > 0)
-            {
-                int count = this.channel_.read(bodyBuffer);
-                if (count < 0)
-                {
-                    throw new IOException();
-                }
-                else if (count == 0)
-                {
-                    if (this.retryCount_ > RETRY_MAX)
-                    {
-                        throw new IOException();
-                    }
-                    this.retryCount_++;
-                    try
-                    {
-                        Thread.sleep(READ_WAIT);
-                    }
-                    catch (InterruptedException ex)
-                    {
-                        LOGGER.warn(ex);
-                    }
+            byte[] body = new byte[capacity];
+            readFull(this.socket_.getInputStream(), body, 0, capacity);
+            ByteBuffer bodyBuffer = ByteBuffer.wrap(body);
 
-                    continue;
-                }
-
-                this.retryCount_ = 0;
-            }
-
-            this.headerBuffer_.rewind();
             resultStream.write(bodyBuffer.array());
         }
         while (finalTelegram != TelegramConstants.FINAL_TELEGRAM);
-        
+
         byte[] telegramBytes = resultStream.toByteArray();
         int telegramLength = telegramBytes.length;
         ByteBuffer outputBuffer = ByteBuffer.wrap(telegramBytes);
@@ -348,6 +315,34 @@ public class TelegramReader implements Runnable
         outputBuffer.putInt(telegramLength);
 
         return outputBuffer.array();
+    }
+
+    /**
+     * 電文を指定した長さで読み込む。
+     * @param in {@link InputStream}
+     * @param data 読み込み後のデータを格納するオブジェクト
+     * @param offset オフセット
+     * @param length 読み込む長さ
+     * @throws IOException 入出力例外が発生した場合
+     */
+    private void readFull(InputStream in, byte[] data, final int offset, final int length)
+        throws IOException
+    {
+        // read() は1回ですべてのデータを読み込むことができないため、すべてのデータを読み込むまで繰り返す
+        int pos = offset;
+        int remainLength = length;
+        int lastCount = 0;
+        while (remainLength > 0)
+        {
+            int inputCount = in.read(data, pos, remainLength);
+            if (inputCount < 0)
+            {
+                throw new IOException("Cannot read.");
+            }
+            pos += inputCount;
+            remainLength -= inputCount;
+            lastCount = inputCount;
+        }
     }
 
     /**
@@ -370,8 +365,8 @@ public class TelegramReader implements Runnable
     public void logTelegram(final String message, final Telegram response, final int length)
     {
         String telegramStr = TelegramUtil.toPrintStr(response, length);
-        outputLog("DECC0108", message, this.channel_.socket().getInetAddress().getHostAddress(),
-                   this.channel_.socket().getPort(), telegramStr);
+        outputLog("DECC0108", message, this.socket_.getInetAddress().getHostAddress(),
+                  this.socket_.getPort(), telegramStr);
     }
 
     /**
@@ -380,12 +375,12 @@ public class TelegramReader implements Runnable
     public void shutdown()
     {
         isShutdown_ = true;
-        setRunning(false);    
+        setRunning(false);
 
         // 電文送信スレッドに割り込んで停止する。
         this.clientSendThread_.interrupt();
     }
-    
+
     /**
      * ログを出力します。<br />
      * 
@@ -401,7 +396,7 @@ public class TelegramReader implements Runnable
             LOGGER.log(messageCode, throwable, args);
         }
     }
-    
+
     /**
      * ログを出力します。<br />
      * 

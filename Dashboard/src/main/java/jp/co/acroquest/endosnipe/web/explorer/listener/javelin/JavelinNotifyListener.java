@@ -128,7 +128,11 @@ public class JavelinNotifyListener implements TelegramListener
                                 + clientId);
                 CommunicatorSetting communicateSetting = new CommunicatorSetting();
                 communicateSetting.port = javelinPort;
-                communicateSetting.sslEnable = false;
+                communicateSetting.sslEnable = dbConfig.isSslEnable();
+                communicateSetting.keyStore = dbConfig.getSslKeyStore();
+                communicateSetting.keyStorePass = dbConfig.getSslKeyStorePass();
+                communicateSetting.trustStore = dbConfig.getSslTrustStore();
+                communicateSetting.trustStorePass = dbConfig.getSslTrustStorePass();
                 client.init(javelinHost, communicateSetting);
                 client.addTelegramListener(new CollectorListener(agentId, databaseName));
                 client.addTelegramListener(new SignalStateChangeListener());

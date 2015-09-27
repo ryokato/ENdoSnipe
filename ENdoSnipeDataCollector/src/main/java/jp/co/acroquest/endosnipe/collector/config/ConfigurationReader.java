@@ -238,9 +238,6 @@ public class ConfigurationReader
     /** 同一SQL判定を行うフラグを表す接頭辞 */
     private static final String JUDGE_SIMILAR_SQL = "resource.judege.similar.sql";
 
-    /** 同一SQL判定の類似度を表す接頭辞 */
-    private static final String JUDGE_SQL_SIMILARITY = "resource.judege.sql.similarity";
-
     /** データベース名で使用できる文字を、正規表現で表したもの */
     private static final String DATABASE_NAME_USABLE_PATTERN = "[A-Za-z0-9#$%@=\\+\\-_~\\.]*";
 
@@ -969,10 +966,6 @@ public class ConfigurationReader
         else if (JUDGE_SIMILAR_SQL.equals(key))
         {
             config.setJudgeSimilarSql(Boolean.parseBoolean(value));
-        }
-        else if (JUDGE_SQL_SIMILARITY.equals(key))
-        {
-            config.setJudgeSqlSimilarity(Float.parseFloat(value));
         }
     }
 
