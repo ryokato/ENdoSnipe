@@ -25,12 +25,16 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.communicator.impl;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +53,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 import jp.co.acroquest.endosnipe.common.jmx.JMXManager;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
+import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
 import jp.co.acroquest.endosnipe.common.util.NetworkUtil;
 import jp.co.acroquest.endosnipe.communicator.CommunicationClient;
 import jp.co.acroquest.endosnipe.communicator.CommunicatorListener;
@@ -560,17 +565,20 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
     private Socket createSslSocket(InetSocketAddress remote)
         throws Exception
     {
+        String abstractDir = getAbsoluteDirectoryPath();
         // KeyStoreの読み込み
         char[] keyPassChar = setting_.keyStorePass.toCharArray();
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        keyStore.load(new FileInputStream(setting_.keyStore), keyPassChar);
+        File keyStoreFile = new File(abstractDir, setting_.keyStore);
+        keyStore.load(new FileInputStream(keyStoreFile), keyPassChar);
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
         kmf.init(keyStore, keyPassChar);
 
         // TrustStoreの読み込み
         char[] trustPassChar = setting_.trustStorePass.toCharArray();
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        trustStore.load(new FileInputStream(setting_.trustStore), trustPassChar);
+        File trustStoreFile = new File(abstractDir, setting_.trustStore);
+        trustStore.load(new FileInputStream(trustStoreFile), trustPassChar);
         TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(trustStore);
 
@@ -583,6 +591,37 @@ public class CommunicationClientImpl implements CommunicationClient, Runnable
         SSLSocketFactory socketFactory = sContext.getSocketFactory();
         Socket socket = socketFactory.createSocket(remote.getAddress(), remote.getPort());
         return socket;
+    }
+
+    /**
+     * ディレクトリの絶対パスを取得する。
+     * @return 絶対パス
+     */
+    private String getAbsoluteDirectoryPath()
+    {
+        URL resourceJarUrl =
+            CommunicationClientImpl.class.getResource("CommunicationClientImpl.class");
+        String resourceJarPath = resourceJarUrl.getFile();
+        try
+        {
+            resourceJarPath = URLDecoder.decode(resourceJarPath, "UTF-8");
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            // 何もしない。
+            SystemLogger.getInstance().warn(ex);
+        }
+
+        int startIndex = resourceJarPath.indexOf("/");
+        int endIndex = resourceJarPath.lastIndexOf("!");
+
+        String absoluteJarPath = resourceJarPath.substring(startIndex, endIndex);
+
+        int dirDelimIndex = absoluteJarPath.lastIndexOf("/");
+
+        String absoluteJarDirectory = absoluteJarPath.substring(0, dirDelimIndex + 1);
+
+        return absoluteJarDirectory;
     }
 
     /**
