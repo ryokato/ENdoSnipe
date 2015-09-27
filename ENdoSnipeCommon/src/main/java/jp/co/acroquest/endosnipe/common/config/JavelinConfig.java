@@ -302,6 +302,16 @@ public class JavelinConfig extends JavelinConfigBase
 
     private static int servletExcludePatternCacheSize__;
 
+    private static boolean sslEnable__;
+
+    private static String sslKeyStore__;
+
+    private static String sslKeyStorePass__;
+
+    private static String sslTrustStore__;
+
+    private static String sslTrustStorePass__;
+
     /**
      * {@link JavelinConfig} を構築します。<br />
      *
@@ -466,6 +476,11 @@ public class JavelinConfig extends JavelinConfigBase
         jdbcjavelinLightweightMode__ = super.isJdbcjavelinLightweightMode();
         servletExcludePattern__ = super.getServletExcludePattern();
         servletExcludePatternCacheSize__ = super.getServletExcludePatternCacheSize();
+        sslEnable__ = super.isSslEnable();
+        sslKeyStore__ = super.getSslKeystore();
+        sslKeyStorePass__ = super.getSslKeystorePass();
+        sslTrustStore__ = super.getSslTruststore();
+        sslTrustStorePass__ = super.getSslTruststorePass();
     }
 
     /**

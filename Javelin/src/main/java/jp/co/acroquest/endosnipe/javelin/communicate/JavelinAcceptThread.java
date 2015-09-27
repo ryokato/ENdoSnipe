@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.co.acroquest.endosnipe.common.config.JavelinConfig;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
 import jp.co.acroquest.endosnipe.communicator.impl.CommunicationServerImpl;
@@ -43,19 +44,19 @@ import jp.co.acroquest.endosnipe.javelin.bean.Invocation;
  *
  */
 public class JavelinAcceptThread extends CommunicationServerImpl implements AlarmListener,
-        TelegramConstants
+    TelegramConstants
 {
     /** 設定 */
     static JavelinConfig config__ = new JavelinConfig();
 
     /** JavelinAcceptThreadのインスタンス(シングルトン) */
     static JavelinAcceptThread instance__ = new JavelinAcceptThread();
+
     private JavelinAcceptThread()
     {
         super(config__.isAcceptPortIsRange(), config__.getAcceptPortRangeMax(),
-                JavelinTransformer.WAIT_FOR_THREAD_START, 
-                config__.getJavelinBindInterval(), 
-                config__.getTelegramListeners().split(","));
+            JavelinTransformer.WAIT_FOR_THREAD_START, config__.getJavelinBindInterval(), config__
+                .getTelegramListeners().split(","));
         this.isJavelin_ = true;
         StatsJavelinRecorder.addListener(this);
     }
@@ -73,10 +74,16 @@ public class JavelinAcceptThread extends CommunicationServerImpl implements Alar
      */
     public void start()
     {
-        int port = config__.getAcceptPort();
-        this.start(port);
+        CommunicatorSetting setting = new CommunicatorSetting();
+        setting.port = config__.getAcceptPort();
+        setting.sslEnable = config__.isSslEnable();
+        setting.keyStore = config__.getSslKeystore();
+        setting.keyStorePass = config__.getSslKeystorePass();
+        setting.trustStore = config__.getSslTruststore();
+        setting.trustStorePass = config__.getSslTruststorePass();
+        this.start(setting);
     }
-        
+
     /**
      * JavelinAcceptThreadのインスタンスを取得する。
      * @return JavelinAcceptThread
@@ -95,9 +102,9 @@ public class JavelinAcceptThread extends CommunicationServerImpl implements Alar
         List<Long> accumulateTimeList = new ArrayList<Long>();
         addInvocationList(invocationList, accumulateTimeList, node);
 
-        Telegram objTelegram = JavelinTelegramCreator.create(invocationList,
-                accumulateTimeList, BYTE_TELEGRAM_KIND_ALERT,
-                BYTE_REQUEST_KIND_NOTIFY);
+        Telegram objTelegram =
+            JavelinTelegramCreator.create(invocationList, accumulateTimeList,
+                                          BYTE_TELEGRAM_KIND_ALERT, BYTE_REQUEST_KIND_NOTIFY);
 
         // アラームを送信する。
         sendTelegram(objTelegram);
@@ -111,7 +118,7 @@ public class JavelinAcceptThread extends CommunicationServerImpl implements Alar
      * @param node CallTreeNode
      */
     private void addInvocationList(List<Invocation> invocationList, List<Long> accumulateTimeList,
-            final CallTreeNode node)
+        final CallTreeNode node)
     {
         invocationList.add(node.getInvocation());
         accumulateTimeList.add(node.getAccumulatedTime());

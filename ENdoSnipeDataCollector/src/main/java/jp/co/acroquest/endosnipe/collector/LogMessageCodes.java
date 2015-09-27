@@ -82,6 +82,9 @@ public interface LogMessageCodes extends CommonLogMessageCodes
     /** システムで予期しないエラーが発生した場合 */
     String SYSTEM_UNKNOW_ERROR = "EEDC0023";
 
+    /** SSLServerSocketの生成に失敗した場合 */
+    String SSL_SERVER_SOCKET_CREATE_FAILURE = "EEDC0024";
+
     // -------------------------------------------------------------------------
     // 電文受信メッセージコード (01xx)
     // -------------------------------------------------------------------------

@@ -27,9 +27,7 @@ package jp.co.acroquest.endosnipe.web.explorer.config;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import jp.co.acroquest.endosnipe.data.db.DatabaseType;
 
@@ -100,6 +98,21 @@ public class DataBaseConfig
     /** エージェントの設定リスト */
     private final List<AgentSetting> agentSettingList_ = new ArrayList<AgentSetting>();
 
+    /** SSL通信：SSLを行うかどうか（Javelin） */
+    private boolean sslEnable_ = false;
+
+    /** SSL通信：keyStoreのパス */
+    private String sslKeyStore_ = "";
+
+    /** SSL通信：keyStoreのパスワード */
+    private String sslKeyStorePass_ = "";
+
+    /** SSL通信：trustStoreのパス */
+    private String sslTrustStore_ = "";
+
+    /** SSL通信：trustStoreのパスワード */
+    private String sslTrustStorePass_ = "";
+
     /** データベースの種類のデフォルト値 */
     private static final DatabaseType DEF_DATABASE_TYPE = DatabaseType.H2;
 
@@ -141,109 +154,6 @@ public class DataBaseConfig
 
     /** 接続モードのデフォルト値 */
     private static final String DEF_CONNECTION_MODE = "client";
-
-    //--------------------
-    // SMTP settings(default)
-    //--------------------
-    /** メール通知を送信するかどうかのデフォルト値。 */
-    private static final boolean DEF_SEND_MAIL = true;
-
-    /** メールサーバのデフォルト値。 */
-    private static final String DEF_SMTP_SERVER = "mail.example.com";
-
-    /** メールのエンコーディング設定デフォルト値。 */
-    private static final String DEF_SMTP_ENCODING = "iso-2022-jp";
-
-    /** 送信元メールアドレス設定デフォルト値。 */
-    private static final String DEF_SMTP_FROM = "endosnipe@example.com";
-
-    /** 送信先メールアドレス設定デフォルト値。 */
-    private static final String DEF_SMTP_TO = "endosnipe@example.com";
-
-    /** メールSubjectのデフォルト値。 */
-    private static final String DEF_SMTP_SUBJECT = "[javelin] ${eventName} is ocurred.";
-
-    /** メールテンプレート(jvnアラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_JVN = "mai_template_jvn.txt";
-
-    /** メールテンプレート(計測値アラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_MEASUREMENT = "mai_template_measurement.txt";
-
-    //--------------------
-    // SMTP settings
-    //--------------------
-    /** メール通知を送信するかどうか */
-    private boolean sendMail_ = DEF_SEND_MAIL;
-
-    /** メールサーバ */
-    private String smtpServer_ = DEF_SMTP_SERVER;
-
-    /** メールのエンコーディング */
-    private String smtpEncoding_ = DEF_SMTP_ENCODING;
-
-    /** 送信元メールアドレス */
-    private String smtpFrom_ = DEF_SMTP_FROM;
-
-    /** 送信先メールアドレス */
-    private String smtpTo_ = DEF_SMTP_TO;
-
-    /** メールSubject */
-    private String smtpSubject_ = DEF_SMTP_SUBJECT;
-
-    /** メールテンプレート(jvnアラーム用) */
-    private String smtpTemplateJvn_ = DEF_SMTP_TEMPLATE_JVN;
-
-    /** メールテンプレート(計測値アラーム用) */
-    private String smtpTemplateMeasurement_ = DEF_SMTP_TEMPLATE_MEASUREMENT;
-
-    /** メールテンプレート（キー：設定項目名、値：テンプレートファイル名） */
-    private final Map<String, MailTemplateEntity> smtpTemplateMap_ =
-            new HashMap<String, MailTemplateEntity>();
-
-    //--------------------
-    // SNMP settings(default)
-    //--------------------
-    /** SNMPTrapを送信するかどうかのデフォルト値true(=送信する) */
-    private static final boolean DEF_SEND_TRAP = true;
-
-    /** マネージャリストのデフォルト値localhost */
-    private static final String DEF_MANAGERS = "localhost";
-
-    /** SNMP Trapポート番号のデフォルト値162 */
-    private static final int DEF_TRAP_PORT = 162;
-
-    /** Trapコミュニティ名のデフォルト値public */
-    private static final String DEF_TRAP_COMMUNITY = "public";
-
-    /** SNMP Version: v1 */
-    public static final String VERSION_V1 = "v1";
-
-    /** SNMP Version: v2c */
-    public static final String VERSION_V2C = "v2c";
-
-    /** SNMP Version: v3 */
-    public static final String VERSION_V3 = "v3";
-
-    /** SNMP Versionのデフォルト値v2c */
-    private static final String DEF_VERSION = VERSION_V2C;
-
-    //--------------------
-    // SNMP settings
-    //--------------------
-    /** SNMPTrapを送信するかどうか。true:送信する、false:送信しない */
-    private boolean sendTrap_ = DEF_SEND_TRAP;
-
-    /** マネージャリスト */
-    private String managers_ = DEF_MANAGERS;
-
-    /** SNMP Trapポート番号 */
-    private int trapPort_ = DEF_TRAP_PORT;
-
-    /** SNMP Version */
-    private String version_ = DEF_VERSION;
-
-    /** Trapコミュニティ名 */
-    private String trapCommunity_ = DEF_TRAP_COMMUNITY;
 
     /**
      * コンストラクタ。
@@ -485,267 +395,6 @@ public class DataBaseConfig
     }
 
     /**
-     * メール通知を送信するかどうかを取得する。
-     * @return メール通知を送信するかどうかの設定
-     */
-    public boolean isSendMail()
-    {
-        return sendMail_;
-    }
-
-    /**
-     *　メール通知を送信するかどうかを設定する。
-     * @param sendMail メール通知を送信するかどうかの設定
-     */
-    public void setSendMail(final boolean sendMail)
-    {
-        sendMail_ = sendMail;
-    }
-
-    /**
-     * メールのエンコーディングを取得する。
-     * @return メールのエンコーディングの設定
-     */
-    public String getSmtpEncoding()
-    {
-        return smtpEncoding_;
-    }
-
-    /**
-     *　メールのエンコーディングを設定する。
-     * @param smtpEncoding メールのエンコーディングの設定
-     */
-    public void setSmtpEncoding(final String smtpEncoding)
-    {
-        smtpEncoding_ = smtpEncoding;
-    }
-
-    /**
-     * メールサーバを取得する。
-     * @return メールサーバの設定
-     */
-    public String getSmtpServer()
-    {
-        return smtpServer_;
-    }
-
-    /**
-     *　メールサーバを設定する。
-     * @param smtpServer メールサーバの設定
-     */
-    public void setSmtpServer(final String smtpServer)
-    {
-        smtpServer_ = smtpServer;
-    }
-
-    /**
-     * 送信元メールアドレスを取得する。
-     * @return 送信元メールアドレスの設定
-     */
-    public String getSmtpFrom()
-    {
-        return smtpFrom_;
-    }
-
-    /**
-     *　送信元メールアドレスを設定する。
-     * @param smtpFrom 送信元メールアドレスの設定
-     */
-    public void setSmtpFrom(final String smtpFrom)
-    {
-        smtpFrom_ = smtpFrom;
-    }
-
-    /**
-     * 送信先メールアドレスを取得する。
-     * @return 送信先メールアドレスの設定
-     */
-    public String getSmtpTo()
-    {
-        return smtpTo_;
-    }
-
-    /**
-     *　送信先メールアドレスを設定する。
-     * @param smtpTo 送信先メールアドレスの設定
-     */
-    public void setSmtpTo(final String smtpTo)
-    {
-        smtpTo_ = smtpTo;
-    }
-
-    /**
-     * メールテンプレート(jvnアラーム用)を取得する。
-     * @return メールテンプレート(jvnアラーム用)の設定
-     */
-    public String getSmtpTemplateJvn()
-    {
-        return smtpTemplateJvn_;
-    }
-
-    /**
-     *　メールテンプレート(jvnアラーム用)を設定する。
-     * @param smtpTemplateJvn メールテンプレート(jvnアラーム用)の設定
-     */
-    public void setSmtpTemplateJvn(final String smtpTemplateJvn)
-    {
-        smtpTemplateJvn_ = smtpTemplateJvn;
-    }
-
-    /**
-     * メールテンプレート(計測値アラーム用)を取得する。
-     * @return メールテンプレート(計測値アラーム用)の設定
-     */
-    public String getSmtpTemplateMeasurement()
-    {
-        return smtpTemplateMeasurement_;
-    }
-
-    /**
-     *　メールテンプレート(計測値アラーム用)を設定する。
-     * @param smtpTemplateMeasurement メールテンプレート(計測値アラーム用)の設定
-     */
-    public void setSmtpTemplateMeasurement(final String smtpTemplateMeasurement)
-    {
-        smtpTemplateMeasurement_ = smtpTemplateMeasurement;
-    }
-
-    /**
-     * メールテンプレートファイル名を取得する。
-     * @param name テンプレート名
-     * @return テンプレートファイル名
-     */
-    public MailTemplateEntity getSmtpTemplate(final String name)
-    {
-        if (name == null)
-        {
-            return null;
-        }
-        return this.smtpTemplateMap_.get(name);
-    }
-
-    /**
-     * メールテンプレートファイル名を設定する。
-     *
-     * @param name テンプレート名
-     * @param template テンプレートファイル名
-     */
-    public void setSmtpTemplate(final String name, final MailTemplateEntity template)
-    {
-        this.smtpTemplateMap_.put(name, template);
-    }
-
-    /**
-     * メールSubjectを取得する。
-     * @return メールSubjectの設定
-     */
-    public String getSmtpSubject()
-    {
-        return smtpSubject_;
-    }
-
-    /**
-     *　メールSubjectを設定する。
-     * @param smtpSubject メールSubjectの設定
-     */
-    public void setSmtpSubject(final String smtpSubject)
-    {
-        smtpSubject_ = smtpSubject;
-    }
-
-    /**
-     * SNMPTrapを送信するかどうかを取得する。
-     * @return SNMPTrapを送信するかどうか
-     */
-    public boolean isSendTrap()
-    {
-        return sendTrap_;
-    }
-
-    /**
-     *　SNMPTrapを送信するかどうかを設定する。
-     * @param sendTrap SNMPTrapを送信するかどうか
-     */
-    public void setSendTrap(final boolean sendTrap)
-    {
-        sendTrap_ = sendTrap;
-    }
-
-    /**
-     * マネージャリストを取得する。
-     * @return マネージャリスト
-     */
-    public String getManagers()
-    {
-        return managers_;
-    }
-
-    /**
-     *　マネージャリストを設定する。
-     * @param managers マネージャリスト
-     */
-    public void setManagers(final String managers)
-    {
-        managers_ = managers;
-    }
-
-    /**
-     * SNMP Trapポート番号を取得する。
-     * @return SNMP Trapポート番号
-     */
-    public int getTrapPort()
-    {
-        return trapPort_;
-    }
-
-    /**
-     *　SNMP Trapポート番号を設定する。
-     * 
-     * @param trapPort SNMP Trapポート番号
-     */
-    public void setTrapPort(final int trapPort)
-    {
-        trapPort_ = trapPort;
-    }
-
-    /**
-     * Trapコミュニティ名を取得する。
-     * @return Trapコミュニティ名
-     */
-    public String getTrapCommunity()
-    {
-        return trapCommunity_;
-    }
-
-    /**
-     *　Trapコミュニティ名を設定する。
-     * @param trapCommunity Trapコミュニティ名
-     */
-    public void setTrapCommunity(final String trapCommunity)
-    {
-        trapCommunity_ = trapCommunity;
-    }
-
-    /**
-     * SNMP Versionを取得する。
-     * @return SNMP Version
-     */
-    public String getVersion()
-    {
-        return version_;
-    }
-
-    /**
-     *　SNMP Versionを設定する。
-     * 
-     * @param version SNMP Version
-     */
-    public void setVersion(final String version)
-    {
-        version_ = version;
-    }
-
-    /**
      * @return connectionMode
      */
     public String getConnectionMode()
@@ -775,5 +424,95 @@ public class DataBaseConfig
     public void setServerModeAgentSetting(final AgentSetting serverModeAgentSetting)
     {
         serverModeAgentSetting_ = serverModeAgentSetting;
+    }
+
+    /**
+     * SSL通信：SSLを行うかどうかを取得する。
+     * @return SSL通信：SSLを行うかどうか
+     */
+    public boolean isSslEnable()
+    {
+        return sslEnable_;
+    }
+
+    /**
+     * SSL通信：SSLを行うかどうかを設定する。
+     * @param sslEnable SSL通信：SSLを行うかどうか
+     */
+    public void setSslEnable(final boolean sslEnable)
+    {
+        sslEnable_ = sslEnable;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを取得する。
+     * @return SSL通信：keyStoreのパス
+     */
+    public String getSslKeyStore()
+    {
+        return sslKeyStore_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを設定する。
+     * @param sslKeyStore SSL通信：keyStoreのパス
+     */
+    public void setSslKeyStore(final String sslKeyStore)
+    {
+        sslKeyStore_ = sslKeyStore;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @return sslKeyStore SSL通信：keyStoreのパスワード
+     */
+    public String getSslKeyStorePass()
+    {
+        return sslKeyStorePass_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @param sslKeyStorePass SSL通信：keyStoreのパスワード
+     */
+    public void setSslKeyStorePass(final String sslKeyStorePass)
+    {
+        sslKeyStorePass_ = sslKeyStorePass;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを取得する。
+     * @return SSL通信：trustStoreのパス
+     */
+    public String getSslTrustStore()
+    {
+        return sslTrustStore_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを設定する。
+     * @param sslTrustStore SSL通信：trustStoreのパス
+     */
+    public void setSslTrustStore(final String sslTrustStore)
+    {
+        sslTrustStore_ = sslTrustStore;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを取得する。
+     * @return SSL通信：trustStoreのパスワード
+     */
+    public String getSslTrustStorePass()
+    {
+        return sslTrustStorePass_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを設定する。
+     * @param sslTrustStorePass SSL通信：trustStoreのパスワード
+     */
+    public void setSslTrustStorePass(final String sslTrustStorePass)
+    {
+        sslTrustStorePass_ = sslTrustStorePass;
     }
 }

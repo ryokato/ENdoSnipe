@@ -1,9 +1,9 @@
 /*******************************************************************************
- * ENdoSnipe 5.0 - (https://github.com/endosnipe)
+ * ENdoSnipe 6.0 - (https://github.com/endosnipe)
  * 
  * The MIT License (MIT)
  * 
- * Copyright (c) 2012 Acroquest Technology Co.,Ltd.
+ * Copyright (c) 2015 Acroquest Technology Co.,Ltd.
  * 
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,39 +23,31 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  ******************************************************************************/
-package jp.co.acroquest.endosnipe.communicator;
-
-import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
+package jp.co.acroquest.endosnipe.communicator.entity;
 
 /**
- * コミュニケーションサーバのためのインターフェースです。<br />
- * 
- * @author y-komori
+ * 通信周りの設定
+ * @author fujii
+ *
  */
-public interface CommunicationServer extends AbstractCommunicator
+public class CommunicatorSetting
 {
-    /**
-     * サーバの初期化を行います。<br />
-     * {@link #start(int)} メソッドを呼び出す前に、本メソッドを呼び出してください。
-     */
-    void init();
+    /** ポート番号 */
+    public int port;
 
-    /**
-     * サーバを開始します。<br />
-     * 
-     * @param setting 通信設定
-     */
-    void start(CommunicatorSetting setting);
+    /** SSL認証を行うかどうか */
+    public boolean sslEnable;
 
-    /**
-     * サーバを停止します。<br />
-     */
-    void stop();
+    /** キーストアのパス */
+    public String keyStore;
 
-    /**
-     * 接続中クライアントの数を返します。<br />
-     * 
-     * @return クライアントの数
-     */
-    int getActiveClient();
+    /** キーストアのパスワード */
+    public String keyStorePass;
+
+    /** トラストストアのパス */
+    public String trustStore;
+
+    /** トラストストアのパスワード */
+    public String trustStorePass;
+
 }

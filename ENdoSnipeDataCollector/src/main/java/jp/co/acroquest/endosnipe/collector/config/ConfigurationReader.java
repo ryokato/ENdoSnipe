@@ -198,6 +198,21 @@ public class ConfigurationReader
     /** 待ち受けポート */
     private static final String SERVER_ACCEPT_PORT = "accept.port";
 
+    /** SSL通信：SSL通信を行うかどうか */
+    private static final String SERVER_SSL_ENABLE = "ssl.enable";
+
+    /** SSL通信：キーストアのパス */
+    private static final String SERVER_SSL_KEYSTORE = "ssl.keystore";
+
+    /** SSL通信：キーストアのパスワード */
+    private static final String SERVER_SSL_KEYSTORE_PASS = "ssl.keystore.pass";
+
+    /** SSL通信：トラストストアのパス */
+    private static final String SERVER_SSL_TRUSTSTORE = "ssl.truststore";
+
+    /** SSL通信：トラストストアのパスワード */
+    private static final String SERVER_SSL_TRUSTSTORE_PASS = "ssl.truststore.pass";
+
     /** Javelinログの最大蓄積期間 (共通設定) */
     private static final String COMMON_JVN_LOG_STORAGE_PERIOD = "javelin.log.storage.period";
 
@@ -222,9 +237,6 @@ public class ConfigurationReader
 
     /** 同一SQL判定を行うフラグを表す接頭辞 */
     private static final String JUDGE_SIMILAR_SQL = "resource.judege.similar.sql";
-
-    /** 同一SQL判定の類似度を表す接頭辞 */
-    private static final String JUDGE_SQL_SIMILARITY = "resource.judege.sql.similarity";
 
     /** データベース名で使用できる文字を、正規表現で表したもの */
     private static final String DATABASE_NAME_USABLE_PATTERN = "[A-Za-z0-9#$%@=\\+\\-_~\\.]*";
@@ -689,6 +701,26 @@ public class ConfigurationReader
                 throw new InitializeException(ex);
             }
         }
+        else if (SERVER_SSL_ENABLE.equals(key))
+        {
+            config.setSslEnable(Boolean.valueOf(value));
+        }
+        else if (SERVER_SSL_KEYSTORE.equals(key))
+        {
+            config.setSslKeyStore(value);
+        }
+        else if (SERVER_SSL_KEYSTORE_PASS.equals(key))
+        {
+            config.setSslKeyStorePass(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE.equals(key))
+        {
+            config.setSslTrustStore(value);
+        }
+        else if (SERVER_SSL_TRUSTSTORE_PASS.equals(key))
+        {
+            config.setSslTrustStorePass(value);
+        }
         else if (COMMON_JVN_LOG_STORAGE_PERIOD.equals(key))
         {
             config.setJvnLogStoragePeriod(value);
@@ -934,10 +966,6 @@ public class ConfigurationReader
         else if (JUDGE_SIMILAR_SQL.equals(key))
         {
             config.setJudgeSimilarSql(Boolean.parseBoolean(value));
-        }
-        else if (JUDGE_SQL_SIMILARITY.equals(key))
-        {
-            config.setJudgeSqlSimilarity(Float.parseFloat(value));
         }
     }
 

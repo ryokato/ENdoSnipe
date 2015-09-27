@@ -55,6 +55,7 @@ import jp.co.acroquest.endosnipe.communicator.CommunicationFactory;
 import jp.co.acroquest.endosnipe.communicator.CommunicatorListener;
 import jp.co.acroquest.endosnipe.communicator.TelegramReceiver;
 import jp.co.acroquest.endosnipe.communicator.TelegramSender;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
@@ -397,7 +398,10 @@ public class JavelinClient implements CommunicatorListener, LogMessageCodes
         this.client_ =
             CommunicationFactory.getCommunicationClient("DataCollector-ClientThread-"
                 + this.clientId_);
-        this.client_.init(this.javelinHost_, this.javelinPort_);
+        CommunicatorSetting setting = new CommunicatorSetting();
+        setting.port = this.javelinPort_;
+        setting.sslEnable = false;
+        this.client_.init(this.javelinHost_, setting);
 
         String agentName = null;
         if (connectNotify != null)
@@ -488,7 +492,7 @@ public class JavelinClient implements CommunicatorListener, LogMessageCodes
         final JvnFileNotifyListener jvnFileNotifyListener,
         final SystemResourceListener systemResourceListener)
     {
-        // 接続に成功するとSocketChannelからIPアドレスを取得できるため、
+        // 接続に成功するとSocketからIPアドレスを取得できるため、
         // そのときにJvnFileNotifyListenerにIPアドレスを登録する
         CommunicatorListener listener = new CommunicatorListener() {
             public void clientConnected(final String hostName, final String ipAddress,
