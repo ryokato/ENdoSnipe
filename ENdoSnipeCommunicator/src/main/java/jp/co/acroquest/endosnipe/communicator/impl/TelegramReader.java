@@ -58,7 +58,7 @@ public class TelegramReader implements Runnable
     /***/
     private static final int READ_WAIT = 100;
 
-    private static final int RETRY_MAX = 100;
+    private static final int RETRY_MAX = 10000;
 
     private volatile boolean isRunning_;
 

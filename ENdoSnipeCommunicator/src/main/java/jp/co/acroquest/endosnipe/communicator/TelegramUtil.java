@@ -28,7 +28,6 @@ package jp.co.acroquest.endosnipe.communicator;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -58,7 +57,7 @@ public final class TelegramUtil implements TelegramConstants
     public static final int TELEGRAM_LENGTH_MAX = 10 * 1024 * 1024;
 
     /** 受信電文の最大長 */
-    public static final int TELEGRAM_READ_LENGTH_MAX = 1 * 1024 * 1024;
+    public static final int TELEGRAM_READ_LENGTH_MAX = 2 * 1024 * 1024;
 
     /** shortからbyte配列への変換時に必要なバイト数 */
     private static final int SHORT_BYTE_SWITCH_LENGTH = 2;
@@ -146,8 +145,7 @@ public final class TelegramUtil implements TelegramConstants
 
         if (intbyteArrLength > TELEGRAM_READ_LENGTH_MAX)
         {
-            intbyteArrLength = TELEGRAM_READ_LENGTH_MAX;
-            LOGGER.log("WECC0101", intbyteArrLength);
+            throw new IllegalStateException("Illegal Telegram length.");
         }
 
         try
