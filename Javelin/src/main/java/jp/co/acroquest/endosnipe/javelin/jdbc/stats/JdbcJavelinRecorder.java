@@ -1075,6 +1075,7 @@ public class JdbcJavelinRecorder
                                         execPlanResult =
                                             doExecPlan(processor, stmt, bindList, planStmt,
                                                        originalSqlElement);
+                                        sendExecPlan(node, execPlanText, originalSqlElement);
                                     }
                                     else
                                     {
@@ -1096,25 +1097,6 @@ public class JdbcJavelinRecorder
                             execPlanResult = prevExecPlans[count];
                         }
                         execPlanText.append(execPlanResult);
-
-                        StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
-                        String stacktraceStr =
-                            ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
-
-                        String invocationKey = "";
-                        if (node != null)
-                        {
-                            invocationKey = node.getInvocation().getRootInvocationManagerKey();
-                        }
-
-                        String itemName = StatsUtil.addPrefix(invocationKey);
-
-                        // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
-                        SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
-                        sqlPlanTelegramSender.execute(itemName, originalSqlElement,
-                                                      execPlanText.toString(),
-                                                      new Timestamp(System.currentTimeMillis()),
-                                                      stacktraceStr);
                     }
                 }
                 catch (Exception ex)
@@ -1182,6 +1164,35 @@ public class JdbcJavelinRecorder
         }
 
         return resultText;
+    }
+
+    /**
+     * 実行計画を送信する。
+     * @param node ノード
+     * @param execPlanText 実行計画
+     * @param originalSqlElement 発行したSQL
+     */
+    private static void sendExecPlan(CallTreeNode node, StringBuffer execPlanText,
+        String originalSqlElement)
+    {
+        StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
+        String stacktraceStr =
+            ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
+
+        String invocationKey = "";
+        if (node != null)
+        {
+            invocationKey = node.getInvocation().getRootInvocationManagerKey();
+        }
+
+        String itemName = StatsUtil.addPrefix(invocationKey);
+
+        // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
+        SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
+        sqlPlanTelegramSender.execute(itemName, originalSqlElement,
+                                      execPlanText.toString(),
+                                      new Timestamp(System.currentTimeMillis()),
+                                      stacktraceStr);
     }
 
     private static String appendLineBreak(String str)
