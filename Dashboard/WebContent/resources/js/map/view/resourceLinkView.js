@@ -48,7 +48,7 @@ ENS.ResourceLinkElementView = ENS.ShapeElementView.extend({
 
 				// ツリー要素をクリックしてイベントを発生させる。
 				if (targetDashboardLink) {
-					resourceDashboardListView.clickModel(targetDashboardLink);
+					resourceDashboardListView.showModel(targetDashboardLink);
 				}
 			}
 		});
