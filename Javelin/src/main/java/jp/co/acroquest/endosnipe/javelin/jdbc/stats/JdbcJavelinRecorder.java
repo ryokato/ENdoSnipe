@@ -98,8 +98,9 @@ public class JdbcJavelinRecorder
     private static final String STRING_LIMITED_MARK = "...";
 
     /** 実行計画取得に失敗した場合のメッセージ。 */
-    public static final String EXPLAIN_PLAN_FAILED = JdbcJavelinMessages
-        .getMessage("javelin.jdbc.stats." + "JdbcJavelinRecorder.FailExplainPlanMessage");
+    public static final String EXPLAIN_PLAN_FAILED =
+        JdbcJavelinMessages
+            .getMessage("javelin.jdbc.stats." + "JdbcJavelinRecorder.FailExplainPlanMessage");
 
     /** 設定値保持Bean */
     static JdbcJavelinConfig config__;
@@ -234,7 +235,7 @@ public class JdbcJavelinRecorder
                 // セッション終了処理に入っている場合は、処理しない。
                 if (tree != null && (config__.isAllowSqlTraceForOracle() // 
                     && (tree.containsFlag(SqlTraceStatus.KEY_SESSION_CLOSING) //
-                    || tree.containsFlag(SqlTraceStatus.KEY_SESSION_INITIALIZING))))
+                        || tree.containsFlag(SqlTraceStatus.KEY_SESSION_INITIALIZING))))
                 {
                     return;
                 }
@@ -480,7 +481,7 @@ public class JdbcJavelinRecorder
             if (tree == null || (config__.isAllowSqlTraceForOracle() //
                 && (tree.containsFlag(SqlTraceStatus.KEY_SESSION_INITIALIZING) //
                     || tree.containsFlag(SqlTraceStatus.KEY_SESSION_CLOSING) //
-                || tree.containsFlag(SqlTraceStatus.KEY_SESSION_FINISHED))))
+                    || tree.containsFlag(SqlTraceStatus.KEY_SESSION_FINISHED))))
             {
                 return;
             }
@@ -679,8 +680,8 @@ public class JdbcJavelinRecorder
                     else
                     {
                         // 実行計画の内容、スタックトレースともに出力する。
-                        event
-                            .addParam(EventConstants.PARAM_FULL_SCAN_EXEC_PLAN, newArgs.toString());
+                        event.addParam(EventConstants.PARAM_FULL_SCAN_EXEC_PLAN,
+                                       newArgs.toString());
                         event.addParam(EventConstants.PARAM_FULL_SCAN_STACK_TRACE, getStackTrace());
                     }
 
@@ -791,7 +792,7 @@ public class JdbcJavelinRecorder
 
     private static long calcQueryTime(final Statement stmt, final int paramNum,
         final CallTreeNode node, final String[] oldArgs)
-        throws Exception
+            throws Exception
     {
         long queryTime = System.currentTimeMillis() - node.getStartTime();
 
@@ -913,9 +914,9 @@ public class JdbcJavelinRecorder
 
             // セッション終了処理に入っている場合は、実行計画は取得しない。
             if ((config__.isAllowSqlTraceForOracle() //
-            && (tree.containsFlag(SqlTraceStatus.KEY_SESSION_INITIALIZING) //
-                || tree.containsFlag(SqlTraceStatus.KEY_SESSION_CLOSING) //
-            || tree.containsFlag(SqlTraceStatus.KEY_SESSION_FINISHED))))
+                && (tree.containsFlag(SqlTraceStatus.KEY_SESSION_INITIALIZING) //
+                    || tree.containsFlag(SqlTraceStatus.KEY_SESSION_CLOSING) //
+                    || tree.containsFlag(SqlTraceStatus.KEY_SESSION_FINISHED))))
             {
                 return;
             }
@@ -1067,27 +1068,20 @@ public class JdbcJavelinRecorder
                             {
                                 synchronized (processor)
                                 {
-                                    recordIntervalExpired =
-                                        isRecordIntervalExpired(node, jdbcJvnStatus);
-                                    prevExecPlans = getPrevExecPlan(callTree, node);
-                                    if (recordIntervalExpired || prevExecPlans == null)
-                                    {
-                                        execPlanResult =
-                                            doExecPlan(processor, stmt, bindList, planStmt,
-                                                       originalSqlElement);
-                                        sendExecPlan(node, execPlanText, originalSqlElement);
-                                    }
-                                    else
-                                    {
-                                        execPlanResult = prevExecPlans[count];
-                                    }
+                                    // 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する
+                                    sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
+                                                                processor, stmt, bindList, planStmt,
+                                                                originalSqlElement, execPlanText,
+                                                                count);
                                 }
                             }
                             else
                             {
-                                execPlanResult =
-                                    doExecPlan(processor, stmt, bindList, planStmt,
-                                               originalSqlElement);
+                                // 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する
+                                sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
+                                                            processor, stmt, bindList, planStmt,
+                                                            originalSqlElement, execPlanText,
+                                                            count);
                             }
 
                             execPlans.add(execPlanResult);
@@ -1167,6 +1161,43 @@ public class JdbcJavelinRecorder
     }
 
     /**
+     * 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する。
+     * @param node メソッド呼び出し情報
+     * @param callTree Javelinログ出力用にコールスタックを記録するためのツリー
+     * @param jdbcJvnStatus JDBCJavelinがスレッド毎に持つ状態値
+     * @param processor JDBCJavelinがスレッド毎に持つ状態値プロセッサ
+     * @param stmt ステートメント
+     * @param bindList bindList
+     * @param planStmt 実行計画取得用ステートメント
+     * @param originalSqlElement 発行したSQL
+     * @param execPlanText 実行計画
+     * @param count 実行計画の配列に対するインデックスになるカウント
+     * @return 実行計画
+     * @throws Exception Exception
+     */
+    private static String sendIntervalExpiredExecPlan(CallTreeNode node, CallTree callTree,
+        JdbcJvnStatus jdbcJvnStatus, DBProcessor processor, Statement stmt, List<?> bindList,
+        Statement planStmt, String originalSqlElement, StringBuffer execPlanText, int count)
+            throws Exception
+    {
+        String execPlanResult = "";
+
+        boolean recordIntervalExpired = isRecordIntervalExpired(node, jdbcJvnStatus);
+        String[] prevExecPlans = getPrevExecPlan(callTree, node);
+        if (recordIntervalExpired || prevExecPlans == null)
+        {
+            execPlanResult = doExecPlan(processor, stmt, bindList, planStmt, originalSqlElement);
+            sendExecPlan(node, execPlanText, originalSqlElement);
+        }
+        else
+        {
+            execPlanResult = prevExecPlans[count];
+        }
+
+        return execPlanResult;
+    }
+
+    /**
      * 実行計画を送信する。
      * @param node ノード
      * @param execPlanText 実行計画
@@ -1176,8 +1207,7 @@ public class JdbcJavelinRecorder
         String originalSqlElement)
     {
         StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
-        String stacktraceStr =
-            ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
+        String stacktraceStr = ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
 
         String invocationKey = "";
         if (node != null)
@@ -1189,10 +1219,8 @@ public class JdbcJavelinRecorder
 
         // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
         SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
-        sqlPlanTelegramSender.execute(itemName, originalSqlElement,
-                                      execPlanText.toString(),
-                                      new Timestamp(System.currentTimeMillis()),
-                                      stacktraceStr);
+        sqlPlanTelegramSender.execute(itemName, originalSqlElement, execPlanText.toString(),
+                                      new Timestamp(System.currentTimeMillis()), stacktraceStr);
     }
 
     private static String appendLineBreak(String str)
@@ -1207,7 +1235,7 @@ public class JdbcJavelinRecorder
 
     private static String doExecPlan(DBProcessor processor, Statement stmt, List<?> bindList,
         Statement planStmt, String originalSqlElement)
-        throws SQLException
+            throws SQLException
     {
         String execPlanResult;
         if (stmt instanceof PreparedStatement)
@@ -1224,7 +1252,7 @@ public class JdbcJavelinRecorder
 
     private static String[] createBindValArray(final Statement stmt, String[] originalSql,
         final String[] execPlanSql)
-        throws Exception
+            throws Exception
     {
         int bindValCount = SqlUtil.getPreparedStatementAddBatchCount(stmt);
         if (bindValCount > 0)
