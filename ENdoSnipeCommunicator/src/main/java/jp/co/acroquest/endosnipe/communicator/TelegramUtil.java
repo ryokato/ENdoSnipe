@@ -43,6 +43,7 @@ import jp.co.acroquest.endosnipe.communicator.entity.RequestBody;
 import jp.co.acroquest.endosnipe.communicator.entity.ResponseBody;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
+import jp.co.acroquest.endosnipe.communicator.entity.TelegramItemNameIdMap;
 
 /**
  * 電文に関する基本機能を提供するためのユーティリティクラスです。<br />
@@ -505,10 +506,8 @@ public final class TelegramUtil implements TelegramConstants
      *            値
      * @return 電文
      */
-    public static Telegram
-        createSingleTelegram(final byte telegramKind, final byte requestKind,
-            final String objectName, final String itemName, final ItemType itemType,
-            final Object value)
+    public static Telegram createSingleTelegram(final byte telegramKind, final byte requestKind,
+        final String objectName, final String itemName, final ItemType itemType, final Object value)
     {
         Header header = new Header();
         header.setByteTelegramKind(telegramKind);
@@ -758,4 +757,69 @@ public final class TelegramUtil implements TelegramConstants
         return bodies;
     }
 
+    /**
+     * 項目名が圧縮されている場合も考慮して、解凍後の計測項目名を取得する。
+     * @param itemNameIdMapList 電文サイズを圧縮/解凍に使う、項目名とIDのセットの配列
+     * @param body 電文本体
+     * @param agentName エージェント名
+     * @return 計測項目名
+     */
+    public static String getMeasurementItemName(List<TelegramItemNameIdMap> itemNameIdMapList,
+        Body body, String agentName)
+    {
+        String itemName = "";
+        String value = body.getStrItemName();
+
+        if (value != null)
+        {
+            // 項目名とIDのマップから、項目名がIDで短縮されて送られてきた場合に復元する。
+            for (TelegramItemNameIdMap itemNameIdMap : itemNameIdMapList)
+            {
+                if (value.equals(itemNameIdMap.getId()))
+                {
+                    itemName = itemNameIdMap.getItemName();
+                    break;
+                }
+            }
+        }
+
+        // 送られてきた値が項目名とIDのマップに存在しなかった場合は、
+        // 項目名の短縮が行われなかったと判断し、その値を項目名とする。
+        if ("".equals(itemName))
+        {
+            itemName = value;
+        }
+
+        String mearsurmentItemName = agentName + itemName;
+
+        return mearsurmentItemName;
+    }
+
+    /**
+     * 電文サイズを解凍する際に使う、項目名とIDのセットの配列を取得する。
+     * @param bodies 電文本体
+     * @return 電文サイズを解凍する際に使う、項目名とIDのセットの配列
+     */
+    public static List<TelegramItemNameIdMap> getTelegramItemNameIdMapList(Body[] bodies)
+    {
+        List<TelegramItemNameIdMap> itemNameIdMapList = new ArrayList<TelegramItemNameIdMap>();
+
+        for (Body itemnameIdMapBody : bodies)
+        {
+            if (OBJECTNAME_ITEMNAME_ID_MAP.equals(itemnameIdMapBody.getStrObjName()))
+            {
+                ResponseBody responseBody = (ResponseBody)itemnameIdMapBody;
+                Object[] itemNameIdList = responseBody.getObjItemValueArr();
+                if (itemNameIdList.length > 1)
+                {
+                    TelegramItemNameIdMap itemNameIdMap = new TelegramItemNameIdMap();
+                    itemNameIdMap.setId((String)itemNameIdList[0]);
+                    itemNameIdMap.setItemName((String)itemNameIdList[1]);
+                    itemNameIdMapList.add(itemNameIdMap);
+                }
+            }
+        }
+
+        return itemNameIdMapList;
+    }
 }
