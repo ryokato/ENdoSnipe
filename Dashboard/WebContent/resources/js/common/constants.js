@@ -541,7 +541,7 @@ ENS.schedulingReportDialog = {};
 ENS.tree.agentName = "/default/";
 ENS.mulResGraphView = {};
 ENS.mulResGraphView.series = {};
-ENS.mulResGraphView.series.number = 10;
+ENS.mulResGraphView.series.numberId = "defautlSeriesNumber"
 
 ENS.graphRange = {};
 ENS.graphRange.ID_RANGE = "range_controller_range";

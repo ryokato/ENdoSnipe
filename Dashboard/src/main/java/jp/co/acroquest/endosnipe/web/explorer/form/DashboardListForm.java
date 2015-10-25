@@ -35,6 +35,9 @@ public class DashboardListForm
     /** 選択しているResourceDashboardListViewのID */
     private String selectedDashboardListId_;
 
+    /** DashBoardデフォルト系列数 */
+    private Integer defautlSeriesNumber_;
+
     /**
      * コンストラクタ。
      */
@@ -141,6 +144,26 @@ public class DashboardListForm
     public void setSelectedDashboardListId(final String selectedDashboardListId)
     {
         this.selectedDashboardListId_ = selectedDashboardListId;
+    }
+
+    /**
+     * DashBoardデフォルト系列数を取得する。
+     *
+     * @return DashBoardデフォルト系列数
+     */
+    public Integer getDefautlSeriesNumber()
+    {
+        return defautlSeriesNumber_;
+    }
+
+    /**
+     * DashBoardデフォルト系列数を設定する。
+     *
+     * @param defautlSeriesNumber DashBoardデフォルト系列数
+     */
+    public void setDefautlSeriesNumber(final Integer defautlSeriesNumber)
+    {
+        this.defautlSeriesNumber_ = defautlSeriesNumber;
     }
 
 }

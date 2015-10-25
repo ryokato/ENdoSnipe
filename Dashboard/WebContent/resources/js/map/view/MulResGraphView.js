@@ -745,7 +745,8 @@ ENS.MultipleResourceGraphElementView = ENS.ResourceGraphElementView
 				});
 
 				// ソート結果から表示可能系列数のみを抽出する。
-				getDataKeysTemp = getDataKeysTemp.slice(0, ENS.mulResGraphView.series.number);
+				var defautlSeriesNumber = $("#" + ENS.mulResGraphView.series.numberId).val();
+				getDataKeysTemp = getDataKeysTemp.slice(0, defautlSeriesNumber);
 				var currentKeysTemp = _.pluck(getDataKeysTemp, "seriesKey");
 
 				// previousKeysとcurrentKeysTempを比較して含まれていないキーを算出する。
