@@ -840,4 +840,8 @@ public interface TelegramConstants
 
     /** 項目名(ストール検出回数) */
     String ITEMNAME_JAVAPROCESS_METHOD_STALL_COUNT = "javaprocess.method.stall.count";
+    
+    // -----------------------------------------------------
+    // 電文サイズの短縮対象にする項目名の長さ
+    int COMPRESSION_ITEM_NAME_LENGTH = 50;
 }

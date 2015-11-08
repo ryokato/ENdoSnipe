@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jp.co.acroquest.endosnipe.common.entity.ItemType;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
@@ -758,41 +760,75 @@ public final class TelegramUtil implements TelegramConstants
     }
 
     /**
-     * 項目名が圧縮されている場合も考慮して、解凍後の計測項目名を取得する。
+     * 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する。
      * @param itemNameIdMapList 電文サイズを圧縮/解凍に使う、項目名とIDのセットの配列
      * @param body 電文本体
-     * @param agentName エージェント名
      * @return 計測項目名
      */
     public static String getMeasurementItemName(List<TelegramItemNameIdMap> itemNameIdMapList,
-        Body body, String agentName)
+        Body body)
     {
-        String itemName = "";
-        String value = body.getStrItemName();
+        String itemName = body.getStrItemName();
 
-        if (value != null)
+        if (itemName == null)
         {
-            // 項目名とIDのマップから、項目名がIDで短縮されて送られてきた場合に復元する。
-            for (TelegramItemNameIdMap itemNameIdMap : itemNameIdMapList)
+            return "";
+        }
+
+        // 圧縮文字
+        String compressedStr = "";
+        // 圧縮されていない部分の文字列
+        String unCompressedStr = "";
+
+        /*
+         * スラッシュ区切りの最初の文字列（スラッシュが存在しない場合はそのままの文字列）が数字の場合に、解凍対象になる。
+         * 以下、解凍対象になる項目名の例。
+         * 例1） 3/average
+         * 例2） 0
+         */
+        int firstIndex = itemName.indexOf("/");
+        String firstIndexStr = "";
+
+        if (firstIndex > 0)
+        {
+            firstIndexStr = itemName.substring(0, firstIndex);
+        }
+        else
+        {
+            firstIndexStr = itemName;
+        }
+
+        if (isNumber(firstIndexStr))
+        {
+            compressedStr = firstIndexStr;
+
+            if (firstIndex != -1)
             {
-                if (value.equals(itemNameIdMap.getId()))
+                int lastIndex = itemName.lastIndexOf("/");
+                unCompressedStr = itemName.substring(lastIndex);
+            }
+        }
+        else
+        {
+            // 解凍対象でないと判断し、解凍処理を行わずに項目名を返却する
+            return itemName;
+        }
+
+        // 項目名とIDのマップから、項目名がIDで短縮されて送られてきた場合に復元する。
+        for (TelegramItemNameIdMap itemNameIdMap : itemNameIdMapList)
+        {
+            if (compressedStr.equals(itemNameIdMap.getId()))
+            {
+                itemName = itemNameIdMap.getItemName();
+                if ("".equals(unCompressedStr) == false)
                 {
-                    itemName = itemNameIdMap.getItemName();
-                    break;
+                    itemName = itemName + unCompressedStr;
                 }
+                break;
             }
         }
 
-        // 送られてきた値が項目名とIDのマップに存在しなかった場合は、
-        // 項目名の短縮が行われなかったと判断し、その値を項目名とする。
-        if ("".equals(itemName))
-        {
-            itemName = value;
-        }
-
-        String mearsurmentItemName = agentName + itemName;
-
-        return mearsurmentItemName;
+        return itemName;
     }
 
     /**
@@ -821,5 +857,18 @@ public final class TelegramUtil implements TelegramConstants
         }
 
         return itemNameIdMapList;
+    }
+
+    /**
+     * 文字列が数字かどうかを確認する。
+     * @param str チェック対象の文字列
+     * @return 数字である場合はtrue、数字でない場合はfalse
+     */
+    private static boolean isNumber(String str)
+    {
+        String regex = "\\A[-]?[0-9]+\\z";
+        Pattern p = Pattern.compile(regex);
+        Matcher m1 = p.matcher(str);
+        return m1.find();
     }
 }
