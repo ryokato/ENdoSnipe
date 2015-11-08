@@ -30,6 +30,9 @@
 
 		<!-- 選択しているResourceDashboardListViewのID -->
 		<form:hidden path="selectedDashboardListId" />
+
+		<!-- DashBoardデフォルト系列数 -->
+		<form:hidden path="defautlSeriesNumber" />
 	</form:form>
 	<script>
 		var appView = new ENS.AppView();

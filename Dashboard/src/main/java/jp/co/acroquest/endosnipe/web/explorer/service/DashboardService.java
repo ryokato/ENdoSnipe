@@ -26,6 +26,7 @@
 package jp.co.acroquest.endosnipe.web.explorer.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -36,11 +37,14 @@ import java.util.Map;
 
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.common.util.MessageUtil;
+import jp.co.acroquest.endosnipe.web.explorer.config.ConfigurationReader;
+import jp.co.acroquest.endosnipe.web.explorer.config.DashBoardConfig;
 import jp.co.acroquest.endosnipe.web.explorer.constants.LogMessageCodes;
 import jp.co.acroquest.endosnipe.web.explorer.constants.ResponseConstants;
 import jp.co.acroquest.endosnipe.web.explorer.dao.DashboardInfoDao;
 import jp.co.acroquest.endosnipe.web.explorer.dto.ResponseDto;
 import jp.co.acroquest.endosnipe.web.explorer.entity.DashboardInfo;
+import jp.co.acroquest.endosnipe.web.explorer.exception.InitializeException;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -393,5 +397,30 @@ public class DashboardService
         responseDto.setResult(ResponseConstants.RESULT_SUCCESS);
         responseDto.setData(imageMap);
         return responseDto;
+    }
+
+    /**
+     * デフォルトの系列数を設定ファイルから取得する。
+     * @param filePath 設定ファイルのパス
+     * @return デフォルトの系列数
+     */
+    public int getDefautlSeriesNumber(final String filePath)
+    {
+        int defautlSeriesNumber = DashBoardConfig.DEFAULT_SERIES_NUM;
+        try
+        {
+            DashBoardConfig config = ConfigurationReader.loadDashBoardConfig(filePath);
+            defautlSeriesNumber = config.getSeriesNumber();
+        }
+        catch (InitializeException ex)
+        {
+            LOGGER.log(LogMessageCodes.CANNOT_FIND_PROPERTY, ex, ex.getMessage(), filePath);
+        }
+        catch (IOException ex)
+        {
+            LOGGER.log(LogMessageCodes.CANNOT_FIND_PROPERTY, ex, ex.getMessage(), filePath);
+        }
+
+        return defautlSeriesNumber;
     }
 }
