@@ -90,11 +90,11 @@ public class SqlPlanNotifyAccessor implements TelegramConstants
                 String sqlStatement = (String)objItemValueArr[0];
                 sqlStatements.add(sqlStatement);
 
-                // 項目名が圧縮されている場合も考慮して、解凍後の計測項目名を取得する
-                String mearsurmentItemName =
-                    TelegramUtil.getMeasurementItemName(itemNameIdMapList, responseBody, agentName);
+                // 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する
+                String itemName =
+                    TelegramUtil.getMeasurementItemName(itemNameIdMapList, responseBody);
 
-                measurmentItemNames.add(mearsurmentItemName);
+                measurmentItemNames.add(agentName + itemName);
             }
             else if (OBJECTNAME_SQL_EXECUTION_PLAN.equals(objectName) == true)
             {
