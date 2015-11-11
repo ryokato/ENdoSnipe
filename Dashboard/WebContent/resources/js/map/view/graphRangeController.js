@@ -216,12 +216,17 @@ ENS.graphRangeController.prototype._callbackGetTopNodes = function($selector, to
 	$option.html("ALL");
 	$selector.append($option);
 	
+	var cnt = 0;
 	for(var i in topNodes){
 		var cluster = topNodes[i];
 		$option = $("<option/>");
 		$option.attr("value", cluster.data);
 		$option.html(cluster.data);
 		$selector.append($option);
+		if (cnt == 0) {
+			$selector.val(cluster.data);
+		}
+		cnt++;
 	}
 	
 	var instance = this;

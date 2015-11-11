@@ -19,6 +19,7 @@
     <property name="lib-service.dir" value="${lib}/service" />
     <property name="scripts.dir" value="scripts" />
     <property name="conf.dir" value="conf" />
+    <property name="conf.mail.dir" value="conf/mail" />
     <property name="doc.dir" value="doc" />
     <property name="licenses.dir" value="licenses" />
     <property name="dist" location="dist" />
@@ -244,10 +245,15 @@
                 <include name="*.conf" />
                 <include name="*.properties" />
                 <include name="*.txt" />
+                <include name="mail" />
             </fileset>
-        	<fileset dir="${resources}">
-        		<include name="log4j.properties" />
-        	</fileset>
+            <fileset dir="${resources}">
+                <include name="log4j.properties" />
+            </fileset>
+        </copy>
+
+        <copy todir="${service-temp-release}/DataCollector/conf/mail">
+            <fileset dir="${conf.mail.dir}" />
         </copy>
 
         <mkdir dir="${service-temp-release}/DataCollector/data" />
@@ -308,6 +314,9 @@
                 <include name="*.conf" />
                 <include name="*.properties" />
                 <include name="*.txt" />
+                <include name="mail" />
+            </tarfileset>
+            <tarfileset prefix="${unix-base.dir}/conf/mail" dir="${conf.mail.dir}" mode="644">
             </tarfileset>
             <tarfileset prefix="${unix-base.dir}/conf" dir="${resources}" mode="644">
                 <include name="log4j.properties" />
