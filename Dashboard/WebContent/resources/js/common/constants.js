@@ -235,7 +235,7 @@ ENS.tree.contextOption = [ {
 	menu_id : ENS.tree.ADD_SIGNAL_TYPE,
 	menu_name : "Add Signal",
 	executeClass : "ENS.SignalDefinitionDialogView",
-	showTreeTypes : [ ENS.tree.type.TARGET ],
+	showTreeTypes : [ ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
 	executeOption : {
 		dialogId : ENS.tree.SIGNAL_DIALOG,
 		signalType : ENS.tree.ADD_SIGNAL_TYPE
@@ -262,23 +262,33 @@ ENS.tree.contextOption = [ {
 	},
 	children : []
 }, {
-	menu_id : ENS.tree.OUTPUT_REPORT_TYPE,
-	menu_name : "Output Report",
-	executeClass : "ENS.ReportDialogView",
-	showTreeTypes : [ ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
+	menu_id : ENS.tree.ADD_SUMMARYSIGNAL_TYPE,
+	menu_name : "Add Summary Signal",
+	executeClass : "ENS.SummarySignalDefinitionDialogView",
+	showTreeTypes : [  ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
 	executeOption : {
-		dialogId : ENS.tree.REPORT_DIALOG,
-		signalType : ENS.tree.OUTPUT_REPORT_TYPE
+		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
+		summarySignalType : ENS.tree.ADD_SUMMARYSIGNAL_TYPE
 	},
 	children : []
 }, {
-	menu_id : ENS.tree.DELETE_REPORT_TYPE,
-	menu_name : "Delete Report",
-	executeClass : "",
-	showTreeTypes : [ ENS.tree.type.REPORT ],
+	menu_id : ENS.tree.EDIT_SUMMARYSIGNAL_TYPE,
+	menu_name : "Edit Summary Signal",
+	executeClass : "ENS.SummarySignalDefinitionDialogView",
+	showTreeTypes : [ ENS.tree.type.SUMMARYSIGNAL ],
 	executeOption : {
-		dialogId : ENS.tree.REPORT_DIALOG,
-		signalType : ENS.tree.DELETE_REPORT_TYPE
+		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
+		summarySignalType : ENS.tree.EDIT_SUMMARYSIGNAL_TYPE
+	},
+	children : []
+}, {
+	menu_id : ENS.tree.DELETE_SUMMARYSIGNAL_TYPE,
+	menu_name : "Delete Summary Signal",
+	executeClass : "",
+	showTreeTypes : [ ENS.tree.type.SUMMARYSIGNAL ],
+	executeOption : {
+		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
+		summarySignalType : ENS.tree.DELETE_SUMMARYSIGNAL_TYPE
 	},
 	children : []
 }, {
@@ -311,34 +321,24 @@ ENS.tree.contextOption = [ {
 		signalType : ENS.tree.DELETE_MULTIPLE_RESOURCE_GRAPH_TYPE
 	},
 	children : []
-} , {
-	menu_id : ENS.tree.ADD_SUMMARYSIGNAL_TYPE,
-	menu_name : "Add Summary Signal",
-	executeClass : "ENS.SummarySignalDefinitionDialogView",
-	showTreeTypes : [  ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
+}, {
+	menu_id : ENS.tree.OUTPUT_REPORT_TYPE,
+	menu_name : "Output Report",
+	executeClass : "ENS.ReportDialogView",
+	showTreeTypes : [ ENS.tree.type.GROUP, ENS.tree.type.TARGET ],
 	executeOption : {
-		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
-		summarySignalType : ENS.tree.ADD_SUMMARYSIGNAL_TYPE
+		dialogId : ENS.tree.REPORT_DIALOG,
+		signalType : ENS.tree.OUTPUT_REPORT_TYPE
 	},
 	children : []
 }, {
-	menu_id : ENS.tree.EDIT_SUMMARYSIGNAL_TYPE,
-	menu_name : "Edit Summary Signal",
-	executeClass : "ENS.SummarySignalDefinitionDialogView",
-	showTreeTypes : [ ENS.tree.type.SUMMARYSIGNAL ],
-	executeOption : {
-		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
-		summarySignalType : ENS.tree.EDIT_SUMMARYSIGNAL_TYPE
-	},
-	children : []
-}, {
-	menu_id : ENS.tree.DELETE_SUMMARYSIGNAL_TYPE,
-	menu_name : "Delete Summary Signal",
+	menu_id : ENS.tree.DELETE_REPORT_TYPE,
+	menu_name : "Delete Report",
 	executeClass : "",
-	showTreeTypes : [ ENS.tree.type.SUMMARYSIGNAL ],
+	showTreeTypes : [ ENS.tree.type.REPORT ],
 	executeOption : {
-		dialogId : ENS.tree.SUMMARYSIGNAL_DIALOG,
-		summarySignalType : ENS.tree.DELETE_SUMMARYSIGNAL_TYPE
+		dialogId : ENS.tree.REPORT_DIALOG,
+		signalType : ENS.tree.DELETE_REPORT_TYPE
 	},
 	children : []
 }, {
@@ -353,7 +353,7 @@ ENS.tree.contextOption = [ {
 	children : []
 },{
 	menu_id : ENS.tree.EDIT_SCHEDULE_TYPE,
-	menu_name : "Edit Scheduling",
+	menu_name : "Edit Periodic Report",
 	executeClass : "ENS.SchedulingReportDialogView",
 	showTreeTypes : [ ENS.tree.type.REPORT_SCHEDULE ],
 	executeOption : {

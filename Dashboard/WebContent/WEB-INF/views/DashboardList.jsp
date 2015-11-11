@@ -237,8 +237,8 @@
 				modal : true
 			});
 
-			var contextMenu0 = new contextMenu("DashboardSwitching", "Dashboard Switching.");
-			var contextMenu1 = new contextMenu("OutputReport", "Output Report.");
+			var contextMenu0 = new contextMenu("DashboardSwitching", "Switch Dashboard");
+			var contextMenu1 = new contextMenu("OutputReport", "Output Report");
 			var contextMenuArray = [ contextMenu0, contextMenu1 ];
 			contextMenuCreator.initializeContextMenu("dashboard_operate", contextMenuArray);
 
