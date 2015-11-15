@@ -12,6 +12,8 @@
  */
 package jp.co.acroquest.endosnipe.web.explorer.entity;
 
+import java.util.Date;
+
 /**
  * レポート定義テーブルに対するエンティティクラスです。<br />
  * 
@@ -20,6 +22,9 @@ package jp.co.acroquest.endosnipe.web.explorer.entity;
  */
 public class ReportDefinition
 {
+    /** テーブル名 */
+    public String tableName_;
+
     /** レポート出力定義のID。 */
     public int reportId_;
 
@@ -30,10 +35,10 @@ public class ReportDefinition
     public String targetMeasurementName_;
 
     /** 期間の始まりの日時。 */
-    public String fmTime_;
+    public Date fmTime_;
 
     /** 期間の終わりの日時。 */
-    public String toTime_;
+    public Date toTime_;
 
     /**
      * for report's status

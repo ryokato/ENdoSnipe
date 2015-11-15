@@ -123,12 +123,6 @@
 		<beans:property name="sqlSessionFactory" ref="sqlSessionFactory" />
 	</beans:bean>
 	
-	<beans:bean id="reportExportResultDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
-		<beans:property name="mapperInterface"
-			value="jp.co.acroquest.endosnipe.web.explorer.dao.ReportExportResultDao" />
-		<beans:property name="sqlSessionFactory" ref="sqlSessionFactory" />
-	</beans:bean>
-	
 	<beans:bean id="PropertySettingDao" class="org.mybatis.spring.mapper.MapperFactoryBean">
 
     <beans:property name="mapperInterface"

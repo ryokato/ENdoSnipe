@@ -12,6 +12,7 @@
  */
 package jp.co.acroquest.endosnipe.web.explorer.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import jp.co.acroquest.endosnipe.web.explorer.entity.ReportDefinition;
@@ -112,5 +113,5 @@ public interface ReportDefinitionDao
      * @return reportDefinition 
      */
     ReportDefinition selectName(@Param("reportName") String reportName,
-            @Param("fmTime") String startTime, @Param("toTime") String endTime);
+            @Param("fmTime") Date startTime, @Param("toTime") Date endTime);
 }

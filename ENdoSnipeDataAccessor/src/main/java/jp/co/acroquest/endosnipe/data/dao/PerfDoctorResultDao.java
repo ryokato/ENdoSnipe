@@ -18,10 +18,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import jp.co.acroquest.endosnipe.common.util.SQLUtil;
 import jp.co.acroquest.endosnipe.data.dto.PerfDoctorResultDto;
+import jp.co.acroquest.endosnipe.util.ResourceDataDaoUtil;
 
 /**
  * PerformanceDoctor診断結果蓄積テーブルのDAO
@@ -50,8 +52,11 @@ public class PerfDoctorResultDao extends AbstractDao
         try
         {
             conn = getConnection(database);
+            Date occurrenceDate = new Date(pDResult.getOccurrenceTime().getTime());
+            String tableName =
+                ResourceDataDaoUtil.getTableNameToInsert(occurrenceDate, PERFDOCTOR_RESULT_TABLE);
             String sql =
-                "insert into " + PERFDOCTOR_RESULT_TABLE + "(OCCURRENCE_TIME, DESCRIPTION, LEVEL, "
+                "insert into " + tableName + "(OCCURRENCE_TIME, DESCRIPTION, LEVEL, "
                     + "CLASS_NAME, METHOD_NAME, JAVELIN_LOG_NAME, MEASUREMENT_ITEM_NAME)"
                     + " values (?, ?, ?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);

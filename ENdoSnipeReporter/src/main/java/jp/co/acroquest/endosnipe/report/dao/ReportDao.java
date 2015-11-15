@@ -5,8 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -29,9 +27,6 @@ public class ReportDao extends AbstractDao implements TableNames
 {
 	/** 最大件数 */
 	public static final int ITEM_COUNT = 200;
-
-	/** 日付のフォーマット。 */
-	private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	/** 平均値計算用のSQL */
 	private static final String SQL_AVERAGE = "SELECT"
@@ -826,17 +821,14 @@ public class ReportDao extends AbstractDao implements TableNames
 		ResultSet rs = null;
 		String sqlBase = "UPDATE REPORT_EXPORT_RESULT"
 			+ " SET STATUS = ? WHERE TARGET_MEASUREMENT_NAME= ? AND FM_TIME= ? AND TO_TIME= ?";
-		DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-		String fmTimeData = dateFormat.format(fmTime.getTime());
-		String toTimeData = dateFormat.format(toTime.getTime());
 		try
 		{
 			conn = getConnection(dbName, true);
 			pstmt = conn.prepareStatement(sqlBase);
 			pstmt.setString(1, status);
 			pstmt.setString(2, targetItemName);
-			pstmt.setString(3, fmTimeData);
-			pstmt.setString(4, toTimeData);
+			pstmt.setTimestamp(3, fmTime);
+			pstmt.setTimestamp(4, toTime);
 			pstmt.executeUpdate();
 		}
 		catch (SQLException e)
