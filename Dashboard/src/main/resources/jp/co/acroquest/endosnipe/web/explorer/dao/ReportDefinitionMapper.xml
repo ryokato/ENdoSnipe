@@ -44,7 +44,7 @@
 	
 	<insert id="insert"
 		parameterType="jp.co.acroquest.endosnipe.web.explorer.entity.ReportDefinition">
-		insert into REPORT_EXPORT_RESULT
+		insert into ${tableName_}
 		(REPORT_NAME,TARGET_MEASUREMENT_NAME,FM_TIME,TO_TIME, STATUS)
 		values
 		(#{reportName_},#{targetMeasurementName_},#{fmTime_},#{toTime_},#{status_})

@@ -12,6 +12,8 @@
  */
 package jp.co.acroquest.endosnipe.web.explorer.service;
 
+import static jp.co.acroquest.endosnipe.data.TableNames.REPORT_EXPORT_RESULT;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -20,7 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import jp.co.acroquest.endosnipe.web.explorer.dao.ReportExportResultDao;
+import jp.co.acroquest.endosnipe.util.ResourceDataDaoUtil;
+import jp.co.acroquest.endosnipe.web.explorer.dao.ReportDefinitionDao;
 import jp.co.acroquest.endosnipe.web.explorer.dao.SchedulingReportDefinitionDao;
 import jp.co.acroquest.endosnipe.web.explorer.dto.ReportDefinitionDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.SchedulingReportDefinitionDto;
@@ -40,10 +43,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReportScheduleService
 {
-
-    /** 日付のフォーマット */
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
     /** 先月 */
     private static final int LAST_MONTH = -1;
 
@@ -80,7 +79,7 @@ public class ReportScheduleService
 
     /** レポート出力結果のDAO */
     @Autowired
-    protected ReportExportResultDao reportExportResultDao_;
+    protected ReportDefinitionDao reportDefinitionDao_;
 
     /**
      * デフォルトコンストラクタ。
@@ -119,7 +118,7 @@ public class ReportScheduleService
                 ReportUtil.sendSchedulingReportDefinition(dto, "add");
             }
 
-            reportExportResultDao_.insert(reportDefinition);
+            reportDefinitionDao_.insert(reportDefinition);
 
             Calendar nextExportCal = createNextTerm(reportDefinition, definition);
             Timestamp timestamp = new Timestamp(nextExportCal.getTimeInMillis());
@@ -161,9 +160,10 @@ public class ReportScheduleService
         }
 
         Date date = new Date(planExportedTime.getTime());
-        DateFormat format = new SimpleDateFormat(DATE_FORMAT);
-        definition.toTime_ = format.format(date);
-        definition.fmTime_ = format.format(fromCalendar.getTime());
+        definition.toTime_ = date;
+        definition.fmTime_ = fromCalendar.getTime();
+        String tableName = ResourceDataDaoUtil.getTableNameToInsert(date, REPORT_EXPORT_RESULT);
+        definition.tableName_ = tableName;
 
         return definition;
     }

@@ -17,10 +17,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import jp.co.acroquest.endosnipe.common.util.SQLUtil;
 import jp.co.acroquest.endosnipe.data.TableNames;
 import jp.co.acroquest.endosnipe.data.entity.SqlPlan;
+import jp.co.acroquest.endosnipe.util.ResourceDataDaoUtil;
 
 /**
  * {@link SqlPlan} のための DAO です。
@@ -46,8 +48,10 @@ public class SqlPlanDao extends AbstractDao implements TableNames
         try
         {
             conn = getConnection(database);
+            Date planDate = new Date(sqlPlan.gettingPlanTime.getTime());
+            String tableName = ResourceDataDaoUtil.getTableNameToInsert(planDate, SQL_PLAN);
             pstmt =
-                conn.prepareStatement("insert into " + SQL_PLAN
+                conn.prepareStatement("insert into " + tableName
                     + " (MEASUREMENT_ITEM_NAME, SQL_STATEMENT,"
                     + " EXECUTION_PLAN, GETTING_PLAN_TIME, STACK_TRACE)" + " values (?,?,?,?,?)");
             PreparedStatement delegated = getDelegatingStatement(pstmt);
@@ -86,7 +90,7 @@ public class SqlPlanDao extends AbstractDao implements TableNames
         throws SQLException
     {
         int updateCount = 0;
-        
+
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -120,7 +124,7 @@ public class SqlPlanDao extends AbstractDao implements TableNames
             SQLUtil.closeStatement(pstmt);
             SQLUtil.closeConnection(conn);
         }
-        
+
         return updateCount;
     }
 

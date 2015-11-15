@@ -12,9 +12,6 @@
  */
 package jp.co.acroquest.endosnipe.web.explorer.util;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -22,7 +19,6 @@ import java.util.List;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.report.ReportData;
 import jp.co.acroquest.endosnipe.report.ReportDataQueue;
-import jp.co.acroquest.endosnipe.web.explorer.constants.LogMessageCodes;
 import jp.co.acroquest.endosnipe.web.explorer.dto.ReportDefinitionDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.SchedulingReportDefinitionDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.TreeMenuDto;
@@ -46,9 +42,6 @@ public class ReportUtil
 
     /** ロガー。 */
     private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger.getLogger(DashboardService.class);
-
-    /** 日付のフォーマット。 */
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /**
      * 
@@ -114,20 +107,10 @@ public class ReportUtil
         definitionDto.setReportName(reportDefinition.reportName_);
         definitionDto.setTargetMeasurementName(reportDefinition.targetMeasurementName_);
 
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-
         Calendar fmTime = Calendar.getInstance();
         Calendar toTime = Calendar.getInstance();
-        try
-        {
-            fmTime.setTime(dateFormat.parse(reportDefinition.fmTime_));
-            toTime.setTime(dateFormat.parse(reportDefinition.toTime_));
-
-        }
-        catch (ParseException ex)
-        {
-            LOGGER.log(LogMessageCodes.UNSUPPORTED_REPORT_FILE_DURATION_FORMAT);
-        }
+        fmTime.setTime(reportDefinition.fmTime_);
+        toTime.setTime(reportDefinition.toTime_);
 
         definitionDto.setReportTermFrom(fmTime);
         definitionDto.setReportTermTo(toTime);
