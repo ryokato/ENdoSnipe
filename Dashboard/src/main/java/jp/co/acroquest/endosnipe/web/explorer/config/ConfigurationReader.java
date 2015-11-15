@@ -92,9 +92,6 @@ public class ConfigurationReader
     /** DataCollectorConfig */
     private static DataBaseConfig config__ = null;
 
-    /** DashBoardConfig */
-    private static DashBoardConfig dashBoardConfig_ = null;
-
     /** 接続モードを表す接頭辞 */
     private static final String CONNECTION_MODE = "connection.mode";
 
@@ -170,12 +167,6 @@ public class ConfigurationReader
 
     /** パラメータ定義ファイルのパス */
     private static String configFilePath__;
-
-    /** DashBoardデフォルト系列数を表す接頭辞 */
-    private static final String DEFAULT_SERIES_NUMBER = "dashboard.graph.defautlSeriesNumber";
-
-    /** DashBoardパラメータ定義ファイルのパス */
-    private static String dashBoardConfigFilePath__;
 
     static
     {
@@ -492,84 +483,5 @@ public class ConfigurationReader
         Pattern pattern = Pattern.compile(DATABASE_NAME_USABLE_PATTERN);
         Matcher matcher = pattern.matcher(databaseName);
         return matcher.matches();
-    }
-
-    /**
-     * 指定されたパスから設定ファイルを読み込み、{@link DashBoardConfig} を構築します。<br />
-     *
-     * @param path パス
-     * @return {@link DashBoardConfig} オブジェクト
-     * @throws IOException 入出力エラーが発生した場合
-     * @throws InitializeException 初期化例外が発生した場合
-     */
-    public static DashBoardConfig loadDashBoardConfig(final String path)
-        throws IOException,
-            InitializeException
-    {
-        if (dashBoardConfig_ != null)
-        {
-            return dashBoardConfig_;
-        }
-
-        File file = new File(path);
-        dashBoardConfigFilePath__ = file.getCanonicalPath();
-        FileInputStream is = new FileInputStream(file);
-        try
-        {
-            dashBoardConfig_ = loadDashBoardConfig(is);
-        }
-        finally
-        {
-            StreamUtil.closeStream(is);
-        }
-        return dashBoardConfig_;
-    }
-
-    /**
-     * ストリームから設定ファイルを読み込み、{@link DashBoardConfig} を構築します。<br />
-     *
-     * @param inputStream 入力ストリーム
-     * @return {@link DashBoardConfig} オブジェクト
-     * @throws IOException 入出力エラーが発生した場合
-     * @throws InitializeException 初期化例外が発生した場合
-     */
-    public static DashBoardConfig loadDashBoardConfig(final InputStream inputStream)
-        throws IOException,
-            InitializeException
-    {
-
-        Properties props = new Properties();
-        try
-        {
-            props.load(inputStream);
-            StreamUtil.closeStream(inputStream);
-        }
-        catch (IOException ex)
-        {
-            StreamUtil.closeStream(inputStream);
-            throw ex;
-        }
-
-        DashBoardConfig config = new DashBoardConfig();
-
-        Enumeration<Object> keys = props.keys();
-        while (keys.hasMoreElements())
-        {
-            String key = (String)keys.nextElement();
-            if (DEFAULT_SERIES_NUMBER.equals(key))
-            {
-                try
-                {
-                    config.setSeriesNumber(Integer.valueOf(props.getProperty(key)));
-                }
-                catch (NumberFormatException ex)
-                {
-                    LOGGER.log(LogMessageCodes.FAIL_TO_READ_PARAMETER, dashBoardConfigFilePath__,
-                               key);
-                    throw new InitializeException(ex);
-                }
-            }
-        }
-        return config;
     }
 }

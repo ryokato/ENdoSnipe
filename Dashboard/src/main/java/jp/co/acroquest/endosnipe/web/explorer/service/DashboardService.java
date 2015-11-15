@@ -26,7 +26,6 @@
 package jp.co.acroquest.endosnipe.web.explorer.service;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -34,22 +33,20 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
-import jp.co.acroquest.endosnipe.common.util.MessageUtil;
-import jp.co.acroquest.endosnipe.web.explorer.config.ConfigurationReader;
-import jp.co.acroquest.endosnipe.web.explorer.config.DashBoardConfig;
-import jp.co.acroquest.endosnipe.web.explorer.constants.LogMessageCodes;
-import jp.co.acroquest.endosnipe.web.explorer.constants.ResponseConstants;
-import jp.co.acroquest.endosnipe.web.explorer.dao.DashboardInfoDao;
-import jp.co.acroquest.endosnipe.web.explorer.dto.ResponseDto;
-import jp.co.acroquest.endosnipe.web.explorer.entity.DashboardInfo;
-import jp.co.acroquest.endosnipe.web.explorer.exception.InitializeException;
+import java.util.Properties;
 
 import org.apache.ibatis.exceptions.PersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
+import jp.co.acroquest.endosnipe.common.util.MessageUtil;
+import jp.co.acroquest.endosnipe.web.explorer.constants.LogMessageCodes;
+import jp.co.acroquest.endosnipe.web.explorer.constants.ResponseConstants;
+import jp.co.acroquest.endosnipe.web.explorer.dao.DashboardInfoDao;
+import jp.co.acroquest.endosnipe.web.explorer.dto.ResponseDto;
+import jp.co.acroquest.endosnipe.web.explorer.entity.DashboardInfo;
 
 /**
  * Dashboard用サービスクラス。
@@ -59,6 +56,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DashboardService
 {
+    /** DashBoardデフォルト系列数を表す接頭辞 */
+    private static final String DEFAULT_SERIES_NUMBER = "dashboard.graph.defautlSeriesNumber";
+
+    /** ダッシュボードのシステムデフォルト系列数 */
+    public static final int DEFAULT_SERIES_NUM = 10;
+
     /** ロガー */
     private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger.getLogger(DashboardService.class);
 
@@ -67,6 +70,12 @@ public class DashboardService
      */
     @Autowired
     protected DashboardInfoDao dashboardInfoDao_;
+
+    /**
+     * ダッシュボードのプロパティ
+     */
+    @Autowired
+    private Properties dashboardProperties;
 
     /**
      * コンストラクタ
@@ -401,24 +410,21 @@ public class DashboardService
 
     /**
      * デフォルトの系列数を設定ファイルから取得する。
-     * @param filePath 設定ファイルのパス
      * @return デフォルトの系列数
      */
-    public int getDefautlSeriesNumber(final String filePath)
+    public int getDefautlSeriesNumber()
     {
-        int defautlSeriesNumber = DashBoardConfig.DEFAULT_SERIES_NUM;
+        int defautlSeriesNumber = DEFAULT_SERIES_NUM;
+
         try
         {
-            DashBoardConfig config = ConfigurationReader.loadDashBoardConfig(filePath);
-            defautlSeriesNumber = config.getSeriesNumber();
+            defautlSeriesNumber =
+                    Integer.parseInt(dashboardProperties.getProperty(DEFAULT_SERIES_NUMBER));
+
         }
-        catch (InitializeException ex)
+        catch (NumberFormatException ex)
         {
-            LOGGER.log(LogMessageCodes.CANNOT_FIND_PROPERTY, ex, ex.getMessage(), filePath);
-        }
-        catch (IOException ex)
-        {
-            LOGGER.log(LogMessageCodes.CANNOT_FIND_PROPERTY, ex, ex.getMessage(), filePath);
+            LOGGER.log(LogMessageCodes.CANNOT_FIND_PROPERTY, ex, ex.getMessage());
         }
 
         return defautlSeriesNumber;

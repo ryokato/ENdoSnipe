@@ -25,7 +25,6 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.web.explorer.controller;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,13 +88,6 @@ public class DashboardController
     /** 背景画像パス */
     private static final String BACKGROUND_IMAGE_PATH = "resources/images/user";
 
-    /** 設定ファイルディレクトリのパス */
-    private static final String DASHBOARD_CONFIG_DIR = "WEB-INF" + File.separator + "classes"
-            + File.separator + "dashboard" + File.separator + "conf";
-
-    /** 設定ファイル名 */
-    private static final String DASHBOARD_CONFIG_NAME = "dashboard.properties";
-
     /** ダッシュボード機能のサービスクラス。 */
     @Autowired
     protected DashboardService dashboardService_;
@@ -135,10 +127,7 @@ public class DashboardController
         // DashBoardデフォルト系列数を設定する。
         if (dashboardListForm.getDefautlSeriesNumber() == null)
         {
-            String filePath = servletContext.getRealPath(DASHBOARD_CONFIG_DIR + File.separator
-                    + DASHBOARD_CONFIG_NAME);
-
-            dashboardListForm.setDefautlSeriesNumber(this.dashboardService_.getDefautlSeriesNumber(filePath));
+            dashboardListForm.setDefautlSeriesNumber(this.dashboardService_.getDefautlSeriesNumber());
         }
 
         return "DashboardList";
