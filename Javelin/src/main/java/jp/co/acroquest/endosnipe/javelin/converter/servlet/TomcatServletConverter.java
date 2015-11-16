@@ -138,6 +138,14 @@ public class TomcatServletConverter extends AbstractConverter
      + "requestValue.setMethod(httpRequest.getMethod());"
      + "requestValue.setQueryString(httpRequest.getQueryString());"
      + "requestValue.setCharacterEncoding(httpRequest.getCharacterEncoding());"
+     + "requestValue.setSessionId(httpRequest.getSession().getId());"
+     + "java.lang.String ipAddress = request.getHeader(\"X-Forwarded-For\");"
+     + "if (ipAddress != null) {"
+     + "  ipAddress = ipAddress.split(\",\")[0];"
+     + "} else {"
+     + "  ipAddress = request.getRemoteAddr();"
+     + "}"
+     + "requestValue.setIpAddress(ipAddress);"
      + "if (requestValue.getCharacterEncoding() != null) {"
      + "    requestValue.setParameterMap(httpRequest.getParameterMap()); "
      + "}" + SERVLET_MONITOR_NAME
@@ -155,6 +163,7 @@ public class TomcatServletConverter extends AbstractConverter
      + "requestValue.setPathInfo(httpRequest.getPathInfo());"
      + "requestValue.setContextPath(httpRequest.getContextPath());"
      + "requestValue.setServletPath(httpRequest.getServletPath());"
+     + "requestValue.setSessionId(httpRequest.getSession().getId());"
      + SERVLET_RESPONSE_CLASS
      + " httpResponse = ("
      + SERVLET_RESPONSE_CLASS

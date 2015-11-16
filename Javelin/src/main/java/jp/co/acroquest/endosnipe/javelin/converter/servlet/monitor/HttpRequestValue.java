@@ -24,6 +24,7 @@
  * SOFTWARE.
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.javelin.converter.servlet.monitor;
+
 import java.util.Map;
 
 /**
@@ -35,32 +36,38 @@ public class HttpRequestValue
 {
     /** パス情報 */
     private String pathInfo_;
-    
+
     /** コンテキストパス */
     private String contextPath_;
-    
+
     /** サーブレットパス */
     private String servletPath_;
 
     /** リモートホスト */
     private String remoteHost_;
-    
+
     /** リモートポート */
-    private int    remotePort_;
-    
+    private int remotePort_;
+
     /** メソッド名 */
     private String method_;
-    
+
     /** クエリストリング */
     private String queryString_;
-    
+
     /** エンコード文字列 */
     private String characterEncoding_;
-    
+
     /** パラメータのMap */
     @SuppressWarnings("rawtypes")
-    private Map    parameterMap_;
-    
+    private Map parameterMap_;
+
+    /** セッションID */
+    private String sessionId_;
+
+    /** IPアドレス */
+    private String ipAddress_;
+
     /**
      * パス情報を取得します。
      * @return パス情報
@@ -69,7 +76,7 @@ public class HttpRequestValue
     {
         return pathInfo_;
     }
-    
+
     /**
      * パス情報を設定します。
      * @param pathInfo パス情報
@@ -78,7 +85,7 @@ public class HttpRequestValue
     {
         pathInfo_ = pathInfo;
     }
-    
+
     /**
      * コンテキストパスを取得します。
      * @return コンテキストパス
@@ -87,7 +94,7 @@ public class HttpRequestValue
     {
         return contextPath_;
     }
-    
+
     /**
      * コンテキストパスを設定します。
      * @param contextPath コンテキストパス
@@ -96,7 +103,7 @@ public class HttpRequestValue
     {
         contextPath_ = contextPath;
     }
-    
+
     /**
      * サーブレットパスを取得します。
      * @return サーブレットパス
@@ -105,7 +112,7 @@ public class HttpRequestValue
     {
         return servletPath_;
     }
-    
+
     /**
      * サーブレットパスを設定します。
      * @param servletPath サーブレットパス
@@ -123,7 +130,7 @@ public class HttpRequestValue
     {
         return remoteHost_;
     }
-    
+
     /**
      * リモートホスト名を設定します。
      * @param remoteHost リモートホスト名
@@ -141,7 +148,7 @@ public class HttpRequestValue
     {
         return remotePort_;
     }
-    
+
     /**
      * リモートポート番号を設定します。
      * @param remotePort リモートポート番号
@@ -150,7 +157,7 @@ public class HttpRequestValue
     {
         remotePort_ = remotePort;
     }
-    
+
     /**
      * メソッド名を取得します。
      * @return メソッド名
@@ -159,7 +166,7 @@ public class HttpRequestValue
     {
         return method_;
     }
-    
+
     /**
      * メソッド名を設定します。
      * @param method メソッド名
@@ -168,7 +175,7 @@ public class HttpRequestValue
     {
         method_ = method;
     }
-    
+
     /**
      * クエリストリングを取得します。
      * @return クエリストリング
@@ -177,7 +184,7 @@ public class HttpRequestValue
     {
         return queryString_;
     }
-    
+
     /**
      * クエリストリングを設定します。
      * @param queryString クエリストリング
@@ -186,7 +193,7 @@ public class HttpRequestValue
     {
         queryString_ = queryString;
     }
-    
+
     /**
      * エンコード文字列を取得します。
      * @return エンコード文字列
@@ -195,7 +202,7 @@ public class HttpRequestValue
     {
         return characterEncoding_;
     }
-    
+
     /**
      * エンコード文字列を設定します。
      * @param characterEncoding エンコード文字列
@@ -204,7 +211,7 @@ public class HttpRequestValue
     {
         characterEncoding_ = characterEncoding;
     }
-    
+
     /**
      * パラメータのMapを取得します。
      * @return パラメータのMap
@@ -214,7 +221,7 @@ public class HttpRequestValue
     {
         return parameterMap_;
     }
-    
+
     /**
      * パラメータのMapを設定します。
      * @param parameterMap パラメータのMap
@@ -224,4 +231,41 @@ public class HttpRequestValue
     {
         parameterMap_ = parameterMap;
     }
+
+    /**
+     * セッションIDを取得する。
+     * @return セッションID
+     */
+    public String getSessionId()
+    {
+        return sessionId_;
+    }
+
+    /**
+     * セッションIDを設定する。
+     * @param sessionId セッションID
+     */
+    public void setSessionId(String sessionId)
+    {
+        sessionId_ = sessionId;
+    }
+
+    /**
+     * IPアドレスを取得する。
+     * @return IPアドレス
+     */
+    public String getIpAddress()
+    {
+        return ipAddress_;
+    }
+
+    /**
+     * IPアドレスを設定する。
+     * @param ipAddress IPアドレス
+     */
+    public void setIpAddress(String ipAddress)
+    {
+        ipAddress_ = ipAddress;
+    }
+
 }
