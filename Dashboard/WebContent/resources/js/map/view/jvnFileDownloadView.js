@@ -187,7 +187,8 @@ ENS.jvnFileDwonloadView = wgp.AbstractView.extend({
 			            },
 			            {
 			            	name: "elapsedTime",
-			            	width: parseInt(instance.tableWidth * 0.15)
+			            	width: parseInt(instance.tableWidth * 0.15),
+			            	sorttype : "int"
 			            },
 			            {
 			            	name: "threadName",
