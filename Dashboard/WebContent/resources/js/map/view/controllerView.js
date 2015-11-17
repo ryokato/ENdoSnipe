@@ -45,7 +45,7 @@ ENS.controllerView = wgp.AbstractView
 								selRow = $("#controllerTable").getRowData(
 										selrowId);
 								if (selRow.updateValue.indexOf("<input") == 0) {
-									$selRow = $(selRow);
+									$selRow = $(selRow.updateValue);
 									var id = $selRow.attr("id");
 									selRow.updateValue = $("#" + id).val();
 								}
@@ -166,11 +166,10 @@ ENS.controllerView = wgp.AbstractView
 				for (cnt = 0; cnt < tmpTableViewData.length; cnt++) {
 					propertyObj = tmpTableViewData[cnt];
 					// 同一ソート番号を持つデータが存在する場合は古い要素を削除。
-					if (lastSortOrder == propertyObj.sortOrder) {
-						tableViewData.pop();
+					if (lastSortOrder !== propertyObj.sortOrder) {
+						tableViewData.push(propertyObj);
 						lastSortOrder = propertyObj.sortOrder;
 					}
-					tableViewData.push(propertyObj);
 				}
 				$("#controllerTable").clearGridData().setGridParam({
 					data : tableViewData
