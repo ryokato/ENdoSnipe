@@ -259,6 +259,7 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "target",
 							width : parseInt(this.tableWidth * 0.05),
+							hidden : true,
 							editable : true,
 							edittype : "select",
 							editoptions : {
@@ -296,6 +297,8 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "alarmThreshold",
 							width : parseInt(this.tableWidth * 0.05),
+							sorttype : "int",
+							hidden : true,
 							editable : true,
 							edittype : "text",
 							editrules : {
@@ -330,6 +333,8 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "alarmCpuThreshold",
 							width : parseInt(this.tableWidth * 0.05),
+							sorttype : "int",
+							hidden : true,
 							editable : true,
 							edittype : "text",
 							editrules : {
@@ -363,7 +368,7 @@ ENS.profilerView = wgp.AbstractView
 						}, {
 							name : "callCount",
 							width : parseInt(this.tableWidth * 0.05),
-							sorttype : "float"
+							sorttype : "int",
 						}, {
 							name : "total",
 							width : parseInt(this.tableWidth * 0.05),
