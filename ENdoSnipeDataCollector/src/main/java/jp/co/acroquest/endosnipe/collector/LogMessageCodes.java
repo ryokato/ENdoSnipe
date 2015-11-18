@@ -194,7 +194,7 @@ public interface LogMessageCodes extends CommonLogMessageCodes
     String FAIL_SEND_ELASTIC_SEARCH = "WEDC0419";
 
     /** 同一SQL判定：類似度の高いSQLを検出 */
-    String FIND_SIMILAR_SQL = "IEDC0420";
+    String FIND_SIMILAR_SQL = "DEDC0420";
 
     /** Javelin 通信用オブジェクトが取得できない */
     String CANNOT_GET_JAVELIN_COMMUNICATION_CLIENT = "EEDC0431";
