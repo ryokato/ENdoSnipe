@@ -312,6 +312,8 @@ public class JavelinConfig extends JavelinConfigBase
 
     private static String sslTrustStorePass__;
 
+    private static String httpCookieKey__;
+
     /**
      * {@link JavelinConfig} を構築します。<br />
      *
@@ -440,6 +442,7 @@ public class JavelinConfig extends JavelinConfigBase
         isFullGCMonitor__ = super.isFullGCMonitor();
         isHttpSessionCount__ = super.isHttpSessionCount();
         isHttpSessionSize__ = super.isHttpSessionSize();
+        httpCookieKey__ = super.getHttpCookieKey();
         isIntervalMonitor__ = super.isIntervalMonitor();
         isLinearSearchMonitor__ = super.isLinearSearchMonitor();
         isLogArgs__ = super.isLogArgs();
@@ -3005,4 +3008,41 @@ public class JavelinConfig extends JavelinConfigBase
     {
         servletExcludePatternCacheSize__ = servletExcludePatternCacheSize;
     }
+
+    @Override
+    public boolean isSslEnable()
+    {
+        return sslEnable__;
+    }
+
+    @Override
+    public String getSslKeystore()
+    {
+        return sslKeyStore__;
+    }
+
+    @Override
+    public String getSslKeystorePass()
+    {
+        return sslKeyStorePass__;
+    }
+
+    @Override
+    public String getSslTruststore()
+    {
+        return sslTrustStore__;
+    }
+
+    @Override
+    public String getSslTruststorePass()
+    {
+        return sslTrustStorePass__;
+    }
+
+    @Override
+    public String getHttpCookieKey()
+    {
+        return httpCookieKey__;
+    }
+
 }

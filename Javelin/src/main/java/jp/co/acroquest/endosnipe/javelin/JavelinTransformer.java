@@ -804,6 +804,7 @@ public class JavelinTransformer implements ClassFileTransformer
         boolean finalizationCount = config.isFinalizationCount();
         boolean httpSessionCount = config.isHttpSessionCount();
         boolean httpSessionSize = config.isHttpSessionSize();
+        String httpCookieKey = config.getHttpCookieKey();
         boolean concurrentAccessMonitored = config.isConcurrentAccessMonitored();
         boolean timeoutMonitor = config.isTimeoutMonitor();
         boolean intervalMonitor = config.isIntervalMonitor();
@@ -919,6 +920,7 @@ public class JavelinTransformer implements ClassFileTransformer
         System.out.println("\tjavelin.servlet.exclude.pattern      : " + servletExcludePattern);
         System.out.println("\tjavelin.httpSessionCount.monitor     : " + httpSessionCount);
         System.out.println("\tjavelin.httpSessionSize.monitor      : " + httpSessionSize);
+        System.out.println("\tjavelin.log.http.cookie.key          : " + httpCookieKey);
         System.out.println("\tjavelin.concurrent.monitor           : " + concurrentAccessMonitored);
         System.out.println("\tjavelin.timeout.monitor              : " + timeoutMonitor);
         System.out.println("\tjavelin.interval.monitor             : " + intervalMonitor);

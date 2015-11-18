@@ -682,6 +682,9 @@ public class JavelinConfigBase
     public static final String HTTP_SESSION_DETAIL_DEPTH_KEY = JAVELIN_PREFIX
         + "log.http.session.detail.depth";
 
+    /** HTTPのCookieから取得するキーのプロパティ */
+    public static final String HTTP_COOKIE_KEY = JAVELIN_PREFIX + "log.http.cookie.key";
+
     /** 計測対象から自動除外する呼び出し回数の閾値 */
     private static final String AUTO_EXCLUDE_THRESHOLD_COUNT = JAVELIN_PREFIX
         + "autoExcludeThreshold.count";
@@ -1583,6 +1586,15 @@ public class JavelinConfigBase
     {
         return CONFIGUTIL.getInteger(HTTP_SESSION_DETAIL_DEPTH_KEY,
                                      DEFAULT_HTTP_SESSION_DETAIL_DEPTH);
+    }
+
+    /**
+     * HTTPのCookieから取得するための取得キー
+     * @return Cookieから取得するための取得キー
+     */
+    public String getHttpCookieKey()
+    {
+        return CONFIGUTIL.getString(HTTP_COOKIE_KEY, "");
     }
 
     /**
@@ -3651,4 +3663,5 @@ public class JavelinConfigBase
     {
         return CONFIGUTIL.getString(SSL_TRUSTSTORE_PASS_KEY, "");
     }
+
 }
