@@ -223,7 +223,7 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
         summarySignalStateManager.setDataBaseName(dataBase);
         summarySignalStateManager.setSummarySignalDefinitionMap(summarySignalDefinitionMap);
         summarySignalStateManager.createAllSummarySignalMapValue();
-        similarSqlProcessor = new SimilarSqlProcessor(config);
+        similarSqlProcessor = new SimilarSqlProcessor();
     }
 
     /**

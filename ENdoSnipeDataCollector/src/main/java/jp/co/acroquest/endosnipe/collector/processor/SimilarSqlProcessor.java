@@ -37,7 +37,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.co.acroquest.endosnipe.collector.JavelinDataLogger;
-import jp.co.acroquest.endosnipe.collector.config.DataCollectorConfig;
 import jp.co.acroquest.endosnipe.common.entity.MeasurementData;
 import jp.co.acroquest.endosnipe.common.entity.ResourceData;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
@@ -50,9 +49,6 @@ import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
  */
 public class SimilarSqlProcessor
 {
-    /** DataCollectorの設定 */
-    private DataCollectorConfig config_ = null;
-
     /** SQL判定用の接尾辞 */
     private static final String SQL_SUFFIX = "/process/response/jdbc/";
 
@@ -84,14 +80,8 @@ public class SimilarSqlProcessor
     /** 連続するパラメータパターン */
     private static final Pattern PATTERN_SEQ_PARAM = Pattern.compile(PARAM + "(" + PARAM + ")+");
 
-    /**
-     * コンストラクタです。
-     * @param config {@link DataCollectorConfig}
-     */
-    public SimilarSqlProcessor(final DataCollectorConfig config)
-    {
-        this.config_ = config;
-    }
+    /** キャッシュするSQLの数 */
+    private static final int MAX_CACHE_SIZE = 100000;
 
     /**
      * 類似したSQLが存在すれば、同一情報と判定して変換処理を行う。
@@ -198,21 +188,20 @@ public class SimilarSqlProcessor
         {
             if (isSameSqlWithoutParameter(sql, targetSql))
             {
-                LOGGER.log(FIND_SIMILAR_SQL, sql, targetSql, 0);
+                if (LOGGER.isDebugEnabled())
+                {
+                    LOGGER.log(FIND_SIMILAR_SQL, sql, targetSql);
+                }
                 similarSql = targetSql;
                 break;
             }
-            //            LevensteinDistance distanceAlgorithm = new LevensteinDistance();
-            //            float distance = distanceAlgorithm.getDistance(sql, targetSql);
-            //            if (distance > config_.getJudgeSqlSimilarity())
-            //            {
-            //                LOGGER.log(FIND_SIMILAR_SQL, sql, targetSql, distance);
-            //                similarSql = targetSql;
-            //                break;
-            //            }
         }
         if (similarSql == null)
         {
+            if (sqlSet_.size() > MAX_CACHE_SIZE)
+            {
+                sqlSet_.clear();
+            }
             sqlSet_.add(sql);
         }
 
