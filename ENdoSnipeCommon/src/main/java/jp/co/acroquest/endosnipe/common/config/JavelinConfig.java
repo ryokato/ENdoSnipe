@@ -183,6 +183,8 @@ public class JavelinConfig extends JavelinConfigBase
 
     private static boolean resourceThreadBlocked__;
 
+    private static boolean resourceJdbcRecord__;
+
     private static int threadModel__;
 
     private static boolean threadMonitor__;
@@ -419,6 +421,7 @@ public class JavelinConfig extends JavelinConfigBase
         threadDumpThreadNum__ = super.getThreadDumpThreadNum();
         resourceThreadRunnable__ = super.isResourceThreadRunnable();
         resourceThreadBlocked__ = super.isResourceThreadBlocked();
+        resourceJdbcRecord__ = super.isResourceJdbcRecord();
         threadModel__ = super.getThreadModel();
         threadMonitor__ = super.getThreadMonitor();
         threadMonitorDepth__ = super.getThreadMonitorDepth();
@@ -1771,6 +1774,18 @@ public class JavelinConfig extends JavelinConfigBase
     public void setResourceThreadBlocked(final boolean threadDumpThreadNum)
     {
         resourceThreadBlocked__ = threadDumpThreadNum;
+    }
+
+    @Override
+    public boolean isResourceJdbcRecord()
+    {
+        return resourceJdbcRecord__;
+    }
+
+    @Override
+    public void setResourceJdbcRecord(final boolean resourceJdbcRecord)
+    {
+        resourceJdbcRecord__ = resourceJdbcRecord;
     }
 
     /**
