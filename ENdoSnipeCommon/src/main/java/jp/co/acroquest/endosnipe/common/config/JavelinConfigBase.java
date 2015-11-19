@@ -602,6 +602,9 @@ public class JavelinConfigBase
     /** BLOCKED状態のスレッド数を取得するかどうか　 */
     public static final String RESOURCE_THREAD_BLOCKED = JAVELIN_PREFIX + "resource.thread.blocked";
 
+    /** JDBCのリソース情報を登録するかどうか　 */
+    public static final String RESOURCE_JDBC_RECORD = JAVELIN_PREFIX + "resource.jdbc.record";
+
     /** フルスレッドダンプ出力に利用するCPU使用率の閾値　 */
     public static final String THREAD_DUMP_CPU = JAVELIN_PREFIX + "thread.dump.cpu";
 
@@ -2729,6 +2732,26 @@ public class JavelinConfigBase
     public void setResourceThreadBlocked(final boolean threadDumpNum)
     {
         CONFIGUTIL.setBoolean(RESOURCE_THREAD_BLOCKED, threadDumpNum);
+    }
+
+    /**
+     * JDBCのリソース情報を取得するフラグを返します。<br />
+     *
+     * @return JDBCのリソース情報を取得するフラグ  
+     */
+    public boolean isResourceJdbcRecord()
+    {
+        return CONFIGUTIL.getBoolean(RESOURCE_JDBC_RECORD, true);
+    }
+
+    /**
+     * JDBCのリソース情報を取得するフラグを設定します。<br />
+     *
+     * @param resourceJdbcRecord JDBCのリソース情報を取得するフラグ  
+     */
+    public void setResourceJdbcRecord(final boolean resourceJdbcRecord)
+    {
+        CONFIGUTIL.setBoolean(RESOURCE_JDBC_RECORD, resourceJdbcRecord);
     }
 
     /**

@@ -113,6 +113,18 @@ public class TurnAroundTimeGroupGetter implements ResourceGroupGetter, TelegramC
             {
                 continue;
             }
+            // ResourceEntryにNameを設定する。
+            // スラッシュは区切り文字のため、スラッシュがある場合には文字参照に変換する
+            String name = invocation.getRootInvocationManagerKey();
+
+            // JDBCのリソース情報を記録しない場合
+            if (!config_.isResourceJdbcRecord())
+            {
+                if (name.startsWith("jdbc:"))
+                {
+                    continue;
+                }
+            }
             TurnAroundTimeInfo info = invocation.resetAccumulatedTimeCount();
 
             // resetAccumulatedTimeCount() 呼出し後に、呼び出し回数が 0 である期間を調べる
@@ -129,10 +141,6 @@ public class TurnAroundTimeGroupGetter implements ResourceGroupGetter, TelegramC
             ResourceItem tatMaxEntry = new ResourceItem();
             ResourceItem tatMinEntry = new ResourceItem();
             ResourceItem tatCountEntry = new ResourceItem();
-
-            // ResourceEntryにNameを設定する。
-            // スラッシュは区切り文字のため、スラッシュがある場合には文字参照に変換する
-            String name = invocation.getRootInvocationManagerKey();
 
             String tatName = getTreeNodeName(name, TelegramConstants.POSTFIX_AVERAGE);
             tatEntry.setName(tatName);
