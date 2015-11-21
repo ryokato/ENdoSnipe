@@ -77,12 +77,14 @@ public class HttpServletConverter extends AbstractConverter
             "  ipAddress = httpRequest.getRemoteAddr();" +
             "}" +
             "requestValue.setIpAddress(ipAddress);" +
-            "if(!\"" + cookieKey__ + "\".equals(\"\")) {" +
-            "  for(javax.servlet.http.Cookie cookie : httpRequest.getCookies()) {" +
-            "    if(\"" + cookieKey__ + "\".equals(cookie.getName()) {" +
-            "      requestValue.setCookieValue(cookie.getValue());" +
-            "    }" +
-            "  }" +
+            "if(!\"" + cookieKey__ + "\".equals(\"\")){" +
+            "javax.servlet.http.Cookie[] cookies = httpRequest.getCookies();" +
+            "for(int cnt=0; cnt<cookies.length; cnt++){" +
+            "javax.servlet.http.Cookie cookie = cookies[cnt];" +
+            "if(\"" + cookieKey__ + "\".equals(cookie.getName())){" +
+            "requestValue.setCookieValue(cookie.getValue());" +
+            "}" +
+            "}" +
             "}" +
             "if (requestValue.getCharacterEncoding() != null) {" + 
             "    requestValue.setParameterMap(httpRequest.getParameterMap()); " +
