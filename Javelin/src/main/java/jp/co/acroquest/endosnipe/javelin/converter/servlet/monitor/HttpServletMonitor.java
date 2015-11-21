@@ -83,6 +83,9 @@ public class HttpServletMonitor
     /** パラメータのマップを入力する引数番号 */
     private static final int ARGS_PARAMETER_MAP_NUM = 8;
 
+    /** Cookieの値を入力する引数番号 */
+    private static final int ARGS_HTTP_COOKIE_NUM = 9;
+
     /** エラーステータス400番台を表す整数 */
     private static final int ERROR_STATUS_FOUR_HUNDRED = 400;
 
@@ -163,6 +166,16 @@ public class HttpServletMonitor
                 else
                 {
                     args[ARGS_PARAMETER_MAP_NUM] = request.getParameterMap();
+                }
+                String cookieValue = request.getCookieValue();
+                if (cookieValue != null)
+                {
+                    args[ARGS_HTTP_COOKIE_NUM] =
+                        "[" + config__.getHttpCookieKey() + "]" + cookieValue;
+                }
+                else
+                {
+                    args[ARGS_HTTP_COOKIE_NUM] = cookieValue;
                 }
             }
 

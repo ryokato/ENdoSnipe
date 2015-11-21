@@ -68,6 +68,9 @@ public class HttpRequestValue
     /** IPアドレス */
     private String ipAddress_;
 
+    /** Cookieから取得した値 */
+    private String cookieValue_;
+
     /**
      * パス情報を取得します。
      * @return パス情報
@@ -266,6 +269,24 @@ public class HttpRequestValue
     public void setIpAddress(String ipAddress)
     {
         ipAddress_ = ipAddress;
+    }
+
+    /**
+     * Cookieの値を取得する。
+     * @return Cookieの値
+     */
+    public String getCookieValue()
+    {
+        return cookieValue_;
+    }
+
+    /**
+     * Cookieの値を設定する。
+     * @param cookieValue Cookieの値
+     */
+    public void setCookieValue(String cookieValue)
+    {
+        cookieValue_ = cookieValue;
     }
 
 }

@@ -27,6 +27,7 @@ package jp.co.acroquest.endosnipe.javelin.converter.servlet;
 
 import java.io.IOException;
 
+import jp.co.acroquest.endosnipe.common.config.JavelinConfig;
 import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
 import jp.co.acroquest.endosnipe.javassist.CannotCompileException;
 import jp.co.acroquest.endosnipe.javassist.ClassPool;
@@ -49,6 +50,9 @@ public class HttpServletConverter extends AbstractConverter
     /** ThrowableのCtClass。 */
     private CtClass throwableClass_;
 
+    /** Cookieから取得する値のキー */
+    private static String cookieKey__ = new JavelinConfig().getHttpCookieKey();
+
     private static final String BEFORE =
             "if ($1 instanceof javax.servlet.http.HttpServletRequest) {" + 
             "javax.servlet.http.HttpServletRequest httpRequest "+
@@ -66,13 +70,22 @@ public class HttpServletConverter extends AbstractConverter
             "requestValue.setQueryString(httpRequest.getQueryString());" +
             "requestValue.setCharacterEncoding(httpRequest.getCharacterEncoding());" +
             "requestValue.setSessionId(httpRequest.getSession().getId());" +
-            "java.lang.String ipAddress = request.getHeader(\"X-Forwarded-For\");" +
+            "java.lang.String ipAddress = httpRequest.getHeader(\"X-Forwarded-For\");" +
             "if (ipAddress != null) {" +
             "  ipAddress = ipAddress.split(\",\")[0];" +
             "} else {" +
-            "  ipAddress = request.getRemoteAddr();" +
+            "  ipAddress = httpRequest.getRemoteAddr();" +
             "}" +
             "requestValue.setIpAddress(ipAddress);" +
+            "if(!\"" + cookieKey__ + "\".equals(\"\")){" +
+            "javax.servlet.http.Cookie[] cookies = httpRequest.getCookies();" +
+            "for(int cnt=0; cnt<cookies.length; cnt++){" +
+            "javax.servlet.http.Cookie cookie = cookies[cnt];" +
+            "if(\"" + cookieKey__ + "\".equals(cookie.getName())){" +
+            "requestValue.setCookieValue(cookie.getValue());" +
+            "}" +
+            "}" +
+            "}" +
             "if (requestValue.getCharacterEncoding() != null) {" + 
             "    requestValue.setParameterMap(httpRequest.getParameterMap()); " +
             "}" +
