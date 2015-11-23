@@ -1,0 +1,54 @@
+/** ELEMENT POSITIONS **/
+.map-elm {
+	height: 100px;
+	font-weight: bold;
+	position: absolute;
+	width: 120px;
+	word-break: break-all;
+	padding: 10px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	position: absolute;
+}
+
+.map-elm span {
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.app {
+	buttom: 10px;
+	width: 85%;
+	height: 100%;
+	z-index: 1;
+	background-image: url("../../images/icon/icon_web.png");
+	background-size: cover;
+}
+
+.data-resource {
+	buttom: 10px;
+	width: 85%;
+	height: 100%;
+	z-index: 1;
+	background-image: url("../../images/icon/icon_db.png");
+	background-size: cover;
+}
+
+.load-balancer {
+	buttom: 10px;
+	width: 85%;
+	height: 100%;
+	z-index: 1;
+	background-image: url("../../images/icon/icon_lb.png");
+	background-size: cover;
+}
+
+.service {
+	buttom: 10px;
+	width: 85%;
+	height: 100%;
+	z-index: 1;
+	background-image: url("../../images/icon/icon_service.png");
+	background-size: cover;
+}

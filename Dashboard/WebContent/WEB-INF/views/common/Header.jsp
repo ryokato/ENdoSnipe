@@ -15,13 +15,15 @@
 				id="header_button_explorer" href="<%=request.getContextPath()%>/">Explorer</a>
 				<a class="top-btn" id="header_button_dashboard"
 				href="<%=request.getContextPath()%>/dashboard/dashboardList">Dashboard</a>
+				<a class="top-btn" id="header_button_systemMap"
+				href="<%=request.getContextPath()%>/systemMap/mapView">Map</a>
 			</td>
 		</tr>
 	</table>
 </body>
 <script>
 	var href = window.location.href;
-	var exp = false, dash = false;
+	var exp = false, dash = false, map = false ;
 	
 	if (href.match(/ENdoSnipe[\/|\/\?.*]$/) != null) {
 		exp = true;
@@ -33,6 +35,9 @@
 	});
 	$("#header_button_dashboard").button({
 		disabled : dash
+	});
+	$("#header_button_systemMap").button({
+		disabled : map
 	});
 	$(".ui-button-text").click(function() {
 		if ($("#dashboardMode").val() == ENS.dashboard.mode.EDIT) {
