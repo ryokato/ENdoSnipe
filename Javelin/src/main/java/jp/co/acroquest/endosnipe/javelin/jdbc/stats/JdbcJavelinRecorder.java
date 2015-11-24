@@ -1072,7 +1072,7 @@ public class JdbcJavelinRecorder
                                         sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
                                                                     processor, stmt, bindList,
                                                                     planStmt, originalSqlElement,
-                                                                    execPlanText, count);
+                                                                    count);
                                 }
                             }
                             else
@@ -1081,8 +1081,7 @@ public class JdbcJavelinRecorder
                                 execPlanResult =
                                     sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
                                                                 processor, stmt, bindList,
-                                                                planStmt, originalSqlElement,
-                                                                execPlanText, count);
+                                                                planStmt, originalSqlElement, count);
                             }
 
                             execPlans.add(execPlanResult);
@@ -1171,14 +1170,13 @@ public class JdbcJavelinRecorder
      * @param bindList bindList
      * @param planStmt 実行計画取得用ステートメント
      * @param originalSqlElement 発行したSQL
-     * @param execPlanText 実行計画
      * @param count 実行計画の配列に対するインデックスになるカウント
      * @return 実行計画
      * @throws Exception Exception
      */
     private static String sendIntervalExpiredExecPlan(CallTreeNode node, CallTree callTree,
         JdbcJvnStatus jdbcJvnStatus, DBProcessor processor, Statement stmt, List<?> bindList,
-        Statement planStmt, String originalSqlElement, StringBuffer execPlanText, int count)
+        Statement planStmt, String originalSqlElement, int count)
         throws Exception
     {
         String execPlanResult = "";
@@ -1188,7 +1186,7 @@ public class JdbcJavelinRecorder
         if (recordIntervalExpired || prevExecPlans == null)
         {
             execPlanResult = doExecPlan(processor, stmt, bindList, planStmt, originalSqlElement);
-            sendExecPlan(node, execPlanText, originalSqlElement);
+            sendExecPlan(node, execPlanResult, originalSqlElement);
         }
         else
         {
@@ -1204,7 +1202,7 @@ public class JdbcJavelinRecorder
      * @param execPlanText 実行計画
      * @param originalSqlElement 発行したSQL
      */
-    private static void sendExecPlan(CallTreeNode node, StringBuffer execPlanText,
+    private static void sendExecPlan(CallTreeNode node, String execPlanText,
         String originalSqlElement)
     {
         StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
@@ -1220,7 +1218,7 @@ public class JdbcJavelinRecorder
 
         // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
         SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
-        sqlPlanTelegramSender.execute(itemName, originalSqlElement, execPlanText.toString(),
+        sqlPlanTelegramSender.execute(itemName, originalSqlElement, execPlanText,
                                       new Timestamp(System.currentTimeMillis()), stacktraceStr);
     }
 
