@@ -1,9 +1,9 @@
 /** ELEMENT POSITIONS **/
 .map-elm {
-	height: 100px;
+	height: 85px;
 	font-weight: bold;
 	position: absolute;
-	width: 120px;
+	width: 100px;
 	word-break: break-all;
 	padding: 10px;
 	border-radius: 10px;

@@ -29,6 +29,8 @@
 		exp = true;
 	}else if (href.match(/dashboardList\?*.*$/) != null) {
 		dash = true;
+	}else if (href.match(/systemMap\?*.*$/) != null) {
+		map = true;
 	}
 	$("#header_button_explorer").button({
 		disabled : exp

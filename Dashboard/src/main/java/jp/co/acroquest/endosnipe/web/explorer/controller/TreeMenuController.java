@@ -16,11 +16,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jp.co.acroquest.endosnipe.data.dto.GraphTypeDto;
-import jp.co.acroquest.endosnipe.web.explorer.dto.TreeMenuDto;
-import jp.co.acroquest.endosnipe.web.explorer.manager.ResourceSender;
-import jp.co.acroquest.endosnipe.web.explorer.service.TreeMenuService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +24,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.wgp.manager.WgpDataManager;
 
+import jp.co.acroquest.endosnipe.data.dto.GraphTypeDto;
+import jp.co.acroquest.endosnipe.web.explorer.dto.TreeMenuDto;
+import jp.co.acroquest.endosnipe.web.explorer.manager.ResourceSender;
+import jp.co.acroquest.endosnipe.web.explorer.service.TreeMenuService;
+
 /**
  * ツリーメニューのコントローラクラス。
- * 
+ *
  * @author miyasaka
  *
  */
@@ -96,7 +96,7 @@ public class TreeMenuController
 
     /**
      * 指定された親ノードの子要素のターゲットのパスを全て取得する。
-     * 
+     *
      * @param parentTreeId 親ノードのID
      * @return 子要素のターゲットのパスのリスト
      */
@@ -112,7 +112,7 @@ public class TreeMenuController
 
     /**
      * 指定された親ノードの子要素のパスを全て取得する。
-     * 
+     *
      * @param parentTreeId 親ノードのID
      * @return 子要素のパスのリスト
      */
@@ -128,5 +128,20 @@ public class TreeMenuController
         returnMap.put(KEY_OF_PARENT_NODE_ID, parentTreeId);
 
         return returnMap;
+    }
+
+    /**
+     * 指定された親ノードの子要素のAgent名の一覧を取得する。
+     * @param parentTreeId ここで設定されたツリーノードID配下のAgent名を取得する
+     * @return Agent名の一覧
+     */
+    @RequestMapping(value = "/getAgentNameList", method = RequestMethod.POST)
+    @ResponseBody
+    public List<String> getAgentNameList(
+            @RequestParam(value = "parentTreeId") final String parentTreeId)
+    {
+        List<String> agentNameList = this.treeMenuService.getAgentNameList(parentTreeId);
+
+        return agentNameList;
     }
 }
