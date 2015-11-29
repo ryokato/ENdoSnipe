@@ -3,6 +3,7 @@ ENS.SystemMapView = wgp.AbstractView.extend({
 	initialize : function(argument) {
 		// 定数の定義
 		this.DIV_ID_CONTROLLER = "range_controller";
+		this.ID_CLUSTER_NAME = "cluster_name";
 
 		_.bindAll();
 
@@ -41,6 +42,8 @@ ENS.SystemMapView = wgp.AbstractView.extend({
 		// TODO 未実装。
 	},
 	onLoad : function() {
+		// Clusterのドロップダウンリストを描画する
+		this._renderClusterList();
 
 		// スクロール位置をリセット
 		$("#" + this.$el.attr("id")).scrollTop(0);
@@ -126,6 +129,26 @@ ENS.SystemMapView = wgp.AbstractView.extend({
 
 		this.systemMap = jsPlumb.ready(this.systemMapSetting.init);
 
+	},
+	_renderClusterList : function() {
+		// クラスタ選択ドロップダウンリスト
+		var $selectorLabel = $("<span/>").html("Cluster: ");
+		$selectorLabel.css("margin-left", "10px");
+		var $selector = this._createClusterSelector();
+		
+		// コンテナ
+		var $container = $("#range_area");
+		
+		// スタイルの変更
+		$container.css("font-size", "0.8em");
+		$container.css("margin-bottom", "0px");
+		
+		// コンテナに追加
+		var $subcontainer = $("<div/>");
+		$subcontainer.css("float", "left");
+		$container.append($subcontainer);
+		$subcontainer.append($selectorLabel);
+		$subcontainer.append($selector);
 	},
 	_getRelationTarget : function(profileList) {
 		var relTargetList = {
@@ -276,6 +299,43 @@ ENS.SystemMapView = wgp.AbstractView.extend({
 			$("#" + target.id).css("top", marginTop + "px");
 			$("#" + target.id).css("left", marginLeft + "px");
 
+		});
+	},
+	_createClusterSelector : function() {
+		var $selector = $("<select/>");
+		$selector.attr("id", this.ID_CLUSTER_NAME);
+		
+		// Ajax通信用の設定
+		var settings = {
+				url: ENS.tree.GET_TOP_NODES
+		};
+		
+		// 非同期通信でデータを送信する
+		var ajaxHandler = new wgp.AjaxHandler();
+		settings[wgp.ConnectionConstants.SUCCESS_CALL_OBJECT_KEY] = this;
+		var result = ajaxHandler.requestServerSync(settings);
+		var nodes = $.parseJSON(result);
+		this._callbackGetTopNodes($selector, nodes);
+		
+		return $selector;
+	},
+	_callbackGetTopNodes : function($selector, topNodes) {
+		var cnt = 0;
+		for(var i in topNodes){
+			var cluster = topNodes[i];
+			$option = $("<option/>");
+			$option.attr("value", cluster.data);
+			$option.html(cluster.data);
+			$selector.append($option);
+			if (cnt == 0) {
+				$selector.val(cluster.data);
+			}
+			cnt++;
+		}
+		
+		var instance = this;
+		$selector.change(function(){
+			
 		});
 	}
 });

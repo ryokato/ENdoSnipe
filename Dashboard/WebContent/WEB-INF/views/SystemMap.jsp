@@ -21,33 +21,47 @@
 <body id="main" oncontextmenu="return false;" onload="self.focus();">
 
 	<script type="text/javascript">
-		var viewArea1 = {};
-		var viewArea2 = {};
+		var viewArea1 = {
+			width : 1200,
+			height : 80,
+			rowspan : 1,
+			colspan : 1,
+			css : {
+				"overflow" : "hidden",
+				"padding-top" : "5px",
+				"z-index" : "30"
+			}
+		};
 
-		viewArea1.width = 300;
-		viewArea1.height = 800;
-		viewArea1.rowspan = 1;
-		viewArea1.colspan = 1;
+		var viewArea2 = {
+			width : 1200,
+			height : 710,
+			rowspan : 1,
+			colspan : 1
+		};
 
-		viewArea2.width = 900;
-		viewArea2.height = 800;
-		viewArea2.rowspan = 1;
-		viewArea2.colspan = 1;
-
-		var table = [ [ new wgp.PerspectiveModel(viewArea1),
-				new wgp.PerspectiveModel(viewArea2) ] ];
-		var perspectiveView = new wgp.PerspectiveView({
+		var table = [ [ new wgp.PerspectiveModel(viewArea1) ],
+				[ new wgp.PerspectiveModel(viewArea2) ] ];
+		perspectiveView = new wgp.PerspectiveView({
 			id : "persArea",
 			collection : table,
 			minimum : false,
 			close : false
 		});
-		perspectiveView.dropView("persArea_drop_0_0", "tree_area");
-		perspectiveView.dropView("persArea_drop_0_1", "contents_area", "Map");
-		$("#persArea_drop_0_1").addClass("ui-resizable-disabled");
+
+		$('#persArea_bar_1_0').hide();
+		$('#persArea_bar_2_0').hide();
+
+		perspectiveView.dropView("persArea_drop_0_0", "range_area", "");
+		perspectiveView.dropView("persArea_drop_1_0", "contents_area", "");
+
+		$("#persArea_drop_0_0").addClass("ui-resizable-disabled");
+
+		var listArea = $("<div id='list_area'><div>");
+		listArea.appendTo("body");
 
 		var appView = new ENS.AppView();
-		
+
 		var systemMapView = new ENS.SystemMapView({
 			systemMapId : "contents_area"
 		});
