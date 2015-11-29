@@ -195,6 +195,7 @@ ENS.tree.GET_CHILD_TARGET_NODES = wgp.common.getContextPath()
 		+ "/tree/getChildTargetNodes";
 ENS.tree.GET_ALL_CHILD_NODES = wgp.common.getContextPath()
 		+ "/tree/getAllChildNodes";
+ENS.tree.GET_AGENT_NAME_LIST = wgp.common.getContextPath() + "/tree/getAgentNameList";
 ENS.tree.THREADDUMP_AGENT_SELECT_ALL_URL = wgp.common.getContextPath()
 		+ "/threadDump/selectAllAgent";
 ENS.tree.THREAD_DUMP_CLICK = wgp.common.getContextPath()+"/threadDump/addThreadDump";

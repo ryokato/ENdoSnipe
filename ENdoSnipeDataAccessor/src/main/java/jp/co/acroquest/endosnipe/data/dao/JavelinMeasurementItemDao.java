@@ -311,6 +311,78 @@ public class JavelinMeasurementItemDao extends AbstractDao implements TableNames
 
         return itemNameList;
     }
+    
+    /**
+     * 指定されたItemName配下のAgent一覧を取得します。<br />
+     *
+     * @param database データベース名
+     * @param measurementItemName 計測項目名
+     * @return Agent一覧
+     * @throws SQLException SQL 実行時に例外が発生した場合
+     */
+    public static List<String> selectAgentNameList(final String database,
+        final String measurementItemName)
+        throws SQLException
+    {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        List<String> agentNameList = new ArrayList<String>();
+
+        try
+        {
+            conn = getConnection(database, true);
+            String sql =
+                "select split_part(MEASUREMENT_ITEM_NAME,'/','4') as child, "
+                    + " split_part(MEASUREMENT_ITEM_NAME,'/','5') != '' as grandchild"
+                    + " from JAVELIN_MEASUREMENT_ITEM"
+                    + " where MEASUREMENT_ITEM_NAME LIKE ?"
+                    + " and split_part("
+                    + " MEASUREMENT_ITEM_NAME,'/','3') = ?" + "group by child, grandchild"
+                    + " order by child, grandchild";
+            pstmt = conn.prepareStatement(sql);
+            PreparedStatement preparedStatement = getDelegatingStatement(pstmt);
+
+            String[] measuremtnItemPart = measurementItemName.split("/");
+            int length = measuremtnItemPart.length;
+            String tempStr = measurementItemName + "%";
+            int index = 1;
+            preparedStatement.setString(index++, tempStr);
+            String measurementItem;
+            if (measuremtnItemPart.length > 0)
+            {
+                measurementItem = measuremtnItemPart[length - 1];
+            }
+            else
+            {
+                measurementItem = "";
+            }
+            preparedStatement.setString(index++, measurementItem);
+            rs = preparedStatement.executeQuery();
+
+            while (rs.next())
+            {
+                String itemName = rs.getString(1);
+
+                if ("".equals(itemName))
+                {
+                    continue;
+                }
+
+                // CHECKSTYLE:OFF
+                agentNameList.add(itemName);
+                // CHECKSTYLE:ON
+            }
+        }
+        finally
+        {
+            SQLUtil.closeResultSet(rs);
+            SQLUtil.closeStatement(pstmt);
+            SQLUtil.closeConnection(conn);
+        }
+
+        return agentNameList;
+    }
 
     /**
      * 指定された計測値種別と項目名称のレコードの　ID を返します。<br />

@@ -35,6 +35,9 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.data.dao.JavelinMeasurementItemDao;
 import jp.co.acroquest.endosnipe.data.dto.GraphTypeDto;
@@ -49,11 +52,8 @@ import jp.co.acroquest.endosnipe.web.explorer.entity.ChildResourceInfo;
 import jp.co.acroquest.endosnipe.web.explorer.manager.DatabaseManager;
 import jp.co.acroquest.endosnipe.web.explorer.util.TreeMenuUtil;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 /**
- * 
+ *
  * ツリーメニューに関する操作を行うクラスです。
  *
  * @author fujii
@@ -207,7 +207,7 @@ public class TreeMenuService
 
     /**
      * 指定された親ノードの直下にある子要素のパスの一覧を取得する。
-     * 
+     *
      * @param parentTreeId 親ノードのID
      * @return 子要素のリスト
      */
@@ -319,7 +319,7 @@ public class TreeMenuService
 
     /**
      * 一番階層が上のノードの一覧を取得する。
-     * 
+     *
      * @return 一番階層が上のノードの一覧
      */
     public List<TreeMenuDto> getTopNodes()
@@ -329,7 +329,7 @@ public class TreeMenuService
 
     /**
      * 指定された親ノードの子要素のターゲットのパスを全て取得する。
-     * 
+     *
      * @param parentTreeId 親ノードのID
      * @return 子要素のターゲットのパスのリスト
      */
@@ -341,9 +341,8 @@ public class TreeMenuService
         List<GraphTypeDto> childNodes = null;
         try
         {
-            childNodes =
-                    JavelinMeasurementItemDao.selectItemNameListByParentItemName(dbName,
-                                                                                 parentTreeId);
+            childNodes = JavelinMeasurementItemDao.selectItemNameListByParentItemName(dbName,
+                                                                                      parentTreeId);
 
         }
         catch (SQLException sqlEx)
@@ -356,7 +355,7 @@ public class TreeMenuService
 
     /**
      * 指定された親ノードの子要素のパスを全て取得する。
-     * 
+     *
      * @param parentTreeId 親ノードのID
      * @return 子要素のパスのリスト
      */
@@ -402,5 +401,28 @@ public class TreeMenuService
         }
 
         return childAllNodes;
+    }
+
+    /**
+     * Agent名の一覧を取得する。
+     * @param parentTreeId ここで設定されたツリーノードID配下のAgent名を取得する
+     * @return Agent名の一覧
+     */
+    public List<String> getAgentNameList(final String parentTreeId)
+    {
+        DatabaseManager dbMmanager = DatabaseManager.getInstance();
+        String dbName = dbMmanager.getDataBaseName(1);
+        // Agent名の一覧を追加する。
+        List<String> agentNameList = new ArrayList<String>();
+        try
+        {
+            agentNameList = JavelinMeasurementItemDao.selectAgentNameList(dbName, parentTreeId);
+        }
+        catch (SQLException sqlEx)
+        {
+            LOGGER.log(LogMessageCodes.SQL_EXCEPTION, sqlEx, sqlEx.getMessage());
+        }
+
+        return agentNameList;
     }
 }

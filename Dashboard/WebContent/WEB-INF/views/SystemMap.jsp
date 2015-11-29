@@ -56,6 +56,7 @@
 		perspectiveView.dropView("persArea_drop_1_0", "contents_area", "");
 
 		$("#persArea_drop_0_0").addClass("ui-resizable-disabled");
+		$("#persArea_drop_1_0").addClass("ui-resizable-disabled");
 
 		var listArea = $("<div id='list_area'><div>");
 		listArea.appendTo("body");
