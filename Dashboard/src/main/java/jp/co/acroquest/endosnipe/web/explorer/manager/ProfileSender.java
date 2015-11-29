@@ -34,9 +34,9 @@ import jp.co.acroquest.endosnipe.web.explorer.entity.MethodModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.wgp.manager.MessageInboundManager;
 import org.wgp.manager.WgpDataManager;
-import org.wgp.servlet.WgpMessageInbound;
+import org.wgp.manager.WgpSessionManager;
+import org.wgp.servlet.WgpSession;
 
 /**
  * プロファイル通知を行うクラス。
@@ -67,12 +67,12 @@ public class ProfileSender
      */
     public void send(final ClassModel[] profileData, final String agentName)
     {
-        MessageInboundManager inboundManager = MessageInboundManager.getInstance();
-        List<WgpMessageInbound> inboundList = inboundManager.getMessageInboundList();
+        WgpSessionManager sessionManager = WgpSessionManager.getInstance();
+        List<WgpSession> sessionList = sessionManager.getSessionList();
 
-        for (WgpMessageInbound inbound : inboundList)
+        for (WgpSession session : sessionList)
         {
-            sendWgpData(profileData, this.wgpDataManager, inbound, agentName);
+            sendWgpData(profileData, this.wgpDataManager, session, agentName);
         }
     }
 
@@ -81,11 +81,11 @@ public class ProfileSender
      *
      * @param profileData 送信するデータ元
      * @param dataManager WGPオブジェクト
-     * @param inbound クライアント
+     * @param session クライアント
      * @param agentName エージェント名
      */
     private void sendWgpData(final ClassModel[] profileData, final WgpDataManager dataManager,
-            final WgpMessageInbound inbound, final String agentName)
+            final WgpSession session, final String agentName)
     {
         String dataGroupId = agentName + "/profiler";
         dataManager.initDataMap(dataGroupId, new HashMap<String, Object>());

@@ -51,6 +51,9 @@ public class SignalInfo
     /** エスカレーション期間。 */
     public double escalationPeriod;
 
+    /** メール送信フラグ */
+    public boolean sendMail;
+
     /**
      * {@link SignalInfo} オブジェクトを生成します。<br />
      */
@@ -63,8 +66,8 @@ public class SignalInfo
     public String toString()
     {
         return String.format("SignalID%d SignalName:%s MatchingPattern:%s Level:%d "
-                                     + "PatternValue:%s escalationPeriod:%f", signalId, signalName,
-                             matchingPattern,
-                             level, patternValue, escalationPeriod);
+                                     + "PatternValue:%s escalationPeriod:%f SendMail:%s", signalId,
+                             signalName,
+                             matchingPattern, level, patternValue, escalationPeriod, sendMail);
     }
 }

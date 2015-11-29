@@ -14,6 +14,7 @@ package jp.co.acroquest.endosnipe.javelin.communicate;
 
 import jp.co.acroquest.endosnipe.communicator.CommunicationClient;
 import jp.co.acroquest.endosnipe.communicator.CommunicatorListener;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.impl.CommunicationClientImpl;
 
 /**
@@ -51,17 +52,19 @@ public class SimpleENdoSnipeClient
      */
     public boolean connect(String host, int port)
     {
-    
-        client_.init(host, port);
-    
+        CommunicatorSetting setting = new CommunicatorSetting();
+        setting.port = port;
+        setting.sslEnable = false;
+
+        client_.init(host, setting);
 
         client_.addCommunicatorListener(new CommunicatorListener() {
-    
+
             public void clientDisconnected(boolean forceDisconnected)
             {
                 // 何もしない。
             }
-    
+
             public void clientConnected(String hostName, String ipAddress, int port)
             {
                 synchronized (SimpleENdoSnipeClient.this.timeoutObject_)
@@ -70,9 +73,9 @@ public class SimpleENdoSnipeClient
                 }
             }
         });
-    
+
         client_.connect(null);
-    
+
         if (client_.isConnected() == false)
         {
             try
@@ -86,14 +89,14 @@ public class SimpleENdoSnipeClient
             {
                 ex.printStackTrace();
             }
-    
+
             if (client_.isConnected() == false)
             {
                 System.out.println("connect timeout. ");
                 return false;
             }
         }
-    
+
         return true;
     }
 

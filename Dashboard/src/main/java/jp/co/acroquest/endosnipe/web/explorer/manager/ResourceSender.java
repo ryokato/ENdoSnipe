@@ -39,13 +39,14 @@ import jp.co.acroquest.endosnipe.common.entity.ResourceData;
 import jp.co.acroquest.endosnipe.web.explorer.dto.MeasurementValueDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.MultipleMeasurementValueDto;
 import jp.co.acroquest.endosnipe.web.explorer.dto.TreeMenuDto;
+import jp.co.acroquest.endosnipe.web.explorer.util.ResourceNameUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-import org.wgp.manager.MessageInboundManager;
 import org.wgp.manager.WgpDataManager;
-import org.wgp.servlet.WgpMessageInbound;
+import org.wgp.manager.WgpSessionManager;
+import org.wgp.servlet.WgpSession;
 
 /**
  * リソース通知を行うクラス。
@@ -75,12 +76,12 @@ public class ResourceSender
      */
     public void send(final ResourceData resourceData)
     {
-        MessageInboundManager inboundManager = MessageInboundManager.getInstance();
-        List<WgpMessageInbound> inboundList = inboundManager.getMessageInboundList();
+        WgpSessionManager sessionManager = WgpSessionManager.getInstance();
+        List<WgpSession> sessionList = sessionManager.getSessionList();
 
-        for (WgpMessageInbound inbound : inboundList)
+        for (WgpSession session : sessionList)
         {
-            sendWgpData(resourceData, this.wgpDataManager, inbound);
+            sendWgpData(resourceData, this.wgpDataManager, session);
         }
     }
 
@@ -100,12 +101,12 @@ public class ResourceSender
      *
      * @param resourceData 送信するデータ元
      * @param dataManager WGPオブジェクト
-     * @param inbound クライアント
+     * @param session クライアント
      */
     private void sendWgpData(final ResourceData resourceData, final WgpDataManager dataManager,
-            final WgpMessageInbound inbound)
+            final WgpSession session)
     {
-        Set<String> listeners = inbound.getListeners();
+        Set<String> listeners = session.getListeners();
         Map<String, MeasurementData> measurementMap = resourceData.getMeasurementMap();
         long measurementTime = resourceData.measurementTime;
         Map<String, MultipleMeasurementValueDto> multiDataMap =
@@ -242,7 +243,8 @@ public class ResourceSender
         for (String groupId : listeners)
         {
             // 正規表現で一致する場合、または完全一致する場合
-            if (itemName.matches(groupId) || itemName.equals(groupId))
+            if (itemName.matches(ResourceNameUtil.getRegularName(groupId))
+                    || itemName.equals(groupId))
             {
                 groupIdList.add(groupId);
 

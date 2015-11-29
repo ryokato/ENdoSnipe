@@ -80,17 +80,17 @@ import jp.co.acroquest.endosnipe.javelin.util.ThreadUtil;
 public class JavelinTransformer implements ClassFileTransformer
 {
     /** Javelin用スレッドが処理を開始するまでの待ち時間。 */
-    public static final int                    WAIT_FOR_THREAD_START = 1000 * 10;
+    public static final int WAIT_FOR_THREAD_START = 1000 * 10;
 
     /** クラスロード時に読まれるクラス */
-    private static JavelinTransformer          transformer__;
+    private static JavelinTransformer transformer__;
 
     /** クラスpoolを登録するMap */
     private static Map<ClassLoader, ClassPool> loaderPoolMap__;
 
-    private static boolean                     forceTransform__      = false;
+    private static boolean forceTransform__ = false;
 
-    private static ConverterPool               converterPool__       = new ConverterPool();
+    private static ConverterPool converterPool__ = new ConverterPool();
 
     static
     {
@@ -98,19 +98,19 @@ public class JavelinTransformer implements ClassFileTransformer
     }
 
     /** ロード済みのクラスの集合 */
-    private static Set<String>                 loadedClassSet__      = new HashSet<String>();
+    private static Set<String> loadedClassSet__ = new HashSet<String>();
 
     /** Javelinの設定値を読み込むクラス */
-    private JavelinTransformConfig             transformConfig_;
+    private JavelinTransformConfig transformConfig_;
 
     /** システムプロパティ表示の先頭 */
-    private static final String                SYS_PROP_HEAD         = "\n>>>> System Properties\n";
+    private static final String SYS_PROP_HEAD = "\n>>>> System Properties\n";
 
     /** システムプロパティ表示の末尾 */
-    private static final String                SYS_PROP_END          = "<<<<\n";
+    private static final String SYS_PROP_END = "<<<<\n";
 
     /** StringBuilderのデフォルトサイズ */
-    private static final int                   DEF_BUILDER_SIZE      = 1024;
+    private static final int DEF_BUILDER_SIZE = 1024;
 
     /**
      * ログ出力処理を埋め込みます。<br />
@@ -123,15 +123,15 @@ public class JavelinTransformer implements ClassFileTransformer
      * @return コード埋め込み後のクラスのバイトコード
      */
     public byte[] transform(final ClassLoader loader, String className,
-            final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain,
-            final byte[] classfileBuffer)
+        final Class<?> classBeingRedefined, final ProtectionDomain protectionDomain,
+        final byte[] classfileBuffer)
     {
         // Javelin関連のスレッドの場合は、変換を行わない。
         if (Thread.currentThread().getName().startsWith("Javelin"))
         {
             return null;
         }
-        
+
         className = className.replaceAll("/", "\\.");
 
         if (!isTargetClassName(className))
@@ -197,15 +197,14 @@ public class JavelinTransformer implements ClassFileTransformer
     private static boolean isTargetClassName(String className)
     {
         // Java APIのクラスおよびjavassist、Javelinのクラスに対しては処理を行わない。
-        if (className.startsWith("sun.misc") 
-                || className.startsWith("javassist.")
-                || className.startsWith("org.seasar.javelin")
-                || className.startsWith("jp.co.acroquest.endosnipe.javelin")
-                || className.startsWith("jp.co.acroquest.endosnipe.javassist"))
+        if (className.startsWith("sun.misc") || className.startsWith("javassist.")
+            || className.startsWith("org.seasar.javelin")
+            || className.startsWith("jp.co.acroquest.endosnipe.javelin")
+            || className.startsWith("jp.co.acroquest.endosnipe.javassist"))
         {
             return false;
         }
-        
+
         return true;
     }
 
@@ -219,7 +218,7 @@ public class JavelinTransformer implements ClassFileTransformer
      * @throws Exception 変換中にエラーが発生した場合
      */
     private byte[] transformClass(final ClassLoader loader, final String className,
-            final byte[] classfileBuffer)
+        final byte[] classfileBuffer)
         throws Exception
     {
         byte[] transformedBytes = null;
@@ -238,7 +237,7 @@ public class JavelinTransformer implements ClassFileTransformer
     }
 
     private byte[] transformClass(final ClassLoader loader, ClassPool pool, final String className,
-            CtClass ctClass)
+        CtClass ctClass)
         throws Exception
     {
         byte[] transformedBytes = null;
@@ -247,7 +246,7 @@ public class JavelinTransformer implements ClassFileTransformer
         {
             // 対象リストにマッチすれば、処理を行う。
             List<IncludeConversionConfig> includeConfigList =
-                    this.transformConfig_.matchesToInclude(className, ctClass, pool);
+                this.transformConfig_.matchesToInclude(className, ctClass, pool);
 
             // 1つのクラスに対し、同じコンバータクラスは1回のみ適用する。
             // 1つのクラスに対して、同じコンバータクラスが複数行に渡り当てはまる場合は、
@@ -260,7 +259,7 @@ public class JavelinTransformer implements ClassFileTransformer
 
             // 対象リストにマッチしない場合は、処理を行わない
             List<ExcludeConversionConfig> exludeConfigList =
-                                             this.transformConfig_.matchesToExclude(className);
+                this.transformConfig_.matchesToExclude(className);
 
             Set<String> appliedConverterSet = new HashSet<String>();
 
@@ -270,26 +269,26 @@ public class JavelinTransformer implements ClassFileTransformer
                 for (String converterName : includeConfig.getConverterNameList())
                 {
                     List<String> converterClassNames =
-                                       this.transformConfig_.getConverterClassNames(converterName);
+                        this.transformConfig_.getConverterClassNames(converterName);
                     for (String converterClassName : converterClassNames)
                     {
                         if (appliedConverterSet.contains(converterClassName))
                         {
                             SystemLogger logger = SystemLogger.getInstance();
                             logger.warn("(" + converterName + ")" + " ignored convert.pattern="
-                                    + includeConfig.getClassNamePattern() + "#"
-                                    + includeConfig.getMethodNamePattern() + ",class=" + className);
+                                + includeConfig.getClassNamePattern() + "#"
+                                + includeConfig.getMethodNamePattern() + ",class=" + className);
                         }
 
-                        byte[] currentTransformedBytes = applyConverter(className, transformedBytes, pool,
-                                          ctClass, includeConfig, exludeConfigList,
-                                          converterClassName);
-                        
-                        if(currentTransformedBytes != null)
+                        byte[] currentTransformedBytes =
+                            applyConverter(className, transformedBytes, pool, ctClass,
+                                           includeConfig, exludeConfigList, converterClassName);
+
+                        if (currentTransformedBytes != null)
                         {
                             transformedBytes = currentTransformedBytes;
                         }
-                        
+
                         appliedConverterSet.add(converterClassName);
                     }
                 }
@@ -364,9 +363,8 @@ public class JavelinTransformer implements ClassFileTransformer
      * @return コード埋め込み後のクラスのバイトコード
      */
     private byte[] applyConverter(final String className, byte[] classfileBuffer,
-            final ClassPool pool, final CtClass ctClass,
-            final IncludeConversionConfig includeConfig,
-            final List<ExcludeConversionConfig> excludeConfigList, final String converterClassName)
+        final ClassPool pool, final CtClass ctClass, final IncludeConversionConfig includeConfig,
+        final List<ExcludeConversionConfig> excludeConfigList, final String converterClassName)
     {
         Converter converter = converterPool__.request(converterClassName);
         if (converter == null)
@@ -380,8 +378,8 @@ public class JavelinTransformer implements ClassFileTransformer
             ctClass.stopPruning(true);
 
             classfileBuffer =
-                              converter.convert(className, classfileBuffer, pool, ctClass,
-                                                includeConfig, excludeConfigList);
+                converter.convert(className, classfileBuffer, pool, ctClass, includeConfig,
+                                  excludeConfigList);
 
         }
         finally
@@ -523,16 +521,16 @@ public class JavelinTransformer implements ClassFileTransformer
 
         // スレッド監視スレッドを開始する。
         initThreadMonitor();
-        
+
         // スレッドダンプ取得スレッドを開始する。
         initThreadDumpMonitor();
-        
+
         // フルGC検出スレッドを開始する。
         initFullGCMonitor();
-        
+
         // ストールメソッド監視スレッドを開始する。
         initMethodStallMonitor();
-        
+
         // ポートをオープンする。
         StatsJavelinRecorder.javelinInit(javelinConfig);
 
@@ -582,7 +580,7 @@ public class JavelinTransformer implements ClassFileTransformer
      * @param classes 変換するロード済みクラス
      */
     private static void transformLoadedClasses(final Instrumentation instrumentation,
-            final Class<?>[] classes)
+        final Class<?>[] classes)
     {
         forceTransform__ = true;
 
@@ -604,7 +602,7 @@ public class JavelinTransformer implements ClassFileTransformer
                 }
 
                 if (element.isArray() || element.isInterface() || element.isAnnotation()
-                        || element.isEnum() || element.isPrimitive())
+                    || element.isEnum() || element.isPrimitive())
                 {
                     continue;
                 }
@@ -619,8 +617,8 @@ public class JavelinTransformer implements ClassFileTransformer
                 try
                 {
                     byte[] newBytecode =
-                                         transformer__.transformClass(element.getClassLoader(),
-                                                                      pool, className, ctClass);
+                        transformer__.transformClass(element.getClassLoader(), pool, className,
+                                                     ctClass);
                     loadedClassSet__.add(element.getCanonicalName());
 
                     if (newBytecode != null)
@@ -659,7 +657,7 @@ public class JavelinTransformer implements ClassFileTransformer
             SystemLogger.getInstance().warn(th);
         }
     }
-    
+
     /**
      * スレッドダンプ取得スレッドを開始する。
      */
@@ -667,7 +665,7 @@ public class JavelinTransformer implements ClassFileTransformer
     {
         ThreadDumpMonitor threadDumpMonitor = ThreadDumpMonitor.getInstance();
         Thread threadDumpMonitorThread =
-                new Thread(threadDumpMonitor, "Javelin-ThreadDump-Monitor");
+            new Thread(threadDumpMonitor, "Javelin-ThreadDump-Monitor");
         threadDumpMonitorThread.setDaemon(true);
         threadDumpMonitorThread.start();
     }
@@ -693,7 +691,7 @@ public class JavelinTransformer implements ClassFileTransformer
         fullGcMonitorThread.setDaemon(true);
         fullGcMonitorThread.start();
     }
-    
+
     /**
      * ストールメソッド監視スレッドを開始する。
      */
@@ -701,7 +699,7 @@ public class JavelinTransformer implements ClassFileTransformer
     {
         MethodStallMonitor methodStallMonitor = MethodStallMonitor.getInstance();
         Thread threadMethodStallThread =
-                new Thread(methodStallMonitor, "Javelin-MethodStall-Monitor");
+            new Thread(methodStallMonitor, "Javelin-MethodStall-Monitor");
         threadMethodStallThread.setDaemon(true);
         threadMethodStallThread.start();
     }
@@ -806,6 +804,7 @@ public class JavelinTransformer implements ClassFileTransformer
         boolean finalizationCount = config.isFinalizationCount();
         boolean httpSessionCount = config.isHttpSessionCount();
         boolean httpSessionSize = config.isHttpSessionSize();
+        String httpCookieKey = config.getHttpCookieKey();
         boolean concurrentAccessMonitored = config.isConcurrentAccessMonitored();
         boolean timeoutMonitor = config.isTimeoutMonitor();
         boolean intervalMonitor = config.isIntervalMonitor();
@@ -888,7 +887,8 @@ public class JavelinTransformer implements ClassFileTransformer
         System.out.println("\tjavelin.connectHost                  : " + connectHost);
         System.out.println("\tjavelin.connectPort                  : " + connectPort);
         System.out.println("\tjavelin.databaseName                 : " + databaseName);
-        System.out.println("\tjavelin.call.tree.enable             : "+config.isCallTreeEnabled());
+        System.out
+            .println("\tjavelin.call.tree.enable             : " + config.isCallTreeEnabled());
         System.out.println("\tjavelin.call.tree.max                : " + callTreeMax);
         System.out.println("\tjavelin.record.invocation.num.max    : " + recInvocationMax);
         System.out.println("\tjavelin.record.jmx                   : " + recordJMX);
@@ -920,6 +920,7 @@ public class JavelinTransformer implements ClassFileTransformer
         System.out.println("\tjavelin.servlet.exclude.pattern      : " + servletExcludePattern);
         System.out.println("\tjavelin.httpSessionCount.monitor     : " + httpSessionCount);
         System.out.println("\tjavelin.httpSessionSize.monitor      : " + httpSessionSize);
+        System.out.println("\tjavelin.log.http.cookie.key          : " + httpCookieKey);
         System.out.println("\tjavelin.concurrent.monitor           : " + concurrentAccessMonitored);
         System.out.println("\tjavelin.timeout.monitor              : " + timeoutMonitor);
         System.out.println("\tjavelin.interval.monitor             : " + intervalMonitor);
@@ -933,6 +934,9 @@ public class JavelinTransformer implements ClassFileTransformer
         System.out.println("\tjavelin.method.stall.traceDepth      : " + methodStallTraceDepth);
         System.out.println("\tjavelin.httpStatusError              : " + httpStatusError);
         System.out.println("\tjavelin.jmx.resource.monitor         : " + monitorJmxResource);
+        System.out.println("\tjavelin.ssl.enable                   : " + config.isSslEnable());
+        System.out.println("\tjavelin.ssl.keystore                 : " + config.getSslKeystore());
+        System.out.println("\tjavelin.ssl.truststore               : " + config.getSslTruststore());
         System.out.println(SYS_PROP_END);
     }
 

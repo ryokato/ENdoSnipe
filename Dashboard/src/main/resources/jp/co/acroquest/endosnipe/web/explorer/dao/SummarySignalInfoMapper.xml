@@ -17,12 +17,13 @@
 		SELECT * FROM
 		SUMMARY_SIGNAL_DEFINITION
 	</select>
-	
+
 	<select id="selectByName" resultMap="SummarySignalInfoMap">
 		SELECT * FROM
 		SUMMARY_SIGNAL_DEFINITION
 		where SUMMARY_SIGNAL_NAME
-		= #{summarySignalName}
+		=
+		#{summarySignalName}
 	</select>
 
 	<insert id="insert"
@@ -41,7 +42,7 @@
 		SUMMARY_SIGNAL_NAME
 		= #{summarySignalName}
 	</select>
-	
+
 	<delete id="deleteChildren">
 		delete from SUMMARY_SIGNAL_DEFINITION
 		where

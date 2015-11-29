@@ -52,6 +52,8 @@ import jp.co.acroquest.endosnipe.collector.log.JavelinLogUtil;
 import jp.co.acroquest.endosnipe.collector.manager.SignalStateManager;
 import jp.co.acroquest.endosnipe.collector.manager.SummarySignalStateManager;
 import jp.co.acroquest.endosnipe.collector.notification.AlarmEntry;
+import jp.co.acroquest.endosnipe.collector.notification.AlarmObserver;
+import jp.co.acroquest.endosnipe.collector.notification.AlarmObserverFactory;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmData;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmProcessor;
 import jp.co.acroquest.endosnipe.collector.processor.AlarmThresholdProcessor;
@@ -150,6 +152,10 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
     private final Map<String, ResourceData> prevConvertedResourceDataMap_ =
         new HashMap<String, ResourceData>();
 
+    /** 前々回の計測値(積算を差分に直したもの) */
+    private final Map<String, ResourceData> prevConvertedResourceDataMap2_ =
+        new HashMap<String, ResourceData>();
+
     /**
      * Javelinから接続されたときのイベント。
      * 接続データを受け取った時にセットされ、接続前の、全てが0のデータを書き込む際に用いられる。
@@ -188,6 +194,9 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
     /** 測定値の閾値下回り時のメッセージフォーマット */
     private static final String FALLS_TAT_MESSAGES = "APP.MTRC.FALL_TAT_message";
 
+    /** アラーム通知を行う通知オブジェクト生成 */
+    private final AlarmObserverFactory alarmObserverFactory_ = new AlarmObserverFactory();
+
     /**
      * 初期化を行います。
      *
@@ -214,7 +223,7 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
         summarySignalStateManager.setDataBaseName(dataBase);
         summarySignalStateManager.setSummarySignalDefinitionMap(summarySignalDefinitionMap);
         summarySignalStateManager.createAllSummarySignalMapValue();
-        similarSqlProcessor = new SimilarSqlProcessor(config);
+        similarSqlProcessor = new SimilarSqlProcessor();
     }
 
     /**
@@ -589,10 +598,12 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
             // 可変数系列で新たなデータが加わっている場合、グラフの始まりを表すデータを追加する。
             String prevDataKey = resourceData.clientId;
             ResourceData prevData = this.prevConvertedResourceDataMap_.get(prevDataKey);
+            ResourceData prevData2 = this.prevConvertedResourceDataMap2_.get(prevDataKey);
             if (prevData != null)
             {
                 ResourceData additionalData =
-                    ResourceDataUtil.createAdditionalPreviousData(prevData, resourceData);
+                    ResourceDataUtil
+                        .createAdditionalPreviousData(prevData, resourceData, prevData2);
 
                 if (additionalData.getMeasurementMap().size() > 0)
                 {
@@ -628,6 +639,9 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
                     && resourceData.getMeasurementMap().size() != 0)
                 {
                     this.prevResourceDataMap_.put(prevDataKey, resourceData);
+                    this.prevConvertedResourceDataMap2_.put(prevDataKey,
+                                                            prevConvertedResourceDataMap_
+                                                                .get(prevDataKey));
                     this.prevConvertedResourceDataMap_.put(prevDataKey, convertedResourceData);
                 }
 
@@ -1163,7 +1177,6 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
 
         {
             SignalDefinitionDto signalDefinition = signalDefinitionEntry.getValue();
-            String itemName = signalDefinition.getMatchingPattern();
             long signalId = signalDefinition.getSignalId();
 
             //現在のアラーム通知状況を取得
@@ -1222,6 +1235,12 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
             for (AlarmEntry alarmEntry : alarmEntryList)
             {
                 addSignalStateChangeEvent(alarmEntry);
+                List<AlarmObserver> observerList =
+                    alarmObserverFactory_.getAlarmObserverList(alarmEntry);
+                for (AlarmObserver observer : observerList)
+                {
+                    observer.send(alarmEntry);
+                }
             }
         }
 
@@ -1682,6 +1701,15 @@ public class JavelinDataLogger implements Runnable, LogMessageCodes
         }
         long prevMeasurementValue = Long.valueOf(measurementDetail.value).longValue();
         return prevMeasurementValue;
+    }
+
+    /**
+     * メールの送信を行う。
+     * @param alarmEntry {@link AlarmEntry}
+     */
+    private void sendMail(final AlarmEntry alarmEntry)
+    {
+
     }
 
 }

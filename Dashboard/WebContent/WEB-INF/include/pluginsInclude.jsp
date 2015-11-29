@@ -13,7 +13,7 @@
 <%
 	// プラグイン単位のディレクトリ名を取得する
 	String pluginsDirectoryPath = config.getServletContext()
-			.getRealPath("resources/plugins");
+			.getRealPath("/resources/plugins");
 	File pluginsDirectory = new File(pluginsDirectoryPath);
 	String[] pluginNames = pluginsDirectory.list();
 

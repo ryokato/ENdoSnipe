@@ -103,6 +103,21 @@ public class DataCollectorConfig
     /** 待ち受けポート */
     private int acceptPort_ = DEF_ACCEOT_PORT;
 
+    /** SSL通信：SSLを行うかどうか（Javelin） */
+    private boolean sslEnable_ = false;
+
+    /** SSL通信：keyStoreのパス */
+    private String sslKeyStore_ = "";
+
+    /** SSL通信：keyStoreのパスワード */
+    private String sslKeyStorePass_ = "";
+
+    /** SSL通信：trustStoreのパス */
+    private String sslTrustStore_ = "";
+
+    /** SSL通信：trustStoreのパスワード */
+    private String sslTrustStorePass_ = "";
+
     /** Javelinログの最大蓄積期間 */
     private String jvnLogStoragePeriod_ = DEF_MEASUREMENT_LOG_STORAGE_PERIOD;
 
@@ -111,9 +126,6 @@ public class DataCollectorConfig
 
     /** 同一SQL判定フラグ */
     private boolean judgeSimilarSql_ = DEF_JUDGE_SIMILAR_SQL;
-
-    /** 同一SQL判定を行う類似度 */
-    private float judgeSqlSimilarity_ = DEF_JUDGE_SQL_SIMILARITY;
 
     /** Agent毎の設定を保持するリスト */
     private final List<AgentSetting> agentSttingList_ = new ArrayList<AgentSetting>();
@@ -181,9 +193,6 @@ public class DataCollectorConfig
     /** 同一SQL判定フラグの初期値 */
     private static final boolean DEF_JUDGE_SIMILAR_SQL = false;
 
-    /** 同一SQL判定フラグの初期値 */
-    private static final float DEF_JUDGE_SQL_SIMILARITY = 0.7f;
-
     //--------------------
     // SMTP settings(default)
     //--------------------
@@ -192,6 +201,9 @@ public class DataCollectorConfig
 
     /** メールサーバのデフォルト値。 */
     private static final String DEF_SMTP_SERVER = "mail.example.com";
+
+    /** メールポートのデフォルト値。 */
+    private static final int DEF_SMTP_PORT = 587;
 
     /** メールのエンコーディング設定デフォルト値。 */
     private static final String DEF_SMTP_ENCODING = "iso-2022-jp";
@@ -202,15 +214,6 @@ public class DataCollectorConfig
     /** 送信先メールアドレス設定デフォルト値。 */
     private static final String DEF_SMTP_TO = "endosnipe@example.com";
 
-    /** メールSubjectのデフォルト値。 */
-    private static final String DEF_SMTP_SUBJECT = "[javelin] ${eventName} is occurred.";
-
-    /** メールテンプレート(jvnアラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_JVN = "mai_template_jvn.txt";
-
-    /** メールテンプレート(計測値アラーム用)のデフォルト値。 */
-    private static final String DEF_SMTP_TEMPLATE_MEASUREMENT = "mai_template_measurement.txt";
-
     //--------------------
     // SMTP settings
     //--------------------
@@ -219,6 +222,15 @@ public class DataCollectorConfig
 
     /** メールサーバ */
     private String smtpServer_ = DEF_SMTP_SERVER;
+
+    /** メールサーバのポート番号 */
+    private int smtpPort_ = DEF_SMTP_PORT;
+
+    /** メールサーバのユーザ名 */
+    private String smtpUser_ = "";
+
+    /** メールサーバのパスワード */
+    private String smtpPassword_ = "";
 
     /** メールのエンコーディング */
     private String smtpEncoding_ = DEF_SMTP_ENCODING;
@@ -229,18 +241,18 @@ public class DataCollectorConfig
     /** 送信先メールアドレス */
     private String smtpTo_ = DEF_SMTP_TO;
 
-    /** メールSubject */
-    private String smtpSubject_ = DEF_SMTP_SUBJECT;
-
-    /** メールテンプレート(jvnアラーム用) */
-    private String smtpTemplateJvn_ = DEF_SMTP_TEMPLATE_JVN;
-
-    /** メールテンプレート(計測値アラーム用) */
-    private String smtpTemplateMeasurement_ = DEF_SMTP_TEMPLATE_MEASUREMENT;
-
     /** メールテンプレート（キー：設定項目名、値：テンプレートファイル名） */
-    private final Map<String, MailTemplateEntity> smtpTemplateMap_ =
-        new HashMap<String, MailTemplateEntity>();
+    private final Map<String, Map<String, MailTemplateEntity>> smtpTemplateMap_ =
+        new HashMap<String, Map<String, MailTemplateEntity>>();
+
+    /** 閾値超過を表す定数 */
+    public static final String SMTP_FAILURE = "failure";
+
+    /** 閾値回復を表す定数 */
+    public static final String SMTP_RECOVER = "recover";
+
+    /** テンプレートのデフォルト名 */
+    private static final String SMTP_TEMPLATE_DEFAULT = "default";
 
     //--------------------
     // SNMP settings(default)
@@ -666,6 +678,60 @@ public class DataCollectorConfig
     }
 
     /**
+     * メールサーバのポート番号を取得する。
+     * @return ポート番号
+     */
+    public int getSmtpPort()
+    {
+        return smtpPort_;
+    }
+
+    /**
+     * メールサーバのポート番号を設定する。
+     * @param smtpPort ポート番号
+     */
+    public void setSmtpPort(final int smtpPort)
+    {
+        smtpPort_ = smtpPort;
+    }
+
+    /**
+     * メールサーバのユーザ名を取得する。
+     * @return ユーザ名
+     */
+    public String getSmtpUser()
+    {
+        return smtpUser_;
+    }
+
+    /**
+     * メールサーバのユーザ名を設定する。
+     * @param smtpUser ユーザ名
+     */
+    public void setSmtpUser(final String smtpUser)
+    {
+        smtpUser_ = smtpUser;
+    }
+
+    /**
+     * メールサーバのパスワードを取得する。
+     * @return パスワード
+     */
+    public String getSmtpPassword()
+    {
+        return smtpPassword_;
+    }
+
+    /**
+     * メールサーバのパスワードを設定する。
+     * @param smtpPassword パスワード
+     */
+    public void setSmtpPassword(final String smtpPassword)
+    {
+        smtpPassword_ = smtpPassword;
+    }
+
+    /**
      * 送信元メールアドレスを取得する。
      * 
      * @return 送信元メールアドレスの設定
@@ -706,89 +772,49 @@ public class DataCollectorConfig
     }
 
     /**
-     * メールテンプレート(jvnアラーム用)を取得する。
-     * 
-     * @return メールテンプレート(jvnアラーム用)の設定
-     */
-    public String getSmtpTemplateJvn()
-    {
-        return smtpTemplateJvn_;
-    }
-
-    /**
-     *　メールテンプレート(jvnアラーム用)を設定する。
-     * 
-     * @param smtpTemplateJvn メールテンプレート(jvnアラーム用)の設定
-     */
-    public void setSmtpTemplateJvn(final String smtpTemplateJvn)
-    {
-        smtpTemplateJvn_ = smtpTemplateJvn;
-    }
-
-    /**
-     * メールテンプレート(計測値アラーム用)を取得する。
-     * 
-     * @return メールテンプレート(計測値アラーム用)の設定
-     */
-    public String getSmtpTemplateMeasurement()
-    {
-        return smtpTemplateMeasurement_;
-    }
-
-    /**
-     *　メールテンプレート(計測値アラーム用)を設定する。
-     * 
-     * @param smtpTemplateMeasurement メールテンプレート(計測値アラーム用)の設定
-     */
-    public void setSmtpTemplateMeasurement(final String smtpTemplateMeasurement)
-    {
-        smtpTemplateMeasurement_ = smtpTemplateMeasurement;
-    }
-
-    /**
      * メールテンプレートファイル名を取得する。
      *
      * @param name テンプレート名
+     * @param type 閾値超過、回復を表す文字列
+     * @param useDefault デフォルトの値を使うかどうか
      * @return テンプレートファイル名
      */
-    public MailTemplateEntity getSmtpTemplate(final String name)
+    public MailTemplateEntity getSmtpTemplate(final String name, final String type,
+        final boolean useDefault)
     {
         if (name == null)
         {
             return null;
         }
-        return this.smtpTemplateMap_.get(name);
+        Map<String, MailTemplateEntity> templateMap = this.smtpTemplateMap_.get(name);
+        if (useDefault)
+        {
+            templateMap = this.smtpTemplateMap_.get(SMTP_TEMPLATE_DEFAULT);
+        }
+        if (templateMap == null)
+        {
+            return null;
+        }
+        return templateMap.get(type);
     }
 
     /**
      * メールテンプレートファイル名を設定する。
      *
      * @param name テンプレート名
+     * @param type 閾値超過、回復を表す文字列
      * @param template テンプレートファイル名
      */
-    public void setSmtpTemplate(final String name, final MailTemplateEntity template)
+    public void addSmtpTemplate(final String name, final String type,
+        final MailTemplateEntity template)
     {
-        this.smtpTemplateMap_.put(name, template);
-    }
-
-    /**
-     * メールSubjectを取得する。
-     * 
-     * @return メールSubjectの設定
-     */
-    public String getSmtpSubject()
-    {
-        return smtpSubject_;
-    }
-
-    /**
-     *　メールSubjectを設定する。
-     * 
-     * @param smtpSubject メールSubjectの設定
-     */
-    public void setSmtpSubject(final String smtpSubject)
-    {
-        smtpSubject_ = smtpSubject;
+        Map<String, MailTemplateEntity> mailTemplateMap = this.smtpTemplateMap_.get(name);
+        if (mailTemplateMap == null)
+        {
+            mailTemplateMap = new HashMap<String, MailTemplateEntity>();
+            this.smtpTemplateMap_.put(name, mailTemplateMap);
+        }
+        mailTemplateMap.put(type, template);
     }
 
     /**
@@ -946,6 +972,96 @@ public class DataCollectorConfig
     }
 
     /**
+     * SSL通信：SSLを行うかどうかを取得する。
+     * @return SSL通信：SSLを行うかどうか
+     */
+    public boolean isSslEnable()
+    {
+        return sslEnable_;
+    }
+
+    /**
+     * SSL通信：SSLを行うかどうかを設定する。
+     * @param sslEnable SSL通信：SSLを行うかどうか
+     */
+    public void setSslEnable(final boolean sslEnable)
+    {
+        sslEnable_ = sslEnable;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを取得する。
+     * @return SSL通信：keyStoreのパス
+     */
+    public String getSslKeyStore()
+    {
+        return sslKeyStore_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスを設定する。
+     * @param sslKeyStore SSL通信：keyStoreのパス
+     */
+    public void setSslKeyStore(final String sslKeyStore)
+    {
+        sslKeyStore_ = sslKeyStore;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @return sslKeyStore SSL通信：keyStoreのパスワード
+     */
+    public String getSslKeyStorePass()
+    {
+        return sslKeyStorePass_;
+    }
+
+    /**
+     * SSL通信：keyStoreのパスワードを設定する。
+     * @param sslKeyStorePass SSL通信：keyStoreのパスワード
+     */
+    public void setSslKeyStorePass(final String sslKeyStorePass)
+    {
+        sslKeyStorePass_ = sslKeyStorePass;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを取得する。
+     * @return SSL通信：trustStoreのパス
+     */
+    public String getSslTrustStore()
+    {
+        return sslTrustStore_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスを設定する。
+     * @param sslTrustStore SSL通信：trustStoreのパス
+     */
+    public void setSslTrustStore(final String sslTrustStore)
+    {
+        sslTrustStore_ = sslTrustStore;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを取得する。
+     * @return SSL通信：trustStoreのパスワード
+     */
+    public String getSslTrustStorePass()
+    {
+        return sslTrustStorePass_;
+    }
+
+    /**
+     * SSL通信：trustStoreのパスワードを設定する。
+     * @param sslTrustStorePass SSL通信：trustStoreのパスワード
+     */
+    public void setSslTrustStorePass(final String sslTrustStorePass)
+    {
+        sslTrustStorePass_ = sslTrustStorePass;
+    }
+
+    /**
      * Javelinログの最大蓄積期間を取得する。
      * @return Javelinログの最大蓄積期間
      */
@@ -997,24 +1113,6 @@ public class DataCollectorConfig
     public void setJudgeSimilarSql(final boolean judgeSimilarSql)
     {
         this.judgeSimilarSql_ = judgeSimilarSql;
-    }
-
-    /**
-     * 同一SQL判定を行う類似度を取得する。
-     * @return 同一SQL判定を行う類似度
-     */
-    public float getJudgeSqlSimilarity()
-    {
-        return judgeSqlSimilarity_;
-    }
-
-    /**
-     * 同一SQL判定を行う類似度を設定する。
-     * @param judgeSqlSimilarity 同一SQL判定を行う類似度
-     */
-    public void setJudgeSqlSimilarity(final float judgeSqlSimilarity)
-    {
-        this.judgeSqlSimilarity_ = judgeSqlSimilarity;
     }
 
     /**

@@ -18,20 +18,19 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jp.co.acroquest.endosnipe.web.explorer.dao.SqlPlanDao;
-import jp.co.acroquest.endosnipe.web.explorer.dto.SqlPlanDto;
-import jp.co.acroquest.endosnipe.web.explorer.entity.SqlPlan;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import blanco.commons.sql.format.BlancoSqlFormatter;
 import blanco.commons.sql.format.BlancoSqlFormatterException;
 import blanco.commons.sql.format.BlancoSqlRule;
+import jp.co.acroquest.endosnipe.web.explorer.dao.SqlPlanDao;
+import jp.co.acroquest.endosnipe.web.explorer.dto.SqlPlanDto;
+import jp.co.acroquest.endosnipe.web.explorer.entity.SqlPlan;
 
 /**
  * SQL実行計画機能のサービスクラス。
- * 
+ *
  * @author miyasaka
  *
  */
@@ -52,7 +51,7 @@ public class SqlPlanService
 
     /**
      * SQL実行計画のリストを取得する。
-     * 
+     *
      * @param itemName 項目名
      * @return SQL実行計画のリスト
      */
@@ -67,7 +66,7 @@ public class SqlPlanService
 
     /**
      * SqlPlanオブジェクトのリストを一つのSqlPlanDtoオブジェクトに変換する。
-     * 
+     *
      * @param sqlPlanList SqlPlanオブジェクトのリスト
      * @return SqlPlanDtoオブジェクト
      */
@@ -107,8 +106,14 @@ public class SqlPlanService
             String timeStr =
                     new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(sqlPlan.gettingPlanTime);
 
-            executionPlanList.add(sqlPlan.executionPlan);
-            gettingPlanTimeList.add(timeStr);
+            // 実行計画と実行計画の取得時間は、取得時間が最新のレコードのみ返却する
+            // なお、SQLの取得条件で取得時間が新しいものから順番に値がsqlPlanListには格納されていることが保証されている為、
+            // sqlPlanListのindex=0の値が最新取得時間のレコードになる
+            if (executionPlanList.size() == 0 && gettingPlanTimeList.size() == 0)
+            {
+                executionPlanList.add(sqlPlan.executionPlan);
+                gettingPlanTimeList.add(timeStr);
+            }
 
             String stackTrace = this.formatStackTrace(sqlPlan.stackTrace);
             stackTraceList.add(stackTrace);
@@ -123,7 +128,7 @@ public class SqlPlanService
 
     /**
      * SQL文をHTML表示用に整形する。
-     * 
+     *
      * @param text SQL文
      * @param sqlName SQL名
      * @return 整形されたSQL文
@@ -153,7 +158,7 @@ public class SqlPlanService
 
     /**
      * スタックトレースをHTML表示用に整形する。
-     * 
+     *
      * @param stackTrace スタックトレース
      * @return 整形後のスタックトレース
      */

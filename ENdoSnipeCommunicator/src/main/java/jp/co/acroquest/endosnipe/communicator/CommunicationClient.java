@@ -25,6 +25,7 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.communicator;
 
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 
 /**
@@ -38,14 +39,14 @@ public interface CommunicationClient extends AbstractCommunicator
      * コミュニケーションクライアントを初期化します。<br />
      * 
      * @param hostName 接続先ホスト名またはIPアドレス
-     * @param port 接続先ポート番号
+     * @param setting {@link CommunicatorSetting}
      */
-    void init(String hostName, int port);
+    void init(String hostName, CommunicatorSetting setting);
 
     /**
      * サーバへ接続します。<br />
      * 
-     * 本メソッドを呼び出す前に、{@link #init(String, int)} メソッドを呼び出してください。<br />
+     * 本メソッドを呼び出す前に、{@link #init(String, CommunicatorSetting)} メソッドを呼び出してください。<br />
      * 
      * @param connectNotify 接続完了後に送信する接続通知
      */

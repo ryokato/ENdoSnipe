@@ -602,6 +602,9 @@ public class JavelinConfigBase
     /** BLOCKED状態のスレッド数を取得するかどうか　 */
     public static final String RESOURCE_THREAD_BLOCKED = JAVELIN_PREFIX + "resource.thread.blocked";
 
+    /** JDBCのリソース情報を登録するかどうか　 */
+    public static final String RESOURCE_JDBC_RECORD = JAVELIN_PREFIX + "resource.jdbc.record";
+
     /** フルスレッドダンプ出力に利用するCPU使用率の閾値　 */
     public static final String THREAD_DUMP_CPU = JAVELIN_PREFIX + "thread.dump.cpu";
 
@@ -681,6 +684,9 @@ public class JavelinConfigBase
     /** HTTPセッションの詳細情報の深さを表すプロパティ */
     public static final String HTTP_SESSION_DETAIL_DEPTH_KEY = JAVELIN_PREFIX
         + "log.http.session.detail.depth";
+
+    /** HTTPのCookieから取得するキーのプロパティ */
+    public static final String HTTP_COOKIE_KEY = JAVELIN_PREFIX + "log.http.cookie.key";
 
     /** 計測対象から自動除外する呼び出し回数の閾値 */
     private static final String AUTO_EXCLUDE_THRESHOLD_COUNT = JAVELIN_PREFIX
@@ -927,6 +933,21 @@ public class JavelinConfigBase
 
     /** 複数ポート接続時にシステムログファイル保存先を初期化しているかどうか */
     private static boolean isSysLogDirInit__ = false;
+
+    /** SSL:SSL認証を利用するかどうか */
+    public static final String SSL_ENABLE_KEY = JAVELIN_PREFIX + "ssl.enable";
+
+    /** SSL:キーストア */
+    public static final String SSL_KEYSTORE_KEY = JAVELIN_PREFIX + "ssl.keystore";
+
+    /** SSL:キーストアのパスワード */
+    public static final String SSL_KEYSTORE_PASS_KEY = JAVELIN_PREFIX + "ssl.keystore.pass";
+
+    /** SSL:トラストストア */
+    public static final String SSL_TRUSTSTORE_KEY = JAVELIN_PREFIX + "ssl.truststore";
+
+    /** SSL:トラストストアのパスワード */
+    public static final String SSL_TRUSTSTORE_PASS_KEY = JAVELIN_PREFIX + "ssl.truststore.pass";
 
     static
     {
@@ -1568,6 +1589,15 @@ public class JavelinConfigBase
     {
         return CONFIGUTIL.getInteger(HTTP_SESSION_DETAIL_DEPTH_KEY,
                                      DEFAULT_HTTP_SESSION_DETAIL_DEPTH);
+    }
+
+    /**
+     * HTTPのCookieから取得するための取得キー
+     * @return Cookieから取得するための取得キー
+     */
+    public String getHttpCookieKey()
+    {
+        return CONFIGUTIL.getString(HTTP_COOKIE_KEY, "");
     }
 
     /**
@@ -2717,6 +2747,26 @@ public class JavelinConfigBase
     }
 
     /**
+     * JDBCのリソース情報を取得するフラグを返します。<br />
+     *
+     * @return JDBCのリソース情報を取得するフラグ  
+     */
+    public boolean isResourceJdbcRecord()
+    {
+        return CONFIGUTIL.getBoolean(RESOURCE_JDBC_RECORD, true);
+    }
+
+    /**
+     * JDBCのリソース情報を取得するフラグを設定します。<br />
+     *
+     * @param resourceJdbcRecord JDBCのリソース情報を取得するフラグ  
+     */
+    public void setResourceJdbcRecord(final boolean resourceJdbcRecord)
+    {
+        CONFIGUTIL.setBoolean(RESOURCE_JDBC_RECORD, resourceJdbcRecord);
+    }
+
+    /**
      * フルスレッドダンプ出力のCPU使用率の閾値を返します。<br />
      *
      * @return フルスレッドダンプ出力のCPU使用率の閾値
@@ -3591,4 +3641,50 @@ public class JavelinConfigBase
     {
         CONFIGUTIL.setInteger(SERVLET_EXCLUDE_PATTERN_CACH_SIZE, servletExcludePatternCacheSize);
     }
+
+    /**
+     * SSL:SSL認証を行うかどうか
+     * @return SSL認証を行うかどうか
+     */
+    public boolean isSslEnable()
+    {
+        return CONFIGUTIL.getBoolean(SSL_ENABLE_KEY, false);
+    }
+
+    /**
+     * SSL:キーストアを取得する。
+     * @return キーストア
+     */
+    public String getSslKeystore()
+    {
+        return CONFIGUTIL.getString(SSL_KEYSTORE_KEY, "");
+    }
+
+    /**
+     * SSL:キーストアのパスワードを取得する。
+     * @return キーストアのパスワード
+     */
+    public String getSslKeystorePass()
+    {
+        return CONFIGUTIL.getString(SSL_KEYSTORE_PASS_KEY, "");
+    }
+
+    /**
+     * SSL:トラストストアを取得する。
+     * @return トラストストア
+     */
+    public String getSslTruststore()
+    {
+        return CONFIGUTIL.getString(SSL_TRUSTSTORE_KEY, "");
+    }
+
+    /**
+     * SSL:トラストストアのパスワードを取得する。
+     * @return トラストストアのパスワード
+     */
+    public String getSslTruststorePass()
+    {
+        return CONFIGUTIL.getString(SSL_TRUSTSTORE_PASS_KEY, "");
+    }
+
 }

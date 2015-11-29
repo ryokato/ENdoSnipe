@@ -119,16 +119,24 @@ public final class TelegramCreator implements TelegramConstants
         objHeader.setByteRequestKind(BYTE_REQUEST_KIND_NOTIFY);
         objHeader.setByteTelegramKind(BYTE_TELEGRAM_KIND_SQL_PLAN);
 
+        String itemNameId = "0";
+        
+        // 項目名とIDのマップをBodyの先頭に登録する(0:ID, 1:項目名)
+        String[] itemNameIdMapList = {itemNameId, measurementItemName};
+        ResponseBody itemNameIdMapBody =
+            TelegramUtil.createResponseBody(OBJECTNAME_ITEMNAME_ID_MAP, "",
+                                            ItemType.ITEMTYPE_STRING, itemNameIdMapList);
+
         // SQL文のBodyを作る
         String[] sqlStatementArr = {sqlStatement};
         ResponseBody sqlStatementBody =
-            TelegramUtil.createResponseBody(OBJECTNAME_SQL_STATEMENT, measurementItemName,
+            TelegramUtil.createResponseBody(OBJECTNAME_SQL_STATEMENT, itemNameId,
                                             ItemType.ITEMTYPE_STRING, sqlStatementArr);
 
         // SQL実行計画のBodyを作る
         String[] executionPlanArr = {executionPlan};
         ResponseBody executionPlanBody =
-            TelegramUtil.createResponseBody(OBJECTNAME_SQL_EXECUTION_PLAN, measurementItemName,
+            TelegramUtil.createResponseBody(OBJECTNAME_SQL_EXECUTION_PLAN, itemNameId,
                                             ItemType.ITEMTYPE_STRING, executionPlanArr);
 
         // SQL実行計画取得時間のBodyを作成する
@@ -136,20 +144,20 @@ public final class TelegramCreator implements TelegramConstants
             new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(gettingPlanTime);
         String[] gettingPlanTimeArr = {gettingPlanTimeStr};
         ResponseBody gettingPlanTimeBody =
-            TelegramUtil.createResponseBody(OBJECTNAME_GETTING_PLAN_TIME, measurementItemName,
+            TelegramUtil.createResponseBody(OBJECTNAME_GETTING_PLAN_TIME, itemNameId,
                                             ItemType.ITEMTYPE_STRING, gettingPlanTimeArr);
 
         // スタックトレースのBodyを作成する
         String[] stackTraceArr = {stackTrace};
         ResponseBody stackTraceBody =
-            TelegramUtil.createResponseBody(OBJECTNAME_STACK_TRACE, measurementItemName,
+            TelegramUtil.createResponseBody(OBJECTNAME_STACK_TRACE, itemNameId,
                                             ItemType.ITEMTYPE_STRING, stackTraceArr);
 
         // 電文オブジェクトを設定する
         Telegram objTelegram = new Telegram();
         objTelegram.setObjHeader(objHeader);
-        objTelegram.setObjBody(new ResponseBody[]{sqlStatementBody, executionPlanBody,
-            gettingPlanTimeBody, stackTraceBody});
+        objTelegram.setObjBody(new ResponseBody[]{itemNameIdMapBody, sqlStatementBody,
+            executionPlanBody, gettingPlanTimeBody, stackTraceBody});
 
         return objTelegram;
 
@@ -337,8 +345,8 @@ public final class TelegramCreator implements TelegramConstants
      *          Invocation を更新する内容
      * @return 電文オブジェクト
      */
-    public static Telegram createUpdateInvocationTelegram(
-        final UpdateInvocationParam[] invocationParamArray)
+    public static Telegram
+        createUpdateInvocationTelegram(final UpdateInvocationParam[] invocationParamArray)
     {
         return createUpdateInvocationTelegram(invocationParamArray, null);
     }
@@ -696,8 +704,8 @@ public final class TelegramCreator implements TelegramConstants
         {
             // bodyに入れる
             bodies =
-                TelegramUtil
-                    .createEmptyRequestBody(OBJECTNAME_DUMP, ITEMNAME_THREADDUMP, agentName);
+                TelegramUtil.createEmptyRequestBody(OBJECTNAME_DUMP, ITEMNAME_THREADDUMP,
+                                                    agentName);
         }
         else
         {

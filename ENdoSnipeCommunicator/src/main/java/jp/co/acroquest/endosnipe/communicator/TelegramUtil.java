@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jp.co.acroquest.endosnipe.common.entity.ItemType;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
@@ -43,6 +45,7 @@ import jp.co.acroquest.endosnipe.communicator.entity.RequestBody;
 import jp.co.acroquest.endosnipe.communicator.entity.ResponseBody;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
+import jp.co.acroquest.endosnipe.communicator.entity.TelegramItemNameIdMap;
 
 /**
  * 電文に関する基本機能を提供するためのユーティリティクラスです。<br />
@@ -57,7 +60,7 @@ public final class TelegramUtil implements TelegramConstants
     public static final int TELEGRAM_LENGTH_MAX = 10 * 1024 * 1024;
 
     /** 受信電文の最大長 */
-    public static final int TELEGRAM_READ_LENGTH_MAX = 1 * 1024 * 1024;
+    public static final int TELEGRAM_READ_LENGTH_MAX = 2 * 1024 * 1024;
 
     /** shortからbyte配列への変換時に必要なバイト数 */
     private static final int SHORT_BYTE_SWITCH_LENGTH = 2;
@@ -145,8 +148,7 @@ public final class TelegramUtil implements TelegramConstants
 
         if (intbyteArrLength > TELEGRAM_READ_LENGTH_MAX)
         {
-            intbyteArrLength = TELEGRAM_READ_LENGTH_MAX;
-            LOGGER.log("WECC0101", intbyteArrLength);
+            throw new IllegalStateException("Illegal Telegram length.");
         }
 
         try
@@ -506,10 +508,8 @@ public final class TelegramUtil implements TelegramConstants
      *            値
      * @return 電文
      */
-    public static Telegram
-        createSingleTelegram(final byte telegramKind, final byte requestKind,
-            final String objectName, final String itemName, final ItemType itemType,
-            final Object value)
+    public static Telegram createSingleTelegram(final byte telegramKind, final byte requestKind,
+        final String objectName, final String itemName, final ItemType itemType, final Object value)
     {
         Header header = new Header();
         header.setByteTelegramKind(telegramKind);
@@ -759,4 +759,116 @@ public final class TelegramUtil implements TelegramConstants
         return bodies;
     }
 
+    /**
+     * 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する。
+     * @param itemNameIdMapList 電文サイズを圧縮/解凍に使う、項目名とIDのセットの配列
+     * @param body 電文本体
+     * @return 計測項目名
+     */
+    public static String getMeasurementItemName(List<TelegramItemNameIdMap> itemNameIdMapList,
+        Body body)
+    {
+        String itemName = body.getStrItemName();
+
+        if (itemName == null)
+        {
+            return "";
+        }
+
+        // 圧縮文字
+        String compressedStr = "";
+        // 圧縮されていない部分の文字列
+        String unCompressedStr = "";
+
+        /*
+         * スラッシュ区切りの最初の文字列（スラッシュが存在しない場合はそのままの文字列）が数字の場合に、解凍対象になる。
+         * 以下、解凍対象になる項目名の例。
+         * 例1） 3/average
+         * 例2） 0
+         */
+        int firstIndex = itemName.indexOf("/");
+        String firstIndexStr = "";
+
+        if (firstIndex > 0)
+        {
+            firstIndexStr = itemName.substring(0, firstIndex);
+        }
+        else
+        {
+            firstIndexStr = itemName;
+        }
+
+        if (isNumber(firstIndexStr))
+        {
+            compressedStr = firstIndexStr;
+
+            if (firstIndex != -1)
+            {
+                int lastIndex = itemName.lastIndexOf("/");
+                unCompressedStr = itemName.substring(lastIndex);
+            }
+        }
+        else
+        {
+            // 解凍対象でないと判断し、解凍処理を行わずに項目名を返却する
+            return itemName;
+        }
+
+        // 項目名とIDのマップから、項目名がIDで短縮されて送られてきた場合に復元する。
+        for (TelegramItemNameIdMap itemNameIdMap : itemNameIdMapList)
+        {
+            if (compressedStr.equals(itemNameIdMap.getId()))
+            {
+                itemName = itemNameIdMap.getItemName();
+                if ("".equals(unCompressedStr) == false)
+                {
+                    itemName = itemName + unCompressedStr;
+                }
+                break;
+            }
+        }
+
+        return itemName;
+    }
+
+    /**
+     * 電文サイズを解凍する際に使う、項目名とIDのセットの配列を取得する。
+     * @param bodies 電文本体
+     * @return 電文サイズを解凍する際に使う、項目名とIDのセットの配列
+     */
+    public static List<TelegramItemNameIdMap> getTelegramItemNameIdMapList(Body[] bodies)
+    {
+        List<TelegramItemNameIdMap> itemNameIdMapList = new ArrayList<TelegramItemNameIdMap>();
+
+        for (Body itemnameIdMapBody : bodies)
+        {
+            if (OBJECTNAME_ITEMNAME_ID_MAP.equals(itemnameIdMapBody.getStrObjName()))
+            {
+                ResponseBody responseBody = (ResponseBody)itemnameIdMapBody;
+                Object[] itemNameIdList = responseBody.getObjItemValueArr();
+                if (itemNameIdList.length > 1)
+                {
+                    TelegramItemNameIdMap itemNameIdMap = new TelegramItemNameIdMap();
+                    itemNameIdMap.setId((String)itemNameIdList[0]);
+                    itemNameIdMap.setItemName((String)itemNameIdList[1]);
+                    itemNameIdMapList.add(itemNameIdMap);
+                }
+            }
+        }
+
+        return itemNameIdMapList;
+    }
+
+    /**
+     * 文字列が数字かどうかを確認する。
+     * @param str チェック対象の文字列
+     * @return 数字である場合はtrue、数字でない場合はfalse
+     */
+    private static boolean isNumber(String str)
+    {
+        String regex = "\\A[-]?[0-9]+\\z";
+        Pattern p = Pattern.compile(regex);
+        Matcher m1 = p.matcher(str);
+        return m1.find();
+    }
 }

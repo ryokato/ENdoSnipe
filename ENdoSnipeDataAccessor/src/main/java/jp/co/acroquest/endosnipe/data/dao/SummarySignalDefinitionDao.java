@@ -168,7 +168,7 @@ public class SummarySignalDefinitionDao extends AbstractDao implements TableName
             String sql =
                 "insert into " + SUMMARY_SIGNAL_DEFINITION
                     + "(SUMMARY_SIGNAL_NAME, TARGET_SIGNAL_ID,SIGNAL_TYPE, PRIORITY_NO)"
-                    + " values (?, ?, ?, ?)";
+                    + " values (?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, summarySignalDefinition.getSummarySignalName());
 

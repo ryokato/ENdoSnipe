@@ -1067,26 +1067,21 @@ public class JdbcJavelinRecorder
                             {
                                 synchronized (processor)
                                 {
-                                    recordIntervalExpired =
-                                        isRecordIntervalExpired(node, jdbcJvnStatus);
-                                    prevExecPlans = getPrevExecPlan(callTree, node);
-                                    if (recordIntervalExpired || prevExecPlans == null)
-                                    {
-                                        execPlanResult =
-                                            doExecPlan(processor, stmt, bindList, planStmt,
-                                                       originalSqlElement);
-                                    }
-                                    else
-                                    {
-                                        execPlanResult = prevExecPlans[count];
-                                    }
+                                    // 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する
+                                    execPlanResult =
+                                        sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
+                                                                    processor, stmt, bindList,
+                                                                    planStmt, originalSqlElement,
+                                                                    count);
                                 }
                             }
                             else
                             {
+                                // 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する
                                 execPlanResult =
-                                    doExecPlan(processor, stmt, bindList, planStmt,
-                                               originalSqlElement);
+                                    sendIntervalExpiredExecPlan(node, callTree, jdbcJvnStatus,
+                                                                processor, stmt, bindList,
+                                                                planStmt, originalSqlElement, count);
                             }
 
                             execPlans.add(execPlanResult);
@@ -1096,25 +1091,6 @@ public class JdbcJavelinRecorder
                             execPlanResult = prevExecPlans[count];
                         }
                         execPlanText.append(execPlanResult);
-
-                        StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
-                        String stacktraceStr =
-                            ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
-
-                        String invocationKey = "";
-                        if (node != null)
-                        {
-                            invocationKey = node.getInvocation().getRootInvocationManagerKey();
-                        }
-
-                        String itemName = StatsUtil.addPrefix(invocationKey);
-
-                        // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
-                        SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
-                        sqlPlanTelegramSender.execute(itemName, originalSqlElement,
-                                                      execPlanText.toString(),
-                                                      new Timestamp(System.currentTimeMillis()),
-                                                      stacktraceStr);
                     }
                 }
                 catch (Exception ex)
@@ -1182,6 +1158,68 @@ public class JdbcJavelinRecorder
         }
 
         return resultText;
+    }
+
+    /**
+     * 前回の実行計画取得時間からのインターバル期間を過ぎている場合に実行計画を電文で送信する。
+     * @param node メソッド呼び出し情報
+     * @param callTree Javelinログ出力用にコールスタックを記録するためのツリー
+     * @param jdbcJvnStatus JDBCJavelinがスレッド毎に持つ状態値
+     * @param processor JDBCJavelinがスレッド毎に持つ状態値プロセッサ
+     * @param stmt ステートメント
+     * @param bindList bindList
+     * @param planStmt 実行計画取得用ステートメント
+     * @param originalSqlElement 発行したSQL
+     * @param count 実行計画の配列に対するインデックスになるカウント
+     * @return 実行計画
+     * @throws Exception Exception
+     */
+    private static String sendIntervalExpiredExecPlan(CallTreeNode node, CallTree callTree,
+        JdbcJvnStatus jdbcJvnStatus, DBProcessor processor, Statement stmt, List<?> bindList,
+        Statement planStmt, String originalSqlElement, int count)
+        throws Exception
+    {
+        String execPlanResult = "";
+
+        boolean recordIntervalExpired = isRecordIntervalExpired(node, jdbcJvnStatus);
+        String[] prevExecPlans = getPrevExecPlan(callTree, node);
+        if (recordIntervalExpired || prevExecPlans == null)
+        {
+            execPlanResult = doExecPlan(processor, stmt, bindList, planStmt, originalSqlElement);
+            sendExecPlan(node, execPlanResult, originalSqlElement);
+        }
+        else
+        {
+            execPlanResult = prevExecPlans[count];
+        }
+
+        return execPlanResult;
+    }
+
+    /**
+     * 実行計画を送信する。
+     * @param node ノード
+     * @param execPlanText 実行計画
+     * @param originalSqlElement 発行したSQL
+     */
+    private static void sendExecPlan(CallTreeNode node, String execPlanText,
+        String originalSqlElement)
+    {
+        StackTraceElement[] stacktrace = ThreadUtil.getCurrentStackTrace();
+        String stacktraceStr = ThreadUtil.getStackTrace(stacktrace, MAX_STACKTRACE_LINE_NUM);
+
+        String invocationKey = "";
+        if (node != null)
+        {
+            invocationKey = node.getInvocation().getRootInvocationManagerKey();
+        }
+
+        String itemName = StatsUtil.addPrefix(invocationKey);
+
+        // DataCollector側でDB登録するために、実行計画に関するデータを電文で送信する
+        SqlPlanTelegramSender sqlPlanTelegramSender = new SqlPlanTelegramSender();
+        sqlPlanTelegramSender.execute(itemName, originalSqlElement, execPlanText,
+                                      new Timestamp(System.currentTimeMillis()), stacktraceStr);
     }
 
     private static String appendLineBreak(String str)

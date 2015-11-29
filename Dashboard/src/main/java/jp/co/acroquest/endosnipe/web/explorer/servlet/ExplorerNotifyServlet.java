@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.communicator.CommunicationClient;
 import jp.co.acroquest.endosnipe.communicator.CommunicationFactory;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.data.dao.MeasurementInfoDao;
 import jp.co.acroquest.endosnipe.data.db.DBManager;
@@ -107,7 +108,7 @@ public class ExplorerNotifyServlet extends HttpServlet
             ENdoSnipeLogger.getLogger(ExplorerNotifyServlet.class);
 
     /** テンプレートディレクトリのパス */
-    private static final String TEMPLATE_DIR = "WEB-INF" + File.separator + "classes"
+    private static final String TEMPLATE_DIR = "/WEB-INF" + File.separator + "classes"
             + File.separator + "dashboard" + File.separator + "template";
 
     /** テンプレートファイルの拡張子 */
@@ -373,10 +374,12 @@ public class ExplorerNotifyServlet extends HttpServlet
                 String clientId = createClientId(javelinHost, javelinPort);
 
                 CommunicationClient client =
-                        CommunicationFactory.getCommunicationClient("DataCollector-ClientThread-"
+                        CommunicationFactory.getCommunicationClient("Dashboard-ClientThread-"
                                 + clientId);
-
-                client.init(javelinHost, javelinPort);
+                CommunicatorSetting communicateSetting = new CommunicatorSetting();
+                communicateSetting.port = javelinPort;
+                communicateSetting.sslEnable = false;
+                client.init(javelinHost, communicateSetting);
                 client.addTelegramListener(new CollectorListener(agentId, setting.databaseName_));
                 client.addTelegramListener(new AlarmNotifyListener(agentId));
                 client.addTelegramListener(new SignalStateChangeListener());
@@ -403,9 +406,15 @@ public class ExplorerNotifyServlet extends HttpServlet
             List<CommunicationClient> clientList = connectionClient.getClientList();
 
             CommunicationClient client =
-                    CommunicationFactory.getCommunicationClient("DataCollector-JavelinNotify-Thread");
-            client.init(dbConfig.getServerModeAgentSetting().acceptHost_,
-                        dbConfig.getServerModeAgentSetting().acceptPort_);
+                    CommunicationFactory.getCommunicationClient("Dashboard-Client-Thread");
+            CommunicatorSetting communicateSetting = new CommunicatorSetting();
+            communicateSetting.port = dbConfig.getServerModeAgentSetting().acceptPort_;
+            communicateSetting.sslEnable = dbConfig.isSslEnable();
+            communicateSetting.keyStore = dbConfig.getSslKeyStore();
+            communicateSetting.keyStorePass = dbConfig.getSslKeyStorePass();
+            communicateSetting.trustStore = dbConfig.getSslTrustStore();
+            communicateSetting.trustStorePass = dbConfig.getSslTrustStorePass();
+            client.init(dbConfig.getServerModeAgentSetting().acceptHost_, communicateSetting);
             ConnectNotifyData connectNotify = new ConnectNotifyData();
             connectNotify.setKind(ConnectNotifyData.KIND_CONTROLLER);
             connectNotify.setPurpose(ConnectNotifyData.PURPOSE_GET_DATABASE);

@@ -63,6 +63,7 @@ public class SignalDefinitionDao extends AbstractDao implements TableNames
                 signalInfo.level = rs.getInt(4);
                 signalInfo.patternValue = rs.getString(5);
                 signalInfo.escalationPeriod = rs.getDouble(6);
+                signalInfo.sendMail = rs.getBoolean(7);
                 // CHECKSTYLE:ON
                 result.add(signalInfo);
             }

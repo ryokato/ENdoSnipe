@@ -52,6 +52,7 @@ public class SummarySignalDefinitionDto
     {
         //nothing
     }
+
     /**
      * Argument コンストラクタ。
      * @param summarySignalDefinition summarysignal
@@ -65,8 +66,8 @@ public class SummarySignalDefinitionDto
         this.signalList_ = summarySignalDefinition.signalList;
         this.errorMessage_ = summarySignalDefinition.errorMessage;
         this.priority_ = summarySignalDefinition.priority;
-
     }
+
     /**
      * SummarySignalのpriorityを取得する。
      * 
@@ -76,6 +77,7 @@ public class SummarySignalDefinitionDto
     {
         return priority_;
     }
+
     /**
      * SummarySignalのpriorityを設定する。
      * 
@@ -86,6 +88,7 @@ public class SummarySignalDefinitionDto
     {
         this.priority_ = priority;
     }
+
     /**
      * SummarySignalのIdを取得する。
      * 
@@ -95,6 +98,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalId_;
     }
+
     /**
      * SummarySignalのIdを設定する。
      * 
@@ -105,6 +109,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalId_ = summarySignalId;
     }
+
     /**
      * SummarySignalのNameを取得する。
      * 
@@ -114,6 +119,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalName_;
     }
+
     /**
      * SummarySignalのNameを設定する。
      * 
@@ -124,6 +130,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalName_ = summarySignalName;
     }
+
     /**
      * SummarySignalのTypeを取得する。
      * 
@@ -133,6 +140,7 @@ public class SummarySignalDefinitionDto
     {
         return summmarySignalType_;
     }
+
     /**
      * SummarySignalのTypeを設定する。
      * 
@@ -143,6 +151,7 @@ public class SummarySignalDefinitionDto
     {
         this.summmarySignalType_ = summmarySignalType;
     }
+
     /**
      * SummarySignalのSignalListを取得する。
      * 
@@ -152,6 +161,7 @@ public class SummarySignalDefinitionDto
     {
         return signalList_;
     }
+
     /**
      * SummarySignalのSignalListを設定する。
      * 
@@ -162,6 +172,7 @@ public class SummarySignalDefinitionDto
     {
         this.signalList_ = signalList;
     }
+
     /**
      * SummarySignalのStatusを取得する。
      * 
@@ -171,6 +182,7 @@ public class SummarySignalDefinitionDto
     {
         return summarySignalStatus_;
     }
+
     /**
      * SummarySignalのStatusを設定する。
      * 
@@ -181,6 +193,7 @@ public class SummarySignalDefinitionDto
     {
         this.summarySignalStatus_ = summarySignalStatus;
     }
+
     /**
      * SummarySignalのMessageを取得する。
      * 
@@ -190,6 +203,7 @@ public class SummarySignalDefinitionDto
     {
         return errorMessage_;
     }
+
     /**
      * SummarySignalのMessageを設定する。
      * 
@@ -200,8 +214,6 @@ public class SummarySignalDefinitionDto
     {
         this.errorMessage_ = errorMessage;
     }
-
-   
 
     @Override
     public String toString()

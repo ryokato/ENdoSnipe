@@ -40,25 +40,28 @@ import jp.co.acroquest.endosnipe.data.entity.SignalDefinition;
 public class SignalDefinitionDto
 {
     /** シグナル定義テーブルのID */
-    private long                 signalId_;
+    private long signalId_;
 
     /** シグナル名 */
-    private String               signalName_;
+    private String signalName_;
 
     /** マッチングパターン */
-    private String               matchingPattern_;
+    private String matchingPattern_;
 
     /** 設定できる閾値の上限レベル */
-    private int                  level_;
+    private int level_;
 
     /** レベルごとの閾値 */
     private Map<Integer, Double> thresholdMaping_;
 
     /** エスカレーション期間 */
-    private double               escalationPeriod_;
+    private double escalationPeriod_;
 
     /** 各レベル毎の閾値 */
-    private String               patternValue_;
+    private String patternValue_;
+
+    /** メール送信フラグ */
+    private boolean sendMail_;
 
     /** 閾値のスプリットパターン */
     private static final Pattern SPLIT_PATERN = Pattern.compile(",");
@@ -170,8 +173,7 @@ public class SignalDefinitionDto
     {
         this.escalationPeriod_ = escalationPeriod;
     }
-    
-    
+
     /**
      * 各レベル毎の閾値を取得する。
      * @return 各レベル毎の閾値
@@ -191,6 +193,24 @@ public class SignalDefinitionDto
     }
 
     /**
+     * メール送信フラグを取得する。
+     * @return メール送信フラグ
+     */
+    public boolean isSendMail()
+    {
+        return sendMail_;
+    }
+
+    /**
+     * メール送信フラグを設定する。
+     * @param sendMail メール送信フラグ
+     */
+    public void setSendMail(boolean sendMail)
+    {
+        sendMail_ = sendMail;
+    }
+
+    /**
      * {@link SignalDefinitionDto} オブジェクトを生成します。
      * @param signalDefinition {@link SignalDefinition}オブジェクト
      */
@@ -203,6 +223,7 @@ public class SignalDefinitionDto
         this.escalationPeriod_ = signalDefinition.escalationPeriod;
         this.thresholdMaping_ = new TreeMap<Integer, Double>();
         this.patternValue_ = signalDefinition.patternValue;
+        this.sendMail_ = signalDefinition.sendMail;
 
         String[] thresholdings = SPLIT_PATERN.split(signalDefinition.patternValue);
         if (thresholdings != null)
@@ -229,6 +250,7 @@ public class SignalDefinitionDto
     {
         return "SignalInfoDto [signalId=" + signalId_ + ", signalName=" + signalName_
             + ", matchingPattern=" + matchingPattern_ + ", level=" + level_ + ", thresholdMaping="
-            + thresholdMaping_ + ", escalationPeriod=" + escalationPeriod_ + "]";
+            + thresholdMaping_ + ", escalationPeriod=" + escalationPeriod_ + ", sendMail="
+            + sendMail_ + "]";
     }
 }

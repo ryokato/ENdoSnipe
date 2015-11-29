@@ -56,36 +56,45 @@ public class HttpServletMonitor
         // Do Nothing.
     }
 
+    /** セッションIDを入力する引数番号 */
+    private static final int ARGS_SESSIONID_NUM = 0;
+
+    /** IPアドレスを入力する引数番号 */
+    private static final int ARGS_IPADRESS_NUM = 1;
+
     /** ホスト名を入力する引数番号 */
-    private static final int ARGS_HOST_NUM = 0;
+    private static final int ARGS_HOST_NUM = 2;
 
     /** ポート番号を入力する引数番号 */
-    private static final int ARGS_PORT_NUM = 1;
+    private static final int ARGS_PORT_NUM = 3;
 
     /** コンテクストパスを入力する引数番号 */
-    private static final int ARGS_CONTEXTPATH_NUM = 2;
+    private static final int ARGS_CONTEXTPATH_NUM = 4;
 
     /** サーブレットパスを入力する引数番号 */
-    private static final int ARGS_SERVLETPATH_NUM = 3;
+    private static final int ARGS_SERVLETPATH_NUM = 5;
 
     /** メソッド名を入力する引数番号 */
-    private static final int ARGS_METHOD_NUM = 4;
+    private static final int ARGS_METHOD_NUM = 6;
 
     /** クエリ文字列を入力する引数番号 */
-    private static final int ARGS_QUERY_STRING_NUM = 5;
+    private static final int ARGS_QUERY_STRING_NUM = 7;
 
     /** パラメータのマップを入力する引数番号 */
-    private static final int ARGS_PARAMETER_MAP_NUM = 6;
+    private static final int ARGS_PARAMETER_MAP_NUM = 8;
+
+    /** Cookieの値を入力する引数番号 */
+    private static final int ARGS_HTTP_COOKIE_NUM = 9;
 
     /** エラーステータス400番台を表す整数 */
     private static final int ERROR_STATUS_FOUR_HUNDRED = 400;
 
     /** 引数の数. */
-    private static final int ARGS_NUM = 8;
+    private static final int ARGS_NUM = 10;
 
     /** Javelinの設定 */
     private static JavelinConfig config__ = new JavelinConfig();
-    
+
     /** 実行時除外対象のURLかどうかを保存する。 */
     private static Map<String, Boolean> excludeCache__ =
         Collections.synchronizedMap(new LruCache<String, Boolean>(config__
@@ -101,39 +110,40 @@ public class HttpServletMonitor
         try
         {
             CallTreeRecorder callTreeRecorder = CallTreeRecorder.getInstance();
-            
+
             // ThreadLocalからクラス名、メソッド名を呼び出す。 クラス名、メソッド名が存在しない場合、 
             // HttpRequestのコンテキストパス、サーブレットパスを呼び出す。
             String[] paths = getPaths(request);
             String contextPath = paths[0];
             String servletPath = paths[1];
-            
+
             // 親ノードと同一のパスならば、二重に記録しない。
             CallTreeNode parent = callTreeRecorder.getCallTreeNode();
             if (parent != null)
             {
                 Invocation invocation = parent.getInvocation();
-                if (invocation != null 
-                    && contextPath.equals(invocation.getClassName())
+                if (invocation != null && contextPath.equals(invocation.getClassName())
                     && servletPath.equals(invocation.getMethodName()))
                 {
                     parent.count_++;
                     return;
                 }
             }
-            
+
             // 除外対象の場合は何もしない。
             if (isRuntimeExcludeTarget(config__, contextPath, servletPath))
             {
                 return;
-            }                    
-            
+            }
+
             Object[] args = null;
 
             // log.argsがtrueのとき、引数情報を表示する。
             if (config__.isLogArgs())
             {
                 args = new Object[ARGS_NUM];
+                args[ARGS_SESSIONID_NUM] = request.getSessionId();
+                args[ARGS_IPADRESS_NUM] = request.getIpAddress();
                 args[ARGS_HOST_NUM] = request.getRemoteHost();
                 args[ARGS_PORT_NUM] = request.getRemotePort();
                 args[ARGS_CONTEXTPATH_NUM] = contextPath;
@@ -157,22 +167,26 @@ public class HttpServletMonitor
                 {
                     args[ARGS_PARAMETER_MAP_NUM] = request.getParameterMap();
                 }
+                String cookieValue = request.getCookieValue();
+                if (cookieValue != null)
+                {
+                    args[ARGS_HTTP_COOKIE_NUM] =
+                        "[" + config__.getHttpCookieKey() + "]" + cookieValue;
+                }
+                else
+                {
+                    args[ARGS_HTTP_COOKIE_NUM] = cookieValue;
+                }
             }
-            
 
             StackTraceElement[] stacktrace = null;
             if (config__.isLogStacktrace())
             {
                 stacktrace = ThreadUtil.getCurrentStackTrace();
             }
-            
-            StatsJavelinRecorder.preProcess(contextPath, 
-                                              servletPath, 
-                                              args, 
-                                              stacktrace, 
-                                              config__,
-                                              true, 
-                                              true);
+
+            StatsJavelinRecorder.preProcess(contextPath, servletPath, args, stacktrace, config__,
+                                            true, true);
         }
         catch (Throwable th)
         {
@@ -190,10 +204,10 @@ public class HttpServletMonitor
         String[] paths = getPaths(request);
         String contextPath = paths[0];
         String servletPath = paths[1];
-        
+
         CallTreeRecorder callTreeRecorder = CallTreeRecorder.getInstance();
         CallTreeNode node = callTreeRecorder.getCallTreeNode();
-        
+
         if (node != null)
         {
             if (node.count_ > 0)
@@ -202,12 +216,12 @@ public class HttpServletMonitor
                 return;
             }
         }
-        
+
         // 除外対象の場合は何もしない。
         if (isRuntimeExcludeTarget(config__, contextPath, servletPath))
         {
             return;
-        }                    
+        }
 
         try
         {
@@ -215,26 +229,21 @@ public class HttpServletMonitor
             if (status >= ERROR_STATUS_FOUR_HUNDRED && config__.isHttpStatusError())
             {
                 HttpStatusEvent event =
-                                        new HttpStatusEvent(contextPath, servletPath, status,
-                                                            response.getThrowable(),
-                                                            config__.getTraceDepth());
+                    new HttpStatusEvent(contextPath, servletPath, status, response.getThrowable(),
+                                        config__.getTraceDepth());
                 StatsJavelinRecorder.addEvent(event);
-                
+
                 Invocation invocation = node.getInvocation();
                 invocation.addHttpStatusCount(String.valueOf(status));
             }
-            
+
             Object returnValue = null;
             if (config__.isLogReturn())
             {
                 returnValue = status;
             }
 
-              StatsJavelinRecorder.postProcess(contextPath, 
-                                                 servletPath, 
-                                                 returnValue, 
-                                                 config__,
-                                                 true);
+            StatsJavelinRecorder.postProcess(contextPath, servletPath, returnValue, config__, true);
         }
         catch (Throwable th)
         {
@@ -247,9 +256,7 @@ public class HttpServletMonitor
      * @param request リクエスト
      * @param throwable 例外。
      */
-    public static void postProcessNG(
-            HttpRequestValue request,
-            final Throwable  throwable)
+    public static void postProcessNG(HttpRequestValue request, final Throwable throwable)
     {
         String[] paths = getPaths(request);
         String contextPath = paths[0];
@@ -258,7 +265,7 @@ public class HttpServletMonitor
         // Invocationに例外が記録されない場合でも発生した、という記録は行う
         CallTreeRecorder callTreeRecorder = CallTreeRecorder.getInstance();
         CallTreeNode node = callTreeRecorder.getCallTreeNode();
-        
+
         if (node != null)
         {
             if (node.count_ > 0)
@@ -267,12 +274,12 @@ public class HttpServletMonitor
                 return;
             }
         }
-        
+
         // 除外対象の場合は何もしない。
         if (isRuntimeExcludeTarget(config__, contextPath, servletPath))
         {
             return;
-        }                    
+        }
 
         CallTree callTree = callTreeRecorder.getCallTree();
         if (node != null && callTree != null)
@@ -286,11 +293,7 @@ public class HttpServletMonitor
 
         try
         {
-            StatsJavelinRecorder.postProcess(contextPath, 
-                                               servletPath, 
-                                               throwable, 
-                                               config__, 
-                                               true);
+            StatsJavelinRecorder.postProcess(contextPath, servletPath, throwable, config__, true);
         }
         catch (Throwable th)
         {
@@ -326,7 +329,7 @@ public class HttpServletMonitor
         {
             contextPath = "/";
         }
-        
+
         String[] paths = {contextPath, servletPath};
         return paths;
     }
@@ -355,7 +358,7 @@ public class HttpServletMonitor
         }
         else
         {
-        	isExclude = Boolean.FALSE;
+            isExclude = Boolean.FALSE;
         }
 
         return isExclude.booleanValue();

@@ -1,1 +1,1 @@
-Bundle-Version: 6.0.0.beta
+Bundle-Version: 6.0.1.release

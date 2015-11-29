@@ -268,9 +268,7 @@ public class ResourceConvertUtil extends TemplateConvertUtil
         }
         else if (objectName.equals(Resource.OBJ_NAME_SIGNAL))
         {
-            Map<String, Object> label = convertProperty(property.getLabel());
-            attrList.add(new HashMap<String, Object>());
-            attrList.add(label);
+            return;
         }
 
         map.put(KEY_PROPERTIES, attrList);
@@ -307,10 +305,8 @@ public class ResourceConvertUtil extends TemplateConvertUtil
         }
         else if (objectName.equals(Resource.OBJ_NAME_SIGNAL))
         {
-            Property signal = property.getSignal();
-            String signalName = getTreeName(name, objectName, signal);
+            String signalName = getTreeName(name, objectName, property);
             map.put(KEY_ID, signalName);
-            map.put(KEY_TEXT, signal.getName());
             return;
         }
         else if (objectName.equals(Resource.OBJ_NAME_MULTIPLE_GRAPH)

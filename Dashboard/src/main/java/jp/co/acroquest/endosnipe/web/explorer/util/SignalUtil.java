@@ -49,7 +49,7 @@ public class SignalUtil
 {
 
     /** シグナルのオブジェトに設定する引数の数 */
-    private static final int SIGNAL_ARGUMENT_COUNT = 6;
+    private static final int SIGNAL_ARGUMENT_COUNT = 7;
 
     /** 閾値を区切るパターン */
     private static final Pattern SIGNAL_SPLIT_PATTERN = Pattern.compile(",");
@@ -148,12 +148,14 @@ public class SignalUtil
         int level = signalDefinitionDto.getLevel();
         double escalationPeriod = signalDefinitionDto.getEscalationPeriod();
         String patternValue = signalDefinitionDto.getPatternValue();
+        Boolean sendMail = signalDefinitionDto.getSendMail();
 
         int dtoCount = SIGNAL_ARGUMENT_COUNT;
         signalBody.setIntLoopCount(dtoCount);
         String[] signalDefObj =
                 { String.valueOf(signalId), signalName, matchingPattern, String.valueOf(level),
-                        String.valueOf(escalationPeriod), patternValue };
+                        String.valueOf(escalationPeriod), patternValue,
+                        String.valueOf(sendMail) };
         signalBody.setObjItemValueArr(signalDefObj);
 
         Body[] requestBodys = { signalBody };

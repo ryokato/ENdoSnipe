@@ -183,6 +183,8 @@ public class JavelinConfig extends JavelinConfigBase
 
     private static boolean resourceThreadBlocked__;
 
+    private static boolean resourceJdbcRecord__;
+
     private static int threadModel__;
 
     private static boolean threadMonitor__;
@@ -302,6 +304,18 @@ public class JavelinConfig extends JavelinConfigBase
 
     private static int servletExcludePatternCacheSize__;
 
+    private static boolean sslEnable__;
+
+    private static String sslKeyStore__;
+
+    private static String sslKeyStorePass__;
+
+    private static String sslTrustStore__;
+
+    private static String sslTrustStorePass__;
+
+    private static String httpCookieKey__;
+
     /**
      * {@link JavelinConfig} を構築します。<br />
      *
@@ -409,6 +423,7 @@ public class JavelinConfig extends JavelinConfigBase
         threadDumpThreadNum__ = super.getThreadDumpThreadNum();
         resourceThreadRunnable__ = super.isResourceThreadRunnable();
         resourceThreadBlocked__ = super.isResourceThreadBlocked();
+        resourceJdbcRecord__ = super.isResourceJdbcRecord();
         threadModel__ = super.getThreadModel();
         threadMonitor__ = super.getThreadMonitor();
         threadMonitorDepth__ = super.getThreadMonitorDepth();
@@ -430,6 +445,7 @@ public class JavelinConfig extends JavelinConfigBase
         isFullGCMonitor__ = super.isFullGCMonitor();
         isHttpSessionCount__ = super.isHttpSessionCount();
         isHttpSessionSize__ = super.isHttpSessionSize();
+        httpCookieKey__ = super.getHttpCookieKey();
         isIntervalMonitor__ = super.isIntervalMonitor();
         isLinearSearchMonitor__ = super.isLinearSearchMonitor();
         isLogArgs__ = super.isLogArgs();
@@ -466,6 +482,11 @@ public class JavelinConfig extends JavelinConfigBase
         jdbcjavelinLightweightMode__ = super.isJdbcjavelinLightweightMode();
         servletExcludePattern__ = super.getServletExcludePattern();
         servletExcludePatternCacheSize__ = super.getServletExcludePatternCacheSize();
+        sslEnable__ = super.isSslEnable();
+        sslKeyStore__ = super.getSslKeystore();
+        sslKeyStorePass__ = super.getSslKeystorePass();
+        sslTrustStore__ = super.getSslTruststore();
+        sslTrustStorePass__ = super.getSslTruststorePass();
     }
 
     /**
@@ -1758,6 +1779,18 @@ public class JavelinConfig extends JavelinConfigBase
         resourceThreadBlocked__ = threadDumpThreadNum;
     }
 
+    @Override
+    public boolean isResourceJdbcRecord()
+    {
+        return resourceJdbcRecord__;
+    }
+
+    @Override
+    public void setResourceJdbcRecord(final boolean resourceJdbcRecord)
+    {
+        resourceJdbcRecord__ = resourceJdbcRecord;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -2990,4 +3023,41 @@ public class JavelinConfig extends JavelinConfigBase
     {
         servletExcludePatternCacheSize__ = servletExcludePatternCacheSize;
     }
+
+    @Override
+    public boolean isSslEnable()
+    {
+        return sslEnable__;
+    }
+
+    @Override
+    public String getSslKeystore()
+    {
+        return sslKeyStore__;
+    }
+
+    @Override
+    public String getSslKeystorePass()
+    {
+        return sslKeyStorePass__;
+    }
+
+    @Override
+    public String getSslTruststore()
+    {
+        return sslTrustStore__;
+    }
+
+    @Override
+    public String getSslTruststorePass()
+    {
+        return sslTrustStorePass__;
+    }
+
+    @Override
+    public String getHttpCookieKey()
+    {
+        return httpCookieKey__;
+    }
+
 }

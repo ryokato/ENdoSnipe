@@ -1,0 +1,14 @@
+【1.現象】
+　${signalName}で閾値の回復を検出しました。
+
+【2.障害検出情報】
+　IPアドレス　　　　　　：${ipAddress}
+　データベース名　　　　：${databaseName}
+　日時　　　　　　　　　：${date} ${timeMillis}
+　alarmThreshold　　　　：${alarmThreshold}
+　alarmValue　　　　　　：${alarmValue}
+　alarmInterval 　　　　：${alarmInterval}
+　alarmLevel　　　　　　：${alarmLevel}
+
+
+以上

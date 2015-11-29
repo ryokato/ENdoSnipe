@@ -12,6 +12,8 @@
  */
 package jp.co.acroquest.endosnipe.web.explorer.service;
 
+import static jp.co.acroquest.endosnipe.data.TableNames.REPORT_EXPORT_RESULT;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +38,7 @@ import jp.co.acroquest.endosnipe.collector.config.DataCollectorConfig;
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.data.dao.JavelinMeasurementItemDao;
 import jp.co.acroquest.endosnipe.report.ReporterThread;
+import jp.co.acroquest.endosnipe.util.ResourceDataDaoUtil;
 import jp.co.acroquest.endosnipe.web.explorer.config.DataBaseConfig;
 import jp.co.acroquest.endosnipe.web.explorer.constants.LogMessageCodes;
 import jp.co.acroquest.endosnipe.web.explorer.dao.PropertySettingDao;
@@ -74,9 +78,6 @@ public class ReportService
     /** レポート情報Dao */
     @Autowired
     protected ReportDefinitionDao reportDefinitionDao_;
-
-    /** 日付のフォーマット。 */
-    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     /** バッファのサイズ */
     private static final int BUFFER_SIZE = 1024;
@@ -348,11 +349,12 @@ public class ReportService
         Calendar fmTimeCal = definitionDto.getReportTermFrom();
         Calendar toTimeCal = definitionDto.getReportTermTo();
 
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-
-        reportDefinition.fmTime_ = dateFormat.format(fmTimeCal.getTime());
-        reportDefinition.toTime_ = dateFormat.format(toTimeCal.getTime());
+        reportDefinition.fmTime_ = fmTimeCal.getTime();
+        reportDefinition.toTime_ = toTimeCal.getTime();
         reportDefinition.status_ = definitionDto.getStatus();
+        Date toDate = toTimeCal.getTime();
+        String tableName = ResourceDataDaoUtil.getTableNameToInsert(toDate, REPORT_EXPORT_RESULT);
+        reportDefinition.tableName_ = tableName;
         return reportDefinition;
     }
 
@@ -842,10 +844,8 @@ public class ReportService
         Calendar fmTimeCal = reportDefinitionDto.getReportTermFrom();
         Calendar toTimeCal = reportDefinitionDto.getReportTermTo();
 
-        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-
-        String startTime = dateFormat.format(fmTimeCal.getTime());
-        String endTime = dateFormat.format(toTimeCal.getTime());
+        Date startTime = fmTimeCal.getTime();
+        Date endTime = toTimeCal.getTime();
         reportDefinition = reportDefinitionDao_.selectName(reportName, startTime, endTime);
         if (reportDefinition != null)
         {

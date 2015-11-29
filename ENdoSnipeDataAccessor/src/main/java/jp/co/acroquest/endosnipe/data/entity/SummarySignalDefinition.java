@@ -41,7 +41,7 @@ public class SummarySignalDefinition
 
     /**  priority of summarySignal */
     public int priority;
-
+    
     /**
      * constructor
      */

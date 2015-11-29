@@ -87,7 +87,6 @@ public class DaoUtil
         }
         if (logFileName == null)
         {
-            LOGGER.log(LogMessageCodes.UNKNOWN_FILE_NAME);
             return null;
         }
 

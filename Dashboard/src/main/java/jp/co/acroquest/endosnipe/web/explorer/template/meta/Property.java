@@ -79,6 +79,9 @@ public class Property
     /** シグナルのプロパティ（コンポジットパターン） */
     private Property signal_;
 
+    /** メール送信有無 */
+    private boolean sendMail_;
+
     /**
      * コンストラクタ
      */
@@ -446,31 +449,50 @@ public class Property
         this.signal_ = signal;
     }
 
+    /**
+     * メール送信有無を取得する
+     * @return メール送信有無
+     */
+    public boolean isSendMail()
+    {
+        return sendMail_;
+    }
+
+    /**
+     * メール送信有無を設定する
+     * @param sendMail メール送信有無
+     */
+    public void setSendMail(final boolean sendMail)
+    {
+        sendMail_ = sendMail;
+    }
+
     @Override
     public int hashCode()
     {
-        final int PRIME = 31;
+        final int prime = 31;
         int result = 1;
-        result = PRIME * result + ((border_ == null) ? 0 : border_.hashCode());
-        result = PRIME * result + ((fill_ == null) ? 0 : fill_.hashCode());
-        result = PRIME * result + ((fontFamily_ == null) ? 0 : fontFamily_.hashCode());
-        result = PRIME * result + ((fontSize_ == null) ? 0 : fontSize_.hashCode());
-        result = PRIME * result + ((label_ == null) ? 0 : label_.hashCode());
-        result = PRIME * result + ((level_ == null) ? 0 : level_.hashCode());
-        result = PRIME * result + ((method_ == null) ? 0 : method_.hashCode());
-        result = PRIME * result + ((name_ == null) ? 0 : name_.hashCode());
-        result = PRIME * result + ((period_ == null) ? 0 : period_.hashCode());
-        result = PRIME * result + ((resourceId_ == null) ? 0 : resourceId_.hashCode());
-        result = PRIME * result + ((shapeName_ == null) ? 0 : shapeName_.hashCode());
-        result = PRIME * result + ((signal_ == null) ? 0 : signal_.hashCode());
-        result = PRIME * result + ((stroke_ == null) ? 0 : stroke_.hashCode());
-        result = PRIME * result + ((strokeDasharray_ == null) ? 0 : strokeDasharray_.hashCode());
-        result = PRIME * result + ((strokeWidth_ == null) ? 0 : strokeWidth_.hashCode());
-        result = PRIME * result + ((target_ == null) ? 0 : target_.hashCode());
-        result = PRIME * result + ((text_ == null) ? 0 : text_.hashCode());
-        result = PRIME * result + ((textAnchor_ == null) ? 0 : textAnchor_.hashCode());
-        result = PRIME * result + ((threshold_ == null) ? 0 : threshold_.hashCode());
-        result = PRIME * result + ((objectType_ == null) ? 0 : objectType_.hashCode());
+        result = prime * result + ((border_ == null) ? 0 : border_.hashCode());
+        result = prime * result + ((fill_ == null) ? 0 : fill_.hashCode());
+        result = prime * result + ((fontFamily_ == null) ? 0 : fontFamily_.hashCode());
+        result = prime * result + ((fontSize_ == null) ? 0 : fontSize_.hashCode());
+        result = prime * result + ((label_ == null) ? 0 : label_.hashCode());
+        result = prime * result + ((level_ == null) ? 0 : level_.hashCode());
+        result = prime * result + ((method_ == null) ? 0 : method_.hashCode());
+        result = prime * result + ((name_ == null) ? 0 : name_.hashCode());
+        result = prime * result + ((objectType_ == null) ? 0 : objectType_.hashCode());
+        result = prime * result + ((period_ == null) ? 0 : period_.hashCode());
+        result = prime * result + ((resourceId_ == null) ? 0 : resourceId_.hashCode());
+        result = prime * result + (sendMail_ ? 1231 : 1237);
+        result = prime * result + ((shapeName_ == null) ? 0 : shapeName_.hashCode());
+        result = prime * result + ((signal_ == null) ? 0 : signal_.hashCode());
+        result = prime * result + ((strokeDasharray_ == null) ? 0 : strokeDasharray_.hashCode());
+        result = prime * result + ((strokeWidth_ == null) ? 0 : strokeWidth_.hashCode());
+        result = prime * result + ((stroke_ == null) ? 0 : stroke_.hashCode());
+        result = prime * result + ((target_ == null) ? 0 : target_.hashCode());
+        result = prime * result + ((textAnchor_ == null) ? 0 : textAnchor_.hashCode());
+        result = prime * result + ((text_ == null) ? 0 : text_.hashCode());
+        result = prime * result + ((threshold_ == null) ? 0 : threshold_.hashCode());
         return result;
     }
 
@@ -578,6 +600,17 @@ public class Property
         {
             return false;
         }
+        if (objectType_ == null)
+        {
+            if (other.objectType_ != null)
+            {
+                return false;
+            }
+        }
+        else if (!objectType_.equals(other.objectType_))
+        {
+            return false;
+        }
         if (period_ == null)
         {
             if (other.period_ != null)
@@ -597,6 +630,10 @@ public class Property
             }
         }
         else if (!resourceId_.equals(other.resourceId_))
+        {
+            return false;
+        }
+        if (sendMail_ != other.sendMail_)
         {
             return false;
         }
@@ -622,17 +659,6 @@ public class Property
         {
             return false;
         }
-        if (stroke_ == null)
-        {
-            if (other.stroke_ != null)
-            {
-                return false;
-            }
-        }
-        else if (!stroke_.equals(other.stroke_))
-        {
-            return false;
-        }
         if (strokeDasharray_ == null)
         {
             if (other.strokeDasharray_ != null)
@@ -655,6 +681,17 @@ public class Property
         {
             return false;
         }
+        if (stroke_ == null)
+        {
+            if (other.stroke_ != null)
+            {
+                return false;
+            }
+        }
+        else if (!stroke_.equals(other.stroke_))
+        {
+            return false;
+        }
         if (target_ == null)
         {
             if (other.target_ != null)
@@ -663,17 +700,6 @@ public class Property
             }
         }
         else if (!target_.equals(other.target_))
-        {
-            return false;
-        }
-        if (text_ == null)
-        {
-            if (other.text_ != null)
-            {
-                return false;
-            }
-        }
-        else if (!text_.equals(other.text_))
         {
             return false;
         }
@@ -688,6 +714,17 @@ public class Property
         {
             return false;
         }
+        if (text_ == null)
+        {
+            if (other.text_ != null)
+            {
+                return false;
+            }
+        }
+        else if (!text_.equals(other.text_))
+        {
+            return false;
+        }
         if (threshold_ == null)
         {
             if (other.threshold_ != null)
@@ -696,17 +733,6 @@ public class Property
             }
         }
         else if (!threshold_.equals(other.threshold_))
-        {
-            return false;
-        }
-        if (objectType_ == null)
-        {
-            if (other.objectType_ != null)
-            {
-                return false;
-            }
-        }
-        else if (!objectType_.equals(other.objectType_))
         {
             return false;
         }
@@ -721,8 +747,9 @@ public class Property
                 + ", fontSize=" + fontSize_ + ", textAnchor=" + textAnchor_ + ", fontFamily="
                 + fontFamily_ + ", text=" + text_ + ", resourceId=" + resourceId_ + ", target="
                 + target_ + ", name=" + name_ + ", level=" + level_ + ", threshold=" + threshold_
-                + ", period=" + period_ + ", objectType=" + objectType_ + ", method=" + method_ + ", border="
-                + border_ + ", label=" + label_ + ", signal=" + signal_ + "]";
+                + ", period=" + period_ + ", objectType=" + objectType_ + ", method=" + method_
+                + ", border=" + border_ + ", label=" + label_ + ", signal=" + signal_
+                + ", sendMail=" + sendMail_ + "]";
     }
 
 }

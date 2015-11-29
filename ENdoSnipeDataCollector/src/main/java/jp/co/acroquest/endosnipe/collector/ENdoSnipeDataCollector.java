@@ -53,6 +53,7 @@ import jp.co.acroquest.endosnipe.communicator.accessor.ConnectNotifyAccessor;
 import jp.co.acroquest.endosnipe.communicator.accessor.ResourceNotifyAccessor;
 import jp.co.acroquest.endosnipe.communicator.accessor.SystemResourceGetter;
 import jp.co.acroquest.endosnipe.communicator.entity.Body;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
@@ -445,7 +446,7 @@ public class ENdoSnipeDataCollector implements CommunicationClientRepository, Lo
     public void startServer()
         throws InitializeException
     {
-        startServer(config_.getAcceptPort());
+        startServer(config_);
 
         AgentSetting agentSetting = new AgentSetting();
         agentSetting.jvnLogStragePeriod = config_.getJvnLogStoragePeriod();
@@ -458,16 +459,26 @@ public class ENdoSnipeDataCollector implements CommunicationClientRepository, Lo
 
     /**
      * ポート番号を指定してクライアントからの接続を待ち受けるサーバを開始する。
-     * @param port 待ち受けポート番号
+     * @param config {@link DataCollectorConfig}
      */
-    public void startServer(final int port)
+    public void startServer(final DataCollectorConfig config)
     {
         checkRunning();
 
         server_ = new JavelinServer();
         JavelinDataQueue queue = this.javelinDataLogger_.getQueue();
         server_.setTelegramNotifyListener(this.telegramNotifyListenersMap_);
-        server_.start(port, queue, config_.getDatabaseName(), resourceGetterTask_, behaviorMode_);
+        String databaseName = config_.getDatabaseName();
+
+        CommunicatorSetting setting = new CommunicatorSetting();
+        setting.port = config.getAcceptPort();
+        setting.sslEnable = config.isSslEnable();
+        setting.keyStore = config.getSslKeyStore();
+        setting.keyStorePass = config.getSslKeyStorePass();
+        setting.trustStore = config.getSslTrustStore();
+        setting.trustStorePass = config.getSslTrustStorePass();
+
+        server_.start(setting, queue, databaseName, resourceGetterTask_, behaviorMode_);
     }
 
     /**

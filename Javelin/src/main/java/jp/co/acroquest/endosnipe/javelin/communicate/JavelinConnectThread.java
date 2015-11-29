@@ -31,6 +31,7 @@ import java.util.List;
 import jp.co.acroquest.endosnipe.common.config.JavelinConfig;
 import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
 import jp.co.acroquest.endosnipe.communicator.TelegramListener;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
@@ -46,13 +47,14 @@ import jp.co.acroquest.endosnipe.javelin.bean.Invocation;
  *
  */
 public class JavelinConnectThread extends CommunicationClientImpl implements AlarmListener,
-        TelegramConstants
+    TelegramConstants
 {
     /** 設定 */
     static JavelinConfig config__ = new JavelinConfig();
 
     /** JavelinConnectThreadのインスタンス(シングルトン) */
     static JavelinConnectThread instance__ = new JavelinConnectThread();
+
     private JavelinConnectThread()
     {
         super("JavelinConnectThread", false, false);
@@ -75,16 +77,24 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
     public void connect()
     {
         String host = config__.getConnectHost();
-        int port = config__.getConnectPort();
-        this.init(host, port);
-        
+
+        CommunicatorSetting setting = new CommunicatorSetting();
+        setting.port = config__.getConnectPort();
+        setting.sslEnable = config__.isSslEnable();
+        setting.keyStore = config__.getSslKeystore();
+        setting.keyStorePass = config__.getSslKeystorePass();
+        setting.trustStore = config__.getSslTruststore();
+        setting.trustStorePass = config__.getSslTruststorePass();
+
+        this.init(host, setting);
+
         ConnectNotifyData connectNotify = new ConnectNotifyData();
         connectNotify.setKind(ConnectNotifyData.KIND_JAVELIN);
         connectNotify.setAgentName(config__.getAgentName());
 
         super.connect(connectNotify);
     }
-        
+
     /**
      * JavelinAcceptThreadのインスタンスを取得する。
      * @return JavelinAcceptThread
@@ -93,7 +103,7 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
     {
         return instance__;
     }
- 
+
     /**
      * {@inheritDoc}
      */
@@ -103,9 +113,9 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
         List<Long> accumulateTimeList = new ArrayList<Long>();
         addInvocationList(invocationList, accumulateTimeList, node);
 
-        Telegram objTelegram = JavelinTelegramCreator.create(invocationList,
-                accumulateTimeList, BYTE_TELEGRAM_KIND_ALERT,
-                BYTE_REQUEST_KIND_NOTIFY);
+        Telegram objTelegram =
+            JavelinTelegramCreator.create(invocationList, accumulateTimeList,
+                                          BYTE_TELEGRAM_KIND_ALERT, BYTE_REQUEST_KIND_NOTIFY);
 
         // アラームを送信する。
         sendTelegram(objTelegram);
@@ -119,7 +129,7 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
      * @param node CallTreeNode
      */
     private void addInvocationList(List<Invocation> invocationList, List<Long> accumulateTimeList,
-            final CallTreeNode node)
+        final CallTreeNode node)
     {
         invocationList.add(node.getInvocation());
         accumulateTimeList.add(node.getAccumulatedTime());
@@ -142,7 +152,7 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
     {
         return false;
     }
-    
+
     /**
      * TelegramListenerのクラスをJavelin設定から読み込み、登録する。 クラスのロードは、以下の順でクラスローダでのロードを試みる。
      * <ol> <li>JavelinClientThreadをロードしたクラスローダ</li> <li>コンテキストクラスローダ</li>
@@ -188,7 +198,7 @@ public class JavelinConnectThread extends CommunicationClientImpl implements Ala
             }
         }
     }
-    
+
     /**
      * クラスをロードする。 以下の順でクラスローダでのロードを試みる。 <ol> <li>JavelinClientThreadをロードしたクラスローダ</li>
      * <li>コンテキストクラスローダ</li> </ol>

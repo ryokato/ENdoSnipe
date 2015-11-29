@@ -37,6 +37,7 @@ import jp.co.acroquest.endosnipe.common.entity.ItemType;
 import jp.co.acroquest.endosnipe.common.entity.ResourceItem;
 import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
 import jp.co.acroquest.endosnipe.communicator.TelegramListener;
+import jp.co.acroquest.endosnipe.communicator.TelegramUtil;
 import jp.co.acroquest.endosnipe.communicator.accessor.ResourceNotifyAccessor;
 import jp.co.acroquest.endosnipe.communicator.entity.Body;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
@@ -57,10 +58,10 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
 {
 
     private final ResourceCollector resourceCollector_;
-    
+
     /** Javelinの設定。 */
     private final JavelinConfig javelinConfig_ = new JavelinConfig();
-    
+
     /** システムのリソースデータの名前のリスト。 */
     private final Set<String> systemResourceItemNameSet_ = new HashSet<String>();
 
@@ -73,7 +74,7 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
     public SystemResourceTelegramListener()
     {
         this.resourceCollector_ = ResourceCollector.getInstance();
-        
+
         // システムのリソースデータの名前のリストを初期化する。
         systemResourceItemNameSet_.add(ITEMNAME_SYSTEM_MEMORY_PHYSICAL_MAX);
         systemResourceItemNameSet_.add(ITEMNAME_SYSTEM_MEMORY_PHYSICAL_FREE);
@@ -85,7 +86,7 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
         systemResourceItemNameSet_.add(ITEMNAME_SYSTEM_HANDLE_TOTAL_NUMBER);
         systemResourceItemNameSet_.add(ITEMNAME_SYSTEM_MEMORY_SWAP_MAX);
         systemResourceItemNameSet_.add(ITEMNAME_SYSTEM_MEMORY_SWAP_FREE);
-        
+
         // HadoopAgentから取得するリソース名のリストを初期化する
         hadoopAgentItemNameSet_.add(ITEMNAME_HADOOP_NAMENODE);
         hadoopAgentItemNameSet_.add(ITEMNAME_HADOOP_JOBTRACKER);
@@ -105,7 +106,7 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
         Telegram responseTelegram = null;
         Header header = telegram.getObjHeader();
         if (header.getByteTelegramKind() == BYTE_TELEGRAM_KIND_RESOURCENOTIFY
-                && header.getByteRequestKind() == BYTE_REQUEST_KIND_REQUEST)
+            && header.getByteRequestKind() == BYTE_REQUEST_KIND_REQUEST)
         {
             List<Body> responseBodyList = new ArrayList<Body>();
 
@@ -113,16 +114,18 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
             long currentTime = System.currentTimeMillis();
             ResponseBody timeBody = ResourceNotifyAccessor.makeTimeBody(currentTime);
             responseBodyList.add(timeBody);
-            
+
             Map<String, MultiResourceGetter> mrgMap = new HashMap<String, MultiResourceGetter>();
 
             // ProcParser の load処理
             Body[] objBodies = telegram.getObjBody();
             this.resourceCollector_.load();
-            
-         // 設定更新要求があれば反映する。
+
+            // 設定更新要求があれば反映する。
             ConfigUpdater.executeScheduledRequest();
             
+            List<String> compressionStrList = new ArrayList<String>();
+
             for (Body body : objBodies)
             {
                 String objectName = body.getStrObjName();
@@ -136,23 +139,23 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
                     }
 
                     if (javelinConfig_.getCollectSystemResources()
-                            || systemResourceItemNameSet_.contains(itemName) == false)
+                        || systemResourceItemNameSet_.contains(itemName) == false)
                     {
                         Number value = this.resourceCollector_.getResource(itemName);
                         ItemType itemType = this.resourceCollector_.getResourceType(itemName);
-                        
+
                         if (value != null)
                         {
                             ResponseBody responseBody =
-                                ResourceNotifyAccessor.makeResourceResponseBody(itemName,
-                                                                           value, itemType);
+                                ResourceNotifyAccessor.makeResourceResponseBody(itemName, value,
+                                                                                itemType);
                             responseBodyList.add(responseBody);
                         }
                     }
 
                     ItemType multiItemType = this.resourceCollector_.getMultiResourceType(itemName);
                     MultiResourceGetter multiGetter =
-                            this.resourceCollector_.getMultiResourceGetterMap().get(itemName);
+                        this.resourceCollector_.getMultiResourceGetterMap().get(itemName);
                     List<ResourceItem> entries = null;
                     if (multiGetter != null)
                     {
@@ -169,12 +172,12 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
                     if (entries != null)
                     {
                         addToBodyList(entries, responseBodyList, objectName, itemName,
-                                      multiItemType);
+                                      multiItemType, compressionStrList);
                     }
 
                     // ResourceGroupGetterから情報を取得する
                     List<ResourceGroupGetter> resourceGroupGetterList =
-                            this.resourceCollector_.getResourceGroupGetterList();
+                        this.resourceCollector_.getResourceGroupGetterList();
                     for (ResourceGroupGetter group : resourceGroupGetterList)
                     {
                         Set<String> itemNames = group.getItemNameSet();
@@ -197,13 +200,13 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
                             if (entries != null)
                             {
                                 addToBodyList(entries, responseBodyList, objectName, itemName,
-                                              mgItemType);
+                                              mgItemType, compressionStrList);
                             }
                         }
                     }
                 }
             }
-            
+
             // クライアントの初期化処理時には、空の電文を返し、
             // それ以外の場合はResourceCollectorから取得した結果を返す。
             if (isInitializing == true)
@@ -213,16 +216,16 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
             else
             {
                 addSingleResourceItem(responseBodyList);
-                addMultiResourceItem(responseBodyList, OBJECTNAME_RESOURCE);
-                addResourceGroupItem(responseBodyList, OBJECTNAME_RESOURCE);
+                addMultiResourceItem(responseBodyList, OBJECTNAME_RESOURCE, compressionStrList);
+                addResourceGroupItem(responseBodyList, OBJECTNAME_RESOURCE, compressionStrList);
             }
-            responseTelegram = ResourceNotifyAccessor.makeResponseTelegram(responseBodyList);    
+            responseTelegram = ResourceNotifyAccessor.makeResponseTelegram(responseBodyList);
         }
 
         return responseTelegram;
     }
 
-    private void addResourceGroupItem(List<Body> responseBodyList, String objectName)
+    private void addResourceGroupItem(List<Body> responseBodyList, String objectName, List<String> compressionStrList)
     {
         List<ResourceItem> entries = null;
         // ResourceGroupGetterから情報を取得する
@@ -237,40 +240,38 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
                 ItemType mgItemType = multiResourceGetter.getItemType();
                 if (entries != null)
                 {
-                    addToBodyList(entries, responseBodyList, objectName, itemName,
-                                                   mgItemType);
+                    addToBodyList(entries, responseBodyList, objectName, itemName, mgItemType, compressionStrList);
                 }
 
             }
         }
     }
 
-    private void addMultiResourceItem(List<Body> responseBodyList, String objectName)
+    private void addMultiResourceItem(List<Body> responseBodyList, String objectName, List<String> compressionStrList)
     {
         for (String itemName : this.resourceCollector_.getMultiResourceItemId())
         {
-                // 複数系列を持つ項目名
-                ItemType multiItemType = this.resourceCollector_.getMultiResourceType(itemName);
-                MultiResourceGetter multiGetter =
-                        this.resourceCollector_.getMultiResourceGetterMap().get(itemName);
-                List<ResourceItem> entries = null;
-                if (multiGetter != null)
+            // 複数系列を持つ項目名
+            ItemType multiItemType = this.resourceCollector_.getMultiResourceType(itemName);
+            MultiResourceGetter multiGetter =
+                this.resourceCollector_.getMultiResourceGetterMap().get(itemName);
+            List<ResourceItem> entries = null;
+            if (multiGetter != null)
+            {
+                try
                 {
-                    try
-                    {
-                        entries = multiGetter.getValues();
-                    }
-                    catch (Throwable th)
-                    {
-                        SystemLogger.getInstance().debug(th);
-                    }
+                    entries = multiGetter.getValues();
                 }
+                catch (Throwable th)
+                {
+                    SystemLogger.getInstance().debug(th);
+                }
+            }
 
-                if (entries != null)
-                {
-                    addToBodyList(entries, responseBodyList, objectName, itemName,
-                                  multiItemType);
-                }
+            if (entries != null)
+            {
+                addToBodyList(entries, responseBodyList, objectName, itemName, multiItemType, compressionStrList);
+            }
         }
     }
 
@@ -278,20 +279,19 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
     {
         for (String itemName : this.resourceCollector_.getResourceItemId())
         {
-        
+
             // システムリソースの取得項目である場合
             // →プロパティで取得する指定がなされている場合のみ実行する
             if (javelinConfig_.getCollectSystemResources()
-                    || systemResourceItemNameSet_.contains(itemName) == false)
+                || systemResourceItemNameSet_.contains(itemName) == false)
             {
                 Number value = this.resourceCollector_.getResource(itemName);
                 ItemType itemType = this.resourceCollector_.getResourceType(itemName);
-                
+
                 if (value != null)
                 {
                     ResponseBody responseBody =
-                        ResourceNotifyAccessor.makeResourceResponseBody(itemName,
-                                                                   value, itemType);
+                        ResourceNotifyAccessor.makeResourceResponseBody(itemName, value, itemType);
                     responseBodyList.add(responseBody);
                 }
             }
@@ -306,35 +306,69 @@ public class SystemResourceTelegramListener implements TelegramListener, Telegra
      * @param objectName
      * @param itemName
      * @param itemType
+     * @param compressionStrList
      */
-    private void addToBodyList(final List<ResourceItem> entries,
-            final List<Body> responseBodyList, final String objectName, final String itemName,
-            final ItemType itemType)
+    private void addToBodyList(final List<ResourceItem> entries, final List<Body> responseBodyList,
+        final String objectName, final String itemName, final ItemType itemType, List<String> compressionStrList)
     {
-        String[] values = new String[entries.size()];
-        String[] names = new String[entries.size()];
-
-        for (int index = 0; index < values.length; index++)
+        int entriesSize = entries.size();
+        for (int index = 0; index < entriesSize; index++)
         {
-            values[index] = entries.get(index).getValue();
-            names[index] = entries.get(index).getName();
-            
+            String value = entries.get(index).getValue();
+            String name = entries.get(index).getName();
+
+            int nameLength = name.length();
+            if (nameLength > COMPRESSION_ITEM_NAME_LENGTH)
+            {
+                int lastIndex = name.lastIndexOf("/");
+                String compressionStr = name.substring(0, lastIndex);
+
+                if (compressionStr.length() >= COMPRESSION_ITEM_NAME_LENGTH)
+                {
+                    int compressionKey = compressionStrList.indexOf(compressionStr);
+                    
+                    // まだ圧縮対象の文字列として登録されていない場合に限り、圧縮文字列の登録を行う
+                    if (compressionKey == -1)
+                    {
+                        compressionKey = compressionStrList.size();
+                        
+                        // 圧縮対象の文字列をリストに追加する
+                        compressionStrList.add(compressionStr);
+
+                        // 圧縮対象の文字列とIDのマップをBodyに登録する(0:ID, 1:項目名)
+                        String[] itemNameIdMapList = {compressionKey + "", compressionStr};
+                        ResponseBody itemNameIdMapBody =
+                            TelegramUtil.createResponseBody(OBJECTNAME_ITEMNAME_ID_MAP, "",
+                                                            ItemType.ITEMTYPE_STRING,
+                                                            itemNameIdMapList);
+                        responseBodyList.add(itemNameIdMapBody);
+                    }
+
+                    // 項目名を"<圧縮文字列のキー>/<圧縮対象の文字列以降の文字列>"という形に変換する
+                    String lastIndexStr = name.substring(lastIndex);
+                    name = compressionKey + lastIndexStr;
+
+                    compressionKey++;
+                }
+
+            }
+
             // 値を追加する。
             ResponseBody valueBody = new ResponseBody();
             valueBody.setStrObjName(objectName);
-            valueBody.setStrItemName(names[index]);
+            valueBody.setStrItemName(name);
             valueBody.setIntLoopCount(1);
             valueBody.setByteItemMode(itemType);
-            valueBody.setObjItemValueArr(new Object[] { values[index] });
+            valueBody.setObjItemValueArr(new Object[]{value});
             responseBodyList.add(valueBody);
 
             // 系列名を追加する。
             ResponseBody nameBody = new ResponseBody();
             nameBody.setStrObjName(objectName);
-            nameBody.setStrItemName(names[index] + "-name");
+            nameBody.setStrItemName(name + "-name");
             nameBody.setIntLoopCount(1);
             nameBody.setByteItemMode(ItemType.ITEMTYPE_STRING);
-            nameBody.setObjItemValueArr(new Object[] { names[index] });
+            nameBody.setObjItemValueArr(new Object[]{name});
             responseBodyList.add(nameBody);
         }
     }

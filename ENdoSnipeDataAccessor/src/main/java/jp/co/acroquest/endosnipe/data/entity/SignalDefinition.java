@@ -34,7 +34,7 @@ package jp.co.acroquest.endosnipe.data.entity;
 public class SignalDefinition
 {
     /** シグナル定義テーブルのID */
-    public long   signalId;
+    public long signalId;
 
     /** シグナル名 */
     public String signalName;
@@ -43,13 +43,16 @@ public class SignalDefinition
     public String matchingPattern;
 
     /** 設定できる閾値の上限レベル */
-    public int    level;
+    public int level;
 
     /** レベルごとの閾値(カンマ区切り) */
     public String patternValue;
 
     /** エスカレーション期間。 */
     public double escalationPeriod;
+
+    /** メール送信フラグ */
+    public boolean sendMail;
 
     /**
      * {@link SignalDefinition} オブジェクトを生成します。<br />
@@ -66,8 +69,8 @@ public class SignalDefinition
     public String toString()
     {
         return "SignalInfo [signalId=" + signalId + ", signalName=" + signalName
-            + ", matchingPattern=" + matchingPattern
-            + ", level=" + level + ", patternValue=" + patternValue
-            + ", escalationPeriod=" + escalationPeriod + "]";
+            + ", matchingPattern=" + matchingPattern + ", level=" + level + ", patternValue="
+            + patternValue + ", escalationPeriod=" + escalationPeriod + ", sendMail=" + sendMail
+            + "]";
     }
 }

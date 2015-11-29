@@ -87,7 +87,6 @@ public class ConfigurationReaderTest extends TestCase
         assertEquals(config.getSmtpEncoding(), "iso-2022-jp");
         assertEquals(config.getSmtpFrom(), "endosnipe@example.com");
         assertEquals(config.getSmtpTo(), "endosnipe@example.com");
-        assertEquals(config.getSmtpSubject(), "[javelin] ${eventName} is occurred.");
     }
 
     /**

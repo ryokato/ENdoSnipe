@@ -27,7 +27,6 @@ package jp.co.acroquest.endosnipe.collector.processor;
 
 import java.lang.reflect.Method;
 
-import jp.co.acroquest.endosnipe.collector.config.DataCollectorConfig;
 import junit.framework.TestCase;
 
 public class SimilarSqlProcessorTest extends TestCase
@@ -37,8 +36,7 @@ public class SimilarSqlProcessorTest extends TestCase
     @Override
     public void setUp()
     {
-        DataCollectorConfig config = new DataCollectorConfig();
-        similarSqlProcessor_ = new SimilarSqlProcessor(config);
+        similarSqlProcessor_ = new SimilarSqlProcessor();
     }
 
     /**

@@ -82,6 +82,9 @@ public interface LogMessageCodes extends CommonLogMessageCodes
     /** システムで予期しないエラーが発生した場合 */
     String SYSTEM_UNKNOW_ERROR = "EEDC0023";
 
+    /** SSLServerSocketの生成に失敗した場合 */
+    String SSL_SERVER_SOCKET_CREATE_FAILURE = "EEDC0024";
+
     // -------------------------------------------------------------------------
     // 電文受信メッセージコード (01xx)
     // -------------------------------------------------------------------------
@@ -191,7 +194,7 @@ public interface LogMessageCodes extends CommonLogMessageCodes
     String FAIL_SEND_ELASTIC_SEARCH = "WEDC0419";
 
     /** 同一SQL判定：類似度の高いSQLを検出 */
-    String FIND_SIMILAR_SQL = "IEDC0420";
+    String FIND_SIMILAR_SQL = "DEDC0420";
 
     /** Javelin 通信用オブジェクトが取得できない */
     String CANNOT_GET_JAVELIN_COMMUNICATION_CLIENT = "EEDC0431";

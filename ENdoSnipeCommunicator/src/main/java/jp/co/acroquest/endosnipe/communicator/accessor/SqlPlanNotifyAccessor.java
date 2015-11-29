@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
+import jp.co.acroquest.endosnipe.communicator.TelegramUtil;
 import jp.co.acroquest.endosnipe.communicator.entity.Body;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.ResponseBody;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
+import jp.co.acroquest.endosnipe.communicator.entity.TelegramItemNameIdMap;
 
 /**
  * SQL実行計画通知電文のためのアクセサクラスです。<br />
@@ -33,8 +35,8 @@ import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
  */
 public class SqlPlanNotifyAccessor implements TelegramConstants
 {
-    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
-        .getLogger(SystemResourceGetter.class);
+    private static final ENdoSnipeLogger LOGGER =
+        ENdoSnipeLogger.getLogger(SystemResourceGetter.class);
 
     /**
      * プライベートコンストラクタです。<br />
@@ -60,11 +62,17 @@ public class SqlPlanNotifyAccessor implements TelegramConstants
         }
 
         Body[] bodies = telegram.getObjBody();
-        List<String> measurmentItemNames = new ArrayList<String>(bodies.length);
-        List<String> sqlStatements = new ArrayList<String>(bodies.length);
-        List<String> executionPlans = new ArrayList<String>(bodies.length);
-        List<Timestamp> gettingPlanTimes = new ArrayList<Timestamp>(bodies.length);
-        List<String> stackTraces = new ArrayList<String>(bodies.length);
+
+        // 項目名とIDのマップを取得し、圧縮された電文を解凍する準備をする
+        List<TelegramItemNameIdMap> itemNameIdMapList =
+            TelegramUtil.getTelegramItemNameIdMapList(bodies);
+
+        int measurementListLength = bodies.length;
+        List<String> measurmentItemNames = new ArrayList<String>(measurementListLength);
+        List<String> sqlStatements = new ArrayList<String>(measurementListLength);
+        List<String> executionPlans = new ArrayList<String>(measurementListLength);
+        List<Timestamp> gettingPlanTimes = new ArrayList<Timestamp>(measurementListLength);
+        List<String> stackTraces = new ArrayList<String>(measurementListLength);
 
         for (Body body : bodies)
         {
@@ -82,11 +90,11 @@ public class SqlPlanNotifyAccessor implements TelegramConstants
                 String sqlStatement = (String)objItemValueArr[0];
                 sqlStatements.add(sqlStatement);
 
-                // measurement_item_nameを作成する
-                String itemName = body.getStrItemName();
-                String mearsurmentItemName = agentName + itemName;
+                // 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する
+                String itemName =
+                    TelegramUtil.getMeasurementItemName(itemNameIdMapList, responseBody);
 
-                measurmentItemNames.add(mearsurmentItemName);
+                measurmentItemNames.add(agentName + itemName);
             }
             else if (OBJECTNAME_SQL_EXECUTION_PLAN.equals(objectName) == true)
             {

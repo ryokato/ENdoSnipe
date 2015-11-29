@@ -25,21 +25,35 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.collector;
 
+import static jp.co.acroquest.endosnipe.collector.LogMessageCodes.SSL_SERVER_SOCKET_CREATE_FAILURE;
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
 import jp.co.acroquest.endosnipe.collector.DataCollectorClient.DataCollectorClientListener;
+import jp.co.acroquest.endosnipe.common.logger.ENdoSnipeLogger;
 import jp.co.acroquest.endosnipe.communicator.CommunicationServer;
 import jp.co.acroquest.endosnipe.communicator.CommunicatorListener;
 import jp.co.acroquest.endosnipe.communicator.TelegramListener;
 import jp.co.acroquest.endosnipe.communicator.accessor.ConnectNotifyAccessor;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 
@@ -63,7 +77,7 @@ public class DataCollectorServer implements CommunicationServer, Runnable
     private static final String CLIENT_THREAD_NAME = "JavelinClientThread";
 
     /** Javelin/BottleneckEyeを待ち受けるポート番号 */
-    private int port_;
+    private CommunicatorSetting setting_;
 
     /** サーバソケット */
     private ServerSocket serverSocket_ = null;
@@ -99,6 +113,9 @@ public class DataCollectorServer implements CommunicationServer, Runnable
     private final List<TelegramListener> controlClientTelegramListener_ =
         new ArrayList<TelegramListener>();
 
+    private static final ENdoSnipeLogger LOGGER = ENdoSnipeLogger
+        .getLogger(DataCollectorServer.class);
+
     /**
      * クライアントからの接続・切断を処理するためのリスナ。
      * @author matsuoka
@@ -130,19 +147,19 @@ public class DataCollectorServer implements CommunicationServer, Runnable
     /**
      * {@inheritDoc}
      */
-    public void start(final int port)
+    public void start(final CommunicatorSetting setting)
     {
-        start(port, DEFAULT_BIND_INTERVAL);
+        start(setting, DEFAULT_BIND_INTERVAL);
     }
 
     /**
      * サーバを開始する。
-     * @param port ポート番号
+     * @param setting 通信設定
      * @param bindInterval Bind失敗時の再試行間隔
      */
-    public void start(final int port, final int bindInterval)
+    public void start(final CommunicatorSetting setting, final int bindInterval)
     {
-        port_ = port;
+        setting_ = setting;
         bindInterval_ = bindInterval;
 
         if (this.serverSocket_ != null)
@@ -223,7 +240,14 @@ public class DataCollectorServer implements CommunicationServer, Runnable
         {
             try
             {
-                socket = new ServerSocket(port_);
+                if (setting_.sslEnable)
+                {
+                    socket = createSslServerSocket();
+                }
+                else
+                {
+                    socket = new ServerSocket(setting_.port);
+                }
                 break;
             }
             catch (IOException e)
@@ -244,6 +268,43 @@ public class DataCollectorServer implements CommunicationServer, Runnable
         isListening_ = true;
 
         return socket;
+    }
+
+    private SSLServerSocket createSslServerSocket()
+    {
+        SSLServerSocket serverSocket = null;
+        try
+        {
+            // KeyStoreの読み込み
+            char[] keyPassChar = setting_.keyStorePass.toCharArray();
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(new FileInputStream(setting_.keyStore), keyPassChar);
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, keyPassChar);
+
+            // TrustStoreの読み込み
+            char[] trustPassChar = setting_.trustStorePass.toCharArray();
+            KeyStore trustStore = KeyStore.getInstance("JKS");
+            trustStore.load(new FileInputStream(setting_.trustStore), trustPassChar);
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
+            tmf.init(trustStore);
+
+            KeyManager[] keyManagers = kmf.getKeyManagers();
+            TrustManager[] trustManagers = tmf.getTrustManagers();
+
+            SSLContext sContext = SSLContext.getInstance("TLS");
+            sContext.init(keyManagers, trustManagers, null);
+
+            SSLServerSocketFactory serverSocketFactory = sContext.getServerSocketFactory();
+            serverSocket = (SSLServerSocket)serverSocketFactory.createServerSocket(setting_.port);
+            // クライアント認証は行わない。
+            serverSocket.setNeedClientAuth(false);
+        }
+        catch (Exception ex)
+        {
+            LOGGER.log(SSL_SERVER_SOCKET_CREATE_FAILURE, ex, ex.getMessage());
+        }
+        return serverSocket;
     }
 
     private void accept(final ThreadGroup group)

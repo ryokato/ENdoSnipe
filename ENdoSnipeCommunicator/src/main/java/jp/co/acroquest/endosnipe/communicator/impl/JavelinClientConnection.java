@@ -150,7 +150,6 @@ public class JavelinClientConnection
 
         int headerLength = TelegramUtil.TELEGRAM_HEADER_LENGTH;
         this.outputStream_.write(byteOutputArr, 0, headerLength);
-        this.outputStream_.flush();
 
         int currentPos = headerLength;
         int remainLength = byteOutputArr.length - headerLength;
@@ -158,10 +157,10 @@ public class JavelinClientConnection
         {
             int writeLength = Math.min(BUFFER_SIZE, remainLength);
             this.outputStream_.write(byteOutputArr, currentPos, writeLength);
-            this.outputStream_.flush();
             remainLength -= writeLength;
             currentPos += writeLength;
         }
+        this.outputStream_.flush();
     }
 
     /**

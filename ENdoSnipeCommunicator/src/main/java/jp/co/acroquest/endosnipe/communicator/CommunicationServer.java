@@ -25,6 +25,8 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.communicator;
 
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
+
 /**
  * コミュニケーションサーバのためのインターフェースです。<br />
  * 
@@ -41,15 +43,15 @@ public interface CommunicationServer extends AbstractCommunicator
     /**
      * サーバを開始します。<br />
      * 
-     * @param port ポート番号
+     * @param setting 通信設定
      */
-    void start(int port);
+    void start(CommunicatorSetting setting);
 
     /**
      * サーバを停止します。<br />
      */
     void stop();
-    
+
     /**
      * 接続中クライアントの数を返します。<br />
      * 

@@ -174,7 +174,7 @@ public class PerformanceDoctorService
      */
     public String getPerfDoctorDetailData(final String fileName)
     {
-        StringBuffer detailData = new StringBuffer();
+        StringBuilder detailData = new StringBuilder();
 
         try
         {
@@ -182,7 +182,6 @@ public class PerformanceDoctorService
             JavelinLog jvnLog = DaoUtil.getJavelinLog("1", fileName);
             if (jvnLog == null)
             {
-                LOGGER.log(LogMessageCodes.FAIL_GET_JVNLOG);
                 return null;
             }
             BufferedReader reader = new BufferedReader(new InputStreamReader(jvnLog.javelinLog));

@@ -26,18 +26,20 @@
 package jp.co.acroquest.endosnipe.communicator.accessor;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
+
 import jp.co.acroquest.endosnipe.common.config.JavelinConfig;
 import jp.co.acroquest.endosnipe.common.entity.ItemType;
 import jp.co.acroquest.endosnipe.common.entity.MeasurementData;
 import jp.co.acroquest.endosnipe.common.entity.MeasurementDetail;
 import jp.co.acroquest.endosnipe.common.entity.ResourceData;
+import jp.co.acroquest.endosnipe.communicator.TelegramUtil;
 import jp.co.acroquest.endosnipe.communicator.entity.Body;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.MeasurementConstants;
@@ -45,8 +47,7 @@ import jp.co.acroquest.endosnipe.communicator.entity.RequestBody;
 import jp.co.acroquest.endosnipe.communicator.entity.ResponseBody;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
 import jp.co.acroquest.endosnipe.communicator.entity.TelegramConstants;
-
-import org.apache.log4j.Logger;
+import jp.co.acroquest.endosnipe.communicator.entity.TelegramItemNameIdMap;
 
 /**
  * リソース通知電文のためのアクセサクラスです。<br />
@@ -55,29 +56,28 @@ import org.apache.log4j.Logger;
 public class ResourceNotifyAccessor implements TelegramConstants, MeasurementConstants
 {
     /** グラフの系列が１つ */
-    private static final int           SINGLE_RESOURCE        = 1;
+    private static final int SINGLE_RESOURCE = 1;
 
     /** グラフの系列が２つ以上 */
-    private static final int           MULTI_RESOURCE         = 2;
+    private static final int MULTI_RESOURCE = 2;
 
     /** グラフ系列の電文を表す項目名の接尾辞 */
-    private static final String        NAME_POSTFIX           = "-name";
+    private static final String NAME_POSTFIX = "-name";
 
     /** Javelinの設定。 */
-    private static final JavelinConfig CONFIG                 = new JavelinConfig();
+    private static final JavelinConfig CONFIG = new JavelinConfig();
 
     /** 表示名変換マップ */
-    private static Map<String, String> convMap__              = new HashMap<String, String>(0);
+    private static Map<String, String> convMap__ = new HashMap<String, String>(0);
 
     /** 置換変数を特定するための正規表現文字列。 */
-    private static final Pattern       VAR_PATTERN            =
-                                           Pattern.compile("\\$\\{[A-z0-9][A-z0-9_.-]*\\}");
+    private static final Pattern VAR_PATTERN = Pattern.compile("\\$\\{[A-z0-9][A-z0-9_.-]*\\}");
 
     /** 計測項目名(ID)の接頭辞。定義ファイルから取得した文字列。 */
-    private static String              prefixTemplate__;
+    private static String prefixTemplate__;
 
     /** 計測項目名(ID)に接頭辞を付与しない項目の前方一致パターンリスト。 */
-    private static List<String>        noPrefixPatternList__  = new ArrayList<String>();
+    private static List<String> noPrefixPatternList__ = new ArrayList<String>();
 
     static
     {
@@ -129,7 +129,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
 
             // measurementDataの詳細を追加する。
             Map<String, MeasurementDetail> measurementDetailMap =
-                    measurementData.getMeasurementDetailMap();
+                measurementData.getMeasurementDetailMap();
 
             List<String> nameList = new ArrayList<String>();
             List<Object> valueList = new ArrayList<Object>();
@@ -144,16 +144,16 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
                 }
                 else
                 {
-                    ResponseBody body = makeResourceResponseBody(itemName, value,
-                                                     ItemType.getItemType(itemType));
+                    ResponseBody body =
+                        makeResourceResponseBody(itemName, value, ItemType.getItemType(itemType));
                     responseBodyList.add(body);
                 }
             }
 
             if (nameList.size() > 0)
             {
-                ResponseBody valueBody = makeResourceResponseBody(itemName, valueList,
-                                                 ItemType.getItemType(itemType));
+                ResponseBody valueBody =
+                    makeResourceResponseBody(itemName, valueList, ItemType.getItemType(itemType));
                 responseBodyList.add(valueBody);
 
                 // DisplayName対応
@@ -171,9 +171,9 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
                     }
                 }
 
-                ResponseBody nameBody = makeResourceResponseBody(itemName + "-name",
-                                                                 convNameList,
-                                                                 ItemType.ITEMTYPE_STRING);
+                ResponseBody nameBody =
+                    makeResourceResponseBody(itemName + "-name", convNameList,
+                                             ItemType.ITEMTYPE_STRING);
                 responseBodyList.add(nameBody);
             }
         }
@@ -184,7 +184,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
     }
 
     private static ResponseBody makeResourceResponseBody(String itemName, List<?> nameList,
-            ItemType itemType)
+        ItemType itemType)
     {
         // 値を追加する。
         ResponseBody valueBody = new ResponseBody();
@@ -214,8 +214,8 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
      *
      * @return 電文から作成した{@link ResourceData}オブジェクト
      */
-    public static ResourceData createResourceData(final Telegram telegram, 
-            String dbName, String agentName)
+    public static ResourceData createResourceData(final Telegram telegram, String dbName,
+        String agentName)
     {
         if (checkTelegramKind(telegram) == false || checkResponseKind(telegram) == false)
         {
@@ -228,13 +228,27 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
         ResourceData resourceData = new ResourceData();
 
         Body[] bodies = telegram.getObjBody();
+
+        List<TelegramItemNameIdMap> itemNameIdMapList =
+            TelegramUtil.getTelegramItemNameIdMapList(bodies);
+
         int bodyMax = bodies.length;
         int bodyCnt = 0;
         while (bodyCnt < bodyMax)
         {
             Body body = bodies[bodyCnt];
             String objectName = body.getStrObjName();
-            String itemName = body.getStrItemName();
+
+            if (OBJECTNAME_ITEMNAME_ID_MAP.equals(objectName))
+            {
+                // 項目名とIDのマップは、圧縮/解凍に使うためのものであるため、パスする
+                bodyCnt++;
+                continue;
+            }
+
+            // 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する
+            String itemName = TelegramUtil.getMeasurementItemName(itemNameIdMapList, body);
+
             if (TIME_RESOURCE.equals(objectName))
             {
                 // 項目名が時刻の場合には時刻を設定し、ホストIDの時にはホストIDを設定する。
@@ -258,17 +272,19 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
             {
                 if (logger.isDebugEnabled())
                 {
-                    logger.debug("ResourceNotifyAccessor.createResourceData: " +
-                                 "call addMeasurementData([" + bodyCnt + "]:" + itemName + ")");
+                    logger.debug("ResourceNotifyAccessor.createResourceData: "
+                        + "call addMeasurementData([" + bodyCnt + "]:" + itemName + ")");
                 }
-                bodyCnt = addMeasurementData(resourceData, bodies, bodyCnt, dbName, agentName);
+                bodyCnt =
+                    addMeasurementData(resourceData, bodies, bodyCnt, dbName, agentName,
+                                       itemNameIdMapList);
             }
             else
             {
                 if (logger.isDebugEnabled())
                 {
-                    logger.info("ResourceNotifyAccessor.createResourceData: " +
-                                "unknown ObjectName: [" + bodyCnt + "]=" + objectName);
+                    logger.info("ResourceNotifyAccessor.createResourceData: "
+                        + "unknown ObjectName: [" + bodyCnt + "]=" + objectName);
                 }
                 bodyCnt++;
             }
@@ -283,11 +299,12 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
      * @param bodies 電文本体の配列
      * @param cnt 読込中の電文位置
      * @param dbName データベース名
+     * @param itemNameIdMapList 電文サイズを解凍する際に使う、項目名とIDのセット
      *
      * @return 次の電文位置
      */
     private static int addMeasurementData(ResourceData resourceData, Body[] bodies, int cnt,
-            String dbName, String agentName)
+        String dbName, String agentName, List<TelegramItemNameIdMap> itemNameIdMapList)
     {
         Logger logger = Logger.getLogger(ResourceNotifyAccessor.class);
 
@@ -296,7 +313,10 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
         // 計測値情報を追加
         Body measurementBody = bodies[cnt];
         String measurementObjName = measurementBody.getStrObjName();
-        String measuremnetItemName = agentName + measurementBody.getStrItemName();
+
+        // 項目名が圧縮されている場合も考慮して、解凍後の項目名を取得する
+        String itemName = TelegramUtil.getMeasurementItemName(itemNameIdMapList, measurementBody);
+        String measuremnetItemName = agentName + itemName;
 
         if (OBJECTNAME_RESOURCE.equals(measurementObjName))
         {
@@ -304,7 +324,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
             data.measurementType = 0;
             data.itemName = measuremnetItemName;
             data.valueType = ItemType.getItemTypeNumber(measurementBody.getByteItemMode());
-            
+
             data.displayName = measurementBody.getStrObjDispName();
             if (isSingleResource(bodies, cnt))
             {
@@ -322,8 +342,8 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
 
                 if (logger.isDebugEnabled())
                 {
-                    logger.debug("ResourceNotifyAccessor.addMeasurementData: " +
-                                 "addMeasurementData(" + data + ")");
+                    logger.debug("ResourceNotifyAccessor.addMeasurementData: "
+                        + "addMeasurementData(" + data + ")");
                 }
 
                 resourceData.addMeasurementData(data);
@@ -342,7 +362,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
                 {
                     nameArr = nameBody.getObjItemValueArr();
                 }
-                
+
                 for (int num = 0; num < valueArr.length; num++)
                 {
                     String name = (String)nameArr[num];
@@ -357,8 +377,8 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
 
                 if (logger.isDebugEnabled())
                 {
-                    logger.debug("ResourceNotifyAccessor.addMeasurementData: " +
-                                 "addMeasurementData(" + data + ")");
+                    logger.debug("ResourceNotifyAccessor.addMeasurementData: "
+                        + "addMeasurementData(" + data + ")");
                 }
 
                 resourceData.addMeasurementData(data);
@@ -430,7 +450,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
     {
         Header header = telegram.getObjHeader();
         if (BYTE_REQUEST_KIND_RESPONSE == header.getByteRequestKind()
-                || BYTE_REQUEST_KIND_NOTIFY == header.getByteRequestKind())
+            || BYTE_REQUEST_KIND_NOTIFY == header.getByteRequestKind())
         {
             return true;
         }
@@ -460,7 +480,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
      * @return 要求本体
      */
     public static ResponseBody makeResourceResponseBody(String itemName, Object value,
-            ItemType itemType)
+        ItemType itemType)
     {
         ResponseBody responseBody = new ResponseBody();
         responseBody.setStrObjName(OBJECTNAME_RESOURCE);
@@ -488,6 +508,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
     {
         return makeTelegram(responseBodyList, BYTE_REQUEST_KIND_RESPONSE);
     }
+
     /**
      * 応答電文を作成する。
      * 
@@ -531,7 +552,7 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
             if (needPrefix == true)
             {
                 String concreteItemName = appendPrefix(prefix, itemName);
-                
+
                 // 接頭辞と項目名の間にスラッシュが入らないケースを回避する
                 body.setStrItemName(concreteItemName);
             }
@@ -550,9 +571,9 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
     private static String appendPrefix(String prefix, String itemName)
     {
         StringBuilder builder = new StringBuilder(prefix);
-        
-        if (prefix.length() > 0 && itemName.length() > 0
-                && prefix.endsWith("/") == false && itemName.startsWith("/") == false)
+
+        if (prefix.length() > 0 && itemName.length() > 0 && prefix.endsWith("/") == false
+            && itemName.startsWith("/") == false)
         {
             builder.append("/");
         }
@@ -658,7 +679,6 @@ public class ResourceNotifyAccessor implements TelegramConstants, MeasurementCon
         timeBody.setObjItemValueArr(new Object[]{currentTimeLong});
         return timeBody;
     }
-
 
     /**
      * 表示名変換マップを設定します。

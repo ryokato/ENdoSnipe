@@ -34,6 +34,7 @@ import jp.co.acroquest.endosnipe.communicator.CommunicationClient;
 import jp.co.acroquest.endosnipe.communicator.CommunicationFactory;
 import jp.co.acroquest.endosnipe.communicator.TelegramListener;
 import jp.co.acroquest.endosnipe.communicator.accessor.ConnectNotifyAccessor;
+import jp.co.acroquest.endosnipe.communicator.entity.CommunicatorSetting;
 import jp.co.acroquest.endosnipe.communicator.entity.ConnectNotifyData;
 import jp.co.acroquest.endosnipe.communicator.entity.Header;
 import jp.co.acroquest.endosnipe.communicator.entity.Telegram;
@@ -125,7 +126,14 @@ public class JavelinNotifyListener implements TelegramListener
                 CommunicationClient client =
                         CommunicationFactory.getCommunicationClient("DataCollector-ClientThread-"
                                 + clientId);
-                client.init(javelinHost, javelinPort);
+                CommunicatorSetting communicateSetting = new CommunicatorSetting();
+                communicateSetting.port = javelinPort;
+                communicateSetting.sslEnable = dbConfig.isSslEnable();
+                communicateSetting.keyStore = dbConfig.getSslKeyStore();
+                communicateSetting.keyStorePass = dbConfig.getSslKeyStorePass();
+                communicateSetting.trustStore = dbConfig.getSslTrustStore();
+                communicateSetting.trustStorePass = dbConfig.getSslTrustStorePass();
+                client.init(javelinHost, communicateSetting);
                 client.addTelegramListener(new CollectorListener(agentId, databaseName));
                 client.addTelegramListener(new SignalStateChangeListener());
                 client.addTelegramListener(new SummarySignalStateChangeListener());

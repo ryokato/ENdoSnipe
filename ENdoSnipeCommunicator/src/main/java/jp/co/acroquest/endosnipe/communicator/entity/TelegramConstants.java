@@ -134,6 +134,9 @@ public interface TelegramConstants
     /** 要求応答種別（応答） */
     byte BYTE_REQUEST_KIND_RESPONSE = 2;
 
+    /** オブジェクト名（項目名とIDのマップ） */
+    String OBJECTNAME_ITEMNAME_ID_MAP = "itemnameIdMap";
+
     /** オブジェクト名（リソース通知でのリソース値） */
     String OBJECTNAME_RESOURCE = "resources";
 
@@ -507,8 +510,8 @@ public interface TelegramConstants
     String ITEMNAME_JAVAPROCESS_COLLECTION_MAP_COUNT = "/process/collection/map";
 
     /** 項目名（リソース値での、クラスヒストグラムから取得したオブジェクトのサイズ） */
-    String ITEMNAME_JAVAPROCESS_COLLECTION_HISTOGRAM_SIZE = "/process/histogram/"
-        + "object/size:bytes";
+    String ITEMNAME_JAVAPROCESS_COLLECTION_HISTOGRAM_SIZE =
+        "/process/histogram/" + "object/size:bytes";
 
     /** 項目名（リソース値での、クラスヒストグラムから取得したオブジェクトの数） */
     String ITEMNAME_JAVAPROCESS_COLLECTION_HISTOGRAM_COUNT = "/process/histogram/object/number";
@@ -565,8 +568,8 @@ public interface TelegramConstants
     String ITEMNAME_JAVAPROCESS_CLASSLOADER_CLASS_TOTAL = "/process/classloader/class/total";
 
     /** 項目名(Java 仮想マシンに現在ロードされているクラスの数) */
-    String ITEMNAME_JAVAPROCESS_CLASSLOADER_CLASS_CURRENT = "/process/classloader/"
-        + "class/current";
+    String ITEMNAME_JAVAPROCESS_CLASSLOADER_CLASS_CURRENT =
+        "/process/classloader/" + "class/current";
 
     /** 項目名（リソース値での、トータルのガベージコレクションの時間） */
     String ITEMNAME_JAVAPROCESS_GC_TIME_TOTAL = "/process/gc/time/total(d)";
@@ -727,6 +730,9 @@ public interface TelegramConstants
     /** 項目名（閾値判定パターン） */
     String ITEMNAME_MATCHING_PATTERN = "matchingPattern";
 
+    /** 項目名（メール送信有無) */
+    String ITEMNAME_SEND_MAIL = "sendMail";
+
     /** 項目名(シグナル定義追加) */
     String ITEMNAME_SIGNAL_ADD = "signalAdd";
 
@@ -831,7 +837,11 @@ public interface TelegramConstants
 
     /** クラス名、メソッド名のセパレータ */
     String CLASSMETHOD_SEPARATOR = "###CLASSMETHOD_SEPARATOR###";
-    
+
     /** 項目名(ストール検出回数) */
     String ITEMNAME_JAVAPROCESS_METHOD_STALL_COUNT = "javaprocess.method.stall.count";
+    
+    // -----------------------------------------------------
+    // 電文サイズの短縮対象にする項目名の長さ
+    int COMPRESSION_ITEM_NAME_LENGTH = 50;
 }

@@ -17,10 +17,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import jp.co.acroquest.endosnipe.common.util.SQLUtil;
 import jp.co.acroquest.endosnipe.data.TableNames;
 import jp.co.acroquest.endosnipe.data.entity.SqlPlan;
+import jp.co.acroquest.endosnipe.util.ResourceDataDaoUtil;
 
 /**
  * {@link SqlPlan} のための DAO です。
@@ -46,8 +48,10 @@ public class SqlPlanDao extends AbstractDao implements TableNames
         try
         {
             conn = getConnection(database);
+            Date planDate = new Date(sqlPlan.gettingPlanTime.getTime());
+            String tableName = ResourceDataDaoUtil.getTableNameToInsert(planDate, SQL_PLAN);
             pstmt =
-                conn.prepareStatement("insert into " + SQL_PLAN
+                conn.prepareStatement("insert into " + tableName
                     + " (MEASUREMENT_ITEM_NAME, SQL_STATEMENT,"
                     + " EXECUTION_PLAN, GETTING_PLAN_TIME, STACK_TRACE)" + " values (?,?,?,?,?)");
             PreparedStatement delegated = getDelegatingStatement(pstmt);
@@ -73,7 +77,57 @@ public class SqlPlanDao extends AbstractDao implements TableNames
             SQLUtil.closeConnection(conn);
         }
     }
-    
+
+    /**
+     * SQL実行計画のレコードを追加します。<br />
+     * 
+     * @param database データベース名
+     * @param sqlPlan 挿入するSQL実行計画
+     * @return 更新レコード数
+     * @throws SQLException SQL 実行時に例外が発生した場合
+     */
+    public static int update(final String database, final SqlPlan sqlPlan)
+        throws SQLException
+    {
+        int updateCount = 0;
+
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try
+        {
+            conn = getConnection(database);
+            pstmt =
+                conn.prepareStatement("update " + SQL_PLAN
+                    + " SET EXECUTION_PLAN = ?, GETTING_PLAN_TIME = ?"
+                    + " WHERE MEASUREMENT_ITEM_NAME = ? AND SQL_STATEMENT = ? AND STACK_TRACE = ?");
+            PreparedStatement delegated = getDelegatingStatement(pstmt);
+            // CHECKSTYLE:OFF
+            String measurementItemName = sqlPlan.measurementItemName;
+            String sqlStatement = sqlPlan.sqlStatement;
+            String executionPlan = sqlPlan.executionPlan;
+            Timestamp gettingPlanTime = sqlPlan.gettingPlanTime;
+            String stackTrace = sqlPlan.stackTrace;
+
+            delegated.setString(1, executionPlan);
+            delegated.setTimestamp(2, gettingPlanTime);
+            delegated.setString(3, measurementItemName);
+            delegated.setString(4, sqlStatement);
+            delegated.setString(5, stackTrace);
+            // CHECKSTYLE:ON
+            delegated.execute();
+            updateCount = delegated.getUpdateCount();
+        }
+        finally
+        {
+            SQLUtil.closeResultSet(rs);
+            SQLUtil.closeStatement(pstmt);
+            SQLUtil.closeConnection(conn);
+        }
+
+        return updateCount;
+    }
+
     /**
      * 指定したインデックスのテーブルを truncate します。
      *

@@ -10,9 +10,9 @@ ENS.profilerView = wgp.AbstractView
 					"profileValueChanged" ],
 			initialize : function(argument, treeSettings) {
 				var instance = this;
-				this.tableMargin = 20;
-				this.tableWidth = parseInt($("#" + this.id).width()
-						- this.tableMargin * 4);
+				this.tableMargin = 50;
+				this.tableWidth = parseInt($("#persArea_drop_0_1").width()
+						- this.tableMargin);
 				this.tableColModel = this.createTableColModel();
 
 				var appView = new ENS.AppView();
@@ -94,19 +94,25 @@ ENS.profilerView = wgp.AbstractView
 			render : function() {
 				$("#" + this.id).append('<div id="profilerDiv"></div>');
 				$("#profilerDiv").css({
-					"margin-left" : 5
+					"margin-left" : 5,
+					"margin-top" : 5
 				});
 				$("#profilerDiv")
 						.append(
-								"<input type='button' id='reloadButton' value='reload'>");
+								"<input type='button' class='default-btn' id='reloadButton' value='reload'>");
+				
+				$("#reloadButton").css({
+					"margin-left": this.tableWidth - 290 + "px"
+				});
+				
 				$("#profilerDiv").append(
-						"<input type='button' id='resetButton' value='reset'>");
+						"<input type='button' class='default-btn' id='resetButton' value='reset'>");
 				$("#profilerDiv")
 						.append(
-								"<input type='button' id='updateButton' value='update'>");
+								"<input type='button' class='default-btn' id='updateButton' value='update'>");
 				$("#profilerDiv")
 				.append(
-						"<input type='button' id='downloadButton' value='download'>");
+						"<input type='button' class='default-btn' id='downloadButton' value='download'>");
 				$("#profilerDiv").append('<table id="profilerTable"></table>');
 				$("#profilerDiv").append('<div id="profilerPager"></table>');
 				var height = "auto";
@@ -253,6 +259,7 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "target",
 							width : parseInt(this.tableWidth * 0.05),
+							hidden : true,
 							editable : true,
 							edittype : "select",
 							editoptions : {
@@ -290,6 +297,8 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "alarmThreshold",
 							width : parseInt(this.tableWidth * 0.05),
+							sorttype : "int",
+							hidden : true,
 							editable : true,
 							edittype : "text",
 							editrules : {
@@ -324,6 +333,8 @@ ENS.profilerView = wgp.AbstractView
 						{
 							name : "alarmCpuThreshold",
 							width : parseInt(this.tableWidth * 0.05),
+							sorttype : "int",
+							hidden : true,
 							editable : true,
 							edittype : "text",
 							editrules : {
@@ -357,7 +368,7 @@ ENS.profilerView = wgp.AbstractView
 						}, {
 							name : "callCount",
 							width : parseInt(this.tableWidth * 0.05),
-							sorttype : "float"
+							sorttype : "int",
 						}, {
 							name : "total",
 							width : parseInt(this.tableWidth * 0.05),
