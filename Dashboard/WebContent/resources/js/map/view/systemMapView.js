@@ -36,24 +36,12 @@ ENS.SystemMapView = wgp.AbstractView
         // Clusterのドロップダウンリストを描画する
         this._renderSelectArea();
 
-        // SystemMapの読み込み。
-        this._onLoadSystemMap();
-
-        // スクロール位置をリセット
-        $("#" + this.$el.attr("id")).scrollTop(0);
-        $("#" + this.$el.attr("id")).scrollLeft(0);
-
-      },
-      _onLoadSystemMap : function() {
-        // マップのクリア
-        jsPlumb.empty(this.systemMapId);
-        jsPlumb.detachEveryConnection();
-
         this.agentKeyList = this._getAgentList($("#" + this.ID_CLUSTER_NAME)
             .val());
 
         var instance = this;
         $.each(this.agentKeyList, function(index, agentKey) {
+          instance.collection.models = [];
           ENS.tree.agentName = agentKey;
           var settings = {
             data : {
@@ -63,6 +51,11 @@ ENS.SystemMapView = wgp.AbstractView
           };
           instance.ajaxHandler.requestServerAsync(settings);
         });
+
+        // スクロール位置をリセット
+        $("#" + this.$el.attr("id")).scrollTop(0);
+        $("#" + this.$el.attr("id")).scrollLeft(0);
+
       },
       notifyEvent : function(notificationList) {
         var profileListTmp = [];
@@ -81,6 +74,8 @@ ENS.SystemMapView = wgp.AbstractView
         this._renderSystemMap();
       },
       _renderSystemMap : function() {
+        // システムマップを読み込む。
+
         // 関連を抽出する。
         var relTargetList = this._getRelationTarget(this.profileList);
         // 関連するオブジェクトを生成する。（関連のないAgentは生成しない。）
@@ -165,12 +160,6 @@ ENS.SystemMapView = wgp.AbstractView
         $reloadBtn.attr("id", this.ID_RELOAD_BTN);
         $reloadBtn.css("margin-left", "10px");
         $reloadBtn.html("reload");
-
-        var instance = this;
-        $reloadBtn.click(function() {
-          // SystemMapの読み込み。
-          instance._onLoadSystemMap();
-        });
 
         $subcontainer.append($reloadBtn);
       },
@@ -374,21 +363,22 @@ ENS.SystemMapView = wgp.AbstractView
         return $selector;
       },
       _callbackGetTopNodes : function($selector, topNodes) {
+        var cnt = 0;
         for ( var i in topNodes) {
           var cluster = topNodes[i];
           $option = $("<option/>");
           $option.attr("value", cluster.data);
           $option.html(cluster.data);
           $selector.append($option);
-          if (i == 0) {
+          if (cnt == 0) {
             $selector.val(cluster.data);
           }
+          cnt++;
         }
 
         var instance = this;
         $selector.change(function() {
-          // SystemMapの読み込み。
-          instance._onLoadSystemMap();
+
         });
       },
       _getAgentList : function(clusterName) {
