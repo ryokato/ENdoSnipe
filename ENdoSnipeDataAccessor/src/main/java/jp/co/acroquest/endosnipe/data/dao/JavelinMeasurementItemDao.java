@@ -337,27 +337,14 @@ public class JavelinMeasurementItemDao extends AbstractDao implements TableNames
                     + " split_part(MEASUREMENT_ITEM_NAME,'/','5') != '' as grandchild"
                     + " from JAVELIN_MEASUREMENT_ITEM"
                     + " where MEASUREMENT_ITEM_NAME LIKE ?"
-                    + " and split_part("
-                    + " MEASUREMENT_ITEM_NAME,'/','3') = ?" + "group by child, grandchild"
+                    + " group by child, grandchild"
                     + " order by child, grandchild";
             pstmt = conn.prepareStatement(sql);
             PreparedStatement preparedStatement = getDelegatingStatement(pstmt);
 
-            String[] measuremtnItemPart = measurementItemName.split("/");
-            int length = measuremtnItemPart.length;
             String tempStr = measurementItemName + "%";
-            int index = 1;
-            preparedStatement.setString(index++, tempStr);
-            String measurementItem;
-            if (measuremtnItemPart.length > 0)
-            {
-                measurementItem = measuremtnItemPart[length - 1];
-            }
-            else
-            {
-                measurementItem = "";
-            }
-            preparedStatement.setString(index++, measurementItem);
+            preparedStatement.setString(1, tempStr);
+
             rs = preparedStatement.executeQuery();
 
             while (rs.next())
