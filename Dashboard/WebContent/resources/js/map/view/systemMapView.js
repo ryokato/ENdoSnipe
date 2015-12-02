@@ -7,10 +7,17 @@ ENS.SystemMapView = wgp.AbstractView
         this.ID_CLUSTER_NAME = "cluster_name";
         this.ID_RELOAD_BTN = "reload_btn";
 
+        // 配置位置の定数
+        this.OBJ_MARGIN = 10;
+        this.OBJ_MARGIN_TOP = 120;
+        this.OBJ_MARGIN_LEFT = 280;
+
         this.profileList = [];
 
-        var websocketClient = new wgp.WebSocketClient(this, "notifyEvent");
-        websocketClient.initialize();
+        this.websocketClient = this._connectSocket();
+
+        // リアルタイム描画の制御フラグ（falseでコネクションを閉じる。）
+        this.isOpenSocket = true;
 
         var ajaxHandler = new wgp.AjaxHandler();
         this.ajaxHandler = ajaxHandler;
@@ -19,6 +26,11 @@ ENS.SystemMapView = wgp.AbstractView
 
         // 本クラスのrenderメソッド実行
         this.renderExtend();
+      },
+      _connectSocket : function() {
+        var websocketClient = new wgp.WebSocketClient(this, "notifyEvent");
+        websocketClient.initialize();
+        return websocketClient;
       },
       renderExtend : function() {
 
@@ -36,12 +48,24 @@ ENS.SystemMapView = wgp.AbstractView
         // Clusterのドロップダウンリストを描画する
         this._renderSelectArea();
 
+        // SystemMapの読み込み。
+        this._onLoadSystemMap();
+
+        // スクロール位置をリセット
+        $("#" + this.$el.attr("id")).scrollTop(0);
+        $("#" + this.$el.attr("id")).scrollLeft(0);
+
+      },
+      _onLoadSystemMap : function() {
+        // マップのクリア
+        jsPlumb.empty(this.systemMapId);
+        jsPlumb.detachEveryConnection();
+
+        // クラスタ単位でエージェント名を取得し、Profile取得通知を呼び出す。
         this.agentKeyList = this._getAgentList($("#" + this.ID_CLUSTER_NAME)
             .val());
-
         var instance = this;
         $.each(this.agentKeyList, function(index, agentKey) {
-          instance.collection.models = [];
           ENS.tree.agentName = agentKey;
           var settings = {
             data : {
@@ -51,31 +75,50 @@ ENS.SystemMapView = wgp.AbstractView
           };
           instance.ajaxHandler.requestServerAsync(settings);
         });
-
-        // スクロール位置をリセット
-        $("#" + this.$el.attr("id")).scrollTop(0);
-        $("#" + this.$el.attr("id")).scrollLeft(0);
-
       },
       notifyEvent : function(notificationList) {
-        var profileListTmp = [];
-        _.each(notificationList, function(notification, dataGroupId) {
-          var agentKey = dataGroupId.split("/")[0];
-          var dataTmp = [];
-          _.each(notification, function(notificationData, key) {
-            dataTmp.push(notificationData.updateData);
-          });
-          profileListTmp.push({
-            agentKey : agentKey,
-            dataList : dataTmp
+
+        // 受け取った通知からProfileを抽出し、画面に保持する。
+        var instance = this;
+        $.each(notificationList, function(notification, dataObj) {
+
+          // Profile以外の通知は処理を行わない。
+          if (!notification.endsWith("profiler")) {
+            return false;
+          }
+          var agentKey = notification.split("/")[0];
+          $.each(dataObj, function(key, notificationData) {
+
+            var existFlag = false;
+            var dataTmp = [];
+            $.each(instance.profileList, function(index, profile) {
+              if (profile.agentKey === agentKey) {
+                existFlag = true;
+                profile.dataList.push(notificationData.updateData);
+              } else {
+                dataTmp.push(notificationData.updateData);
+              }
+            });
+
+            if (!existFlag) {
+              instance.profileList.push({
+                agentKey : agentKey,
+                dataList : dataTmp
+              });
+            }
           });
         });
-        this.profileList = $.merge(this.profileList, profileListTmp)
+
+        // 最初の通知を受け取った10秒後にソケットを閉じるフラグを設定する。
+        if (this.isOpenSocket) {
+          setTimeout(function() {
+            instance.isOpenSocket = false;
+          }, 10000);
+        }
+
         this._renderSystemMap();
       },
       _renderSystemMap : function() {
-        // システムマップを読み込む。
-
         // 関連を抽出する。
         var relTargetList = this._getRelationTarget(this.profileList);
         // 関連するオブジェクトを生成する。（関連のないAgentは生成しない。）
@@ -97,16 +140,16 @@ ENS.SystemMapView = wgp.AbstractView
               } ],
               paintStyle : {
                 lineWidth : 2,
-                strokeStyle : "#add8e6",
+                strokeStyle : "#b0c4de",
                 outlineWidth : 1,
-                outlineColor : "#87ceeb"
+                outlineColor : "#e6e6fab"
               },
               hoverPaintStyle : {
-                strokeStyle : "#87ceeb"
+                strokeStyle : "#e6e6fab"
               },
               endpoint : "Dot",
               endpointStyle : {
-                fillStyle : "#add8e6",
+                fillStyle : "#b0c4de",
                 radius : 5
               },
               anchor : [ "Right", "Left" ],
@@ -135,6 +178,10 @@ ENS.SystemMapView = wgp.AbstractView
 
         this.systemMap = jsPlumb.ready(this.systemMapSetting.init);
 
+        // リアルタイム描画の制御フラグがオフの場合、ソケットを閉じる。
+        if (!this.isOpenSocket) {
+          this.WebSocket.ws.close(4500, "描画済み");
+        }
       },
       _renderSelectArea : function() {
         // クラスタ選択ドロップダウンリスト
@@ -156,10 +203,19 @@ ENS.SystemMapView = wgp.AbstractView
         $subcontainer.append($selectorLabel);
         $subcontainer.append($selector);
 
+        // リロードボタン配置
         var $reloadBtn = $("<button/>");
         $reloadBtn.attr("id", this.ID_RELOAD_BTN);
         $reloadBtn.css("margin-left", "10px");
         $reloadBtn.html("reload");
+
+        var instance = this;
+        $reloadBtn.click(function() {
+          // SystemMapの読み込み。
+          instance.websocketClient = instance._connectSocket();
+          instance.isOpenSocket = true;
+          instance._onLoadSystemMap();
+        });
 
         $subcontainer.append($reloadBtn);
       },
@@ -169,7 +225,7 @@ ENS.SystemMapView = wgp.AbstractView
           var relationTarget = {
             db : [],
             agent : []
-          }
+          };
 
           var agentKey = proflie.agentKey;
           var dataList = proflie.dataList;
@@ -219,7 +275,7 @@ ENS.SystemMapView = wgp.AbstractView
           if ($("#agent_" + agentKey).length === 0) {
             $("#" + id).append(
                 '<div class="map-elm" id="agent_' + agentKey + '"><span>'
-                    + agentKey + '</span><div class="app"></div></div>')
+                    + agentKey + '</span><div class="app"></div></div>');
           }
 
           var relTargetList = relTargetListAll[agentKey];
@@ -229,7 +285,7 @@ ENS.SystemMapView = wgp.AbstractView
             if ($("#db_" + dbName).length === 0) {
               $("#" + id).append(
                   '<div class="map-elm" id="db_' + dbName + '"><span>' + dbName
-                      + '</span><div class="data-resource"></div></div>')
+                      + '</span><div class="data-resource"></div></div>');
             }
           });
 
@@ -240,12 +296,12 @@ ENS.SystemMapView = wgp.AbstractView
                 if (agentKey === agentName) {
                   $("#" + id).append(
                       '<div class="map-elm" id="agent_' + agentKey + '"><span>'
-                          + agentKey + '</span><div class="app"></div></div>')
+                          + agentKey + '</span><div class="app"></div></div>');
                 } else if (agentKey.startsWith(agentName)
                     && agentKey.match(/_\d\d\d$/)) {
                   $("#" + id).append(
                       '<div class="map-elm" id="agent_' + agentKey + '"><span>'
-                          + agentKey + '</span><div class="app"></div></div>')
+                          + agentKey + '</span><div class="app"></div></div>');
                 }
               }
             });
@@ -324,19 +380,20 @@ ENS.SystemMapView = wgp.AbstractView
 
         // コストが高いオブジェクト順に左に配置。
         // 配置した列に複数存在する場合は、１行下に配置。
+        var instance = this;
         var targetCost = 0;
-        var marginTop = 10;
-        var marginLeft = 10;
+        var marginTop = this.OBJ_MARGIN;
+        var marginLeft = this.OBJ_MARGIN;
         $.each(costList, function(index, target) {
           if (index === 0) {
             targetCost = target.cost;
           } else if (target.cost < targetCost) {
             targetCost = target.cost;
-            marginLeft += 280;
-            marginTop = 10;
+            marginLeft += instance.OBJ_MARGIN_LEFT;
+            marginTop = instance.OBJ_MARGIN;
           } else {
-            marginLeft = 10;
-            marginTop += 120;
+            marginLeft = instance.OBJ_MARGIN;
+            marginTop += instance.OBJ_MARGIN_TOP;
           }
 
           $("#" + target.id).css("top", marginTop + "px");
@@ -363,22 +420,29 @@ ENS.SystemMapView = wgp.AbstractView
         return $selector;
       },
       _callbackGetTopNodes : function($selector, topNodes) {
-        var cnt = 0;
         for ( var i in topNodes) {
           var cluster = topNodes[i];
-          $option = $("<option/>");
+
+          // クラスタ名がない場合は追加しない。
+          if (!cluster.data) {
+            continue;
+          }
+
+          var $option = $("<option/>");
           $option.attr("value", cluster.data);
           $option.html(cluster.data);
           $selector.append($option);
-          if (cnt == 0) {
+          if (i === 0) {
             $selector.val(cluster.data);
           }
-          cnt++;
         }
 
         var instance = this;
         $selector.change(function() {
-
+          // SystemMapの読み込み。
+          instance.websocketClient = instance._connectSocket();
+          instance.isOpenSocket = true;
+          instance._onLoadSystemMap();
         });
       },
       _getAgentList : function(clusterName) {
