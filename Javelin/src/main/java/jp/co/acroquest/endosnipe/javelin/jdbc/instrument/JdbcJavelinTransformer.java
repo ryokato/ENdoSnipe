@@ -38,11 +38,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.co.acroquest.endosnipe.common.logger.SystemLogger;
-import jp.co.acroquest.endosnipe.javelin.common.JavassistUtil;
-import jp.co.acroquest.endosnipe.javelin.jdbc.common.JdbcJavelinConfig;
-import jp.co.acroquest.endosnipe.javelin.jdbc.common.JdbcJavelinMessages;
-import jp.co.acroquest.endosnipe.javelin.jdbc.stats.JdbcJavelinRecorder;
-import jp.co.acroquest.endosnipe.javelin.jdbc.stats.JdbcJavelinStatement;
 import jp.co.acroquest.endosnipe.javassist.CannotCompileException;
 import jp.co.acroquest.endosnipe.javassist.ClassPool;
 import jp.co.acroquest.endosnipe.javassist.CtBehavior;
@@ -51,6 +46,12 @@ import jp.co.acroquest.endosnipe.javassist.CtField;
 import jp.co.acroquest.endosnipe.javassist.CtMethod;
 import jp.co.acroquest.endosnipe.javassist.Modifier;
 import jp.co.acroquest.endosnipe.javassist.NotFoundException;
+import jp.co.acroquest.endosnipe.javelin.common.JavassistUtil;
+import jp.co.acroquest.endosnipe.javelin.common.logger.SqlLogger;
+import jp.co.acroquest.endosnipe.javelin.jdbc.common.JdbcJavelinConfig;
+import jp.co.acroquest.endosnipe.javelin.jdbc.common.JdbcJavelinMessages;
+import jp.co.acroquest.endosnipe.javelin.jdbc.stats.JdbcJavelinRecorder;
+import jp.co.acroquest.endosnipe.javelin.jdbc.stats.JdbcJavelinStatement;
 
 /**
  * Java Instrumentation APIにより、javaagentとしてクラスの変換を行う.
@@ -156,6 +157,7 @@ public class JdbcJavelinTransformer implements ClassFileTransformer
         // JdbcJavelin関連の設定値をjavelin.confファイルから読込む
         JdbcJavelinConfig config = new JdbcJavelinConfig();
         JdbcJavelinRecorder.setJdbcJavelinConfig(config);
+        SqlLogger.initSystemLog(config);
 
         // JDBCの設定値を取得する
         boolean recordExecPlan = config.isRecordExecPlan();
@@ -170,6 +172,8 @@ public class JdbcJavelinTransformer implements ClassFileTransformer
         boolean recordStackTrace = config.isRecordStackTrace();
         int recordStackTraceThreshold = config.getRecordStackTraceThreshold();
         boolean isLightweightMode = config.isJdbcjavelinLightweightMode();
+        boolean logAllSql = config.isLogAllSql();
+        String jdbcLogDir = config.getLogDir();
 
         // JDBCの設定値を標準出力する
         PrintStream out = System.out;
@@ -189,6 +193,8 @@ public class JdbcJavelinTransformer implements ClassFileTransformer
         out.println("\tjavelin.jdbc.record.statement.num.maximum : " + queryLimitCount);
         out.println("\tjavelin.jdbc.record.stackTrace            : " + recordStackTrace);
         out.println("\tjavelin.jdbc.record.stackTraceThreshold   : " + recordStackTraceThreshold);
+        out.println("\tjavelin.jdbc.log.all.sql                  : " + logAllSql);
+        out.println("\tjavelin.jdbc.log.dir                      : " + jdbcLogDir);
         out.println("<<<<");
     }
 
