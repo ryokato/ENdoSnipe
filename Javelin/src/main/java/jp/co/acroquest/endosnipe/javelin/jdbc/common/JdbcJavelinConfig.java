@@ -35,56 +35,55 @@ import jp.co.acroquest.endosnipe.common.config.JavelinConfigUtil;
 public class JdbcJavelinConfig extends JavelinConfig
 {
     /** 実行計画を取得するか否かを設定するキー。 */
-    public static final String RECORDEXECPLAN_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.recordExecPlan";
-    
-    /** SQL文のFull Scanを監視するか否かを設定するキー。 */ 
-    public static final String FULLSCAN_MONITOR_KEY =
-        JavelinConfig.JAVELIN_PREFIX + "jdbc.fullScan.monitor";
+    public static final String RECORDEXECPLAN_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.recordExecPlan";
+
+    /** SQL文のFull Scanを監視するか否かを設定するキー。 */
+    public static final String FULLSCAN_MONITOR_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.fullScan.monitor";
 
     /** JDBC呼出し重複出力を行うか否かを設定するキー。 */
-    public static final String RECORDDUPLJDBCCALL_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.recordDuplJdbcCall";
+    public static final String RECORDDUPLJDBCCALL_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.recordDuplJdbcCall";
 
     /** バインド変数を取得するか否かを設定するキー。 */
-    public static final String RECORDBINDVAL_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.recordBindVal";
+    public static final String RECORDBINDVAL_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.recordBindVal";
 
     /** 実行計画を取得する閾値を設定するキー。 */
-    public static final String EXECPLANTHRESHOLD_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.execPlanThreshold";
+    public static final String EXECPLANTHRESHOLD_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.execPlanThreshold";
 
     /** バインド変数出力での文字列長制限を設定するキー。 */
-    public static final String STRINGLIMITLENGTH_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.stringLimitLength";
+    public static final String STRINGLIMITLENGTH_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.stringLimitLength";
 
     /** 同一トランザクション内の同一SQL呼び出し回数超過の閾値を監視するか否かを設定するキー。 */
-    public static final String SQLCOUNT_MONITOR_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.sqlcount.monitor";
+    public static final String SQLCOUNT_MONITOR_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.sqlcount.monitor";
 
     /** 同一トランザクション内の同一SQL呼び出し回数超過の閾値。 */
-    public static final String SQLCOUNT_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.sqlcount";
+    public static final String SQLCOUNT_KEY = JavelinConfig.JAVELIN_PREFIX + "jdbc.sqlcount";
 
     /** SQLトレース出力を行うか否かを設定するキー。 */
-    public static final String ORACLE_ALLOW_SQL_TRACE_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.oracle.allowSqlTrace";
+    public static final String ORACLE_ALLOW_SQL_TRACE_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.oracle.allowSqlTrace";
 
     /** PostgreSQLで詳細な実行計画を取得するか否かを設定するキー。 */
-    public static final String POSTGRES_VERBOSE_PLAN_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.postgres.verbosePlan";
+    public static final String POSTGRES_VERBOSE_PLAN_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.postgres.verbosePlan";
 
     /** 最大クエリ保存数を設定するキー。 */
-    public static final String RECORD_STATEMENT_NUM_MAXIMUM_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.record.statement.num.maximum";
+    public static final String RECORD_STATEMENT_NUM_MAXIMUM_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.record.statement.num.maximum";
 
     /** JDBCJavelinでスタックトレース出力のON/OFFを設定するキー。 */
-    public static final String RECORD_STACKTRACE_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.record.stackTrace";
+    public static final String RECORD_STACKTRACE_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.record.stackTrace";
 
     /** JDBCJavelinでスタックトレースを出力するための閾値。 */
-    public static final String RECORD_STACKTRACE_THREADHOLD_KEY =
-            JavelinConfig.JAVELIN_PREFIX + "jdbc.record.stacktraceThreashold";
+    public static final String RECORD_STACKTRACE_THREADHOLD_KEY = JavelinConfig.JAVELIN_PREFIX
+        + "jdbc.record.stacktraceThreashold";
 
     /** JDBCJavelinを有効にするかどうかのキー */
     public static final String JDBC_JAVELIN_ENABLED_KEY = JAVELIN_PREFIX + "jdbc.enable";
@@ -92,11 +91,17 @@ public class JdbcJavelinConfig extends JavelinConfig
     /** JDBCJavelinをLightweightモードで動作させるかどうかのキー */
     public static final String JDBC_JAVELIN_LIGHTWEIGHT_KEY = JAVELIN_PREFIX + "jdbc.lightweight";
 
+    /** 全SQLをログ出力させるかどうかのキー */
+    public static final String LOG_ALL_SQL_KEY = JAVELIN_PREFIX + "jdbc.log.all.sql";
+
+    /** SQLログの出力先フォルダのキー */
+    public static final String JDBC_LOG_DIR_KEY = JAVELIN_PREFIX + "jdbc.log.dir";
+
     /** 実行計画出力ON/OFFフラグのデフォルト値 */
     private static final boolean DEFAULT_RECORDEXECPLAN = false;
-    
+
     /** SQL文のFull Scanを監視するか否かを設定する値のデフォルト値 */
-    private static final boolean DEFAULT_FULLSCAN_MONITOR = true; 
+    private static final boolean DEFAULT_FULLSCAN_MONITOR = true;
 
     /** JDBC呼出し重複出力フラグのデフォルト値 */
     private static final boolean DEFAULT_RECORDDUPLJDBCCALL = false;
@@ -115,7 +120,7 @@ public class JdbcJavelinConfig extends JavelinConfig
 
     /** 閾値のデフォルト */
     private static final int DEFAULT_SQLCOUNT = 20;
-    
+
     /** SQLトレース出力フラグのデフォルト値 */
     private static final boolean DEFAULT_ORACLE_ALLOW_SQL_TRACE = false;
 
@@ -139,7 +144,7 @@ public class JdbcJavelinConfig extends JavelinConfig
 
     /** 実行計画を取得するか否かを設定するキー。 */
     private static boolean isRecordExecPlan__;
-    
+
     /** SQL文のFull Scanを監視するか否かを設定するキー。*/
     private static boolean isFullScanMonitor__;
 
@@ -190,8 +195,13 @@ public class JdbcJavelinConfig extends JavelinConfig
      * JDBCJavelinの記録モードをLightweightモードにするか。<br/>
      * trueの場合、監視に必要のない実行計画等を取得しない。デフォルト値はfalse。
      */
-    private static boolean isJdbcJavelinLightweightMode_;
+    private static boolean isJdbcJavelinLightweightMode__;
 
+    /** 全SQLをログ出力させるかどうか */
+    private static boolean logAllSql__;
+
+    /** SQLログの出力先フォルダ */
+    private static String logDir__;
     static
     {
         initialize();
@@ -209,27 +219,29 @@ public class JdbcJavelinConfig extends JavelinConfig
         isRecordExecPlan__ = configUtil.getBoolean(RECORDEXECPLAN_KEY, DEFAULT_RECORDEXECPLAN);
         isFullScanMonitor__ = configUtil.getBoolean(FULLSCAN_MONITOR_KEY, DEFAULT_FULLSCAN_MONITOR);
         isRecordDuplJdbcCall__ =
-                configUtil.getBoolean(RECORDDUPLJDBCCALL_KEY, DEFAULT_RECORDDUPLJDBCCALL);
+            configUtil.getBoolean(RECORDDUPLJDBCCALL_KEY, DEFAULT_RECORDDUPLJDBCCALL);
         isRecordBindVal__ = configUtil.getBoolean(RECORDBINDVAL_KEY, DEFAULT_RECORDBINDVAL);
         execPlanThreshold__ = configUtil.getLong(EXECPLANTHRESHOLD_KEY, DEFAULT_EXECPLANTHRESHOLD);
         stringLimitLength__ = configUtil.getLong(STRINGLIMITLENGTH_KEY, DEFAULT_STRINGLIMITLENGTH);
         isSqlcountMonitor__ = configUtil.getBoolean(SQLCOUNT_MONITOR_KEY, DEFAULT_SQLCOUNT_MONITOR);
         sqlcount__ = configUtil.getLong(SQLCOUNT_KEY, DEFAULT_SQLCOUNT);
         isOracleAllowSqlTrace__ =
-                configUtil.getBoolean(ORACLE_ALLOW_SQL_TRACE_KEY, DEFAULT_ORACLE_ALLOW_SQL_TRACE);
+            configUtil.getBoolean(ORACLE_ALLOW_SQL_TRACE_KEY, DEFAULT_ORACLE_ALLOW_SQL_TRACE);
         isPostgresVerbosePlan__ =
-                configUtil.getBoolean(POSTGRES_VERBOSE_PLAN_KEY, DEFAULT_POSTGRES_VERBOSE_PLAN);
+            configUtil.getBoolean(POSTGRES_VERBOSE_PLAN_KEY, DEFAULT_POSTGRES_VERBOSE_PLAN);
         recordStatementNumMaximum__ =
-                configUtil.getInteger(RECORD_STATEMENT_NUM_MAXIMUM_KEY,
-                                      DEFAULT_MAX_RECORD_STATEMENT_NUM_MAXIMUM);
+            configUtil.getInteger(RECORD_STATEMENT_NUM_MAXIMUM_KEY,
+                                  DEFAULT_MAX_RECORD_STATEMENT_NUM_MAXIMUM);
         isRecordStackTrace__ = configUtil.getBoolean(RECORD_STACKTRACE_KEY, DEF_RECORD_STACKTRACE);
         recordStacktraceThreashold__ =
             configUtil
                 .getInteger(RECORD_STACKTRACE_THREADHOLD_KEY, DEF_RECORD_STACKTRACE_THRESHOLD);
         isJdbcJavelinEnabled__ =
             configUtil.getBoolean(JDBC_JAVELIN_ENABLED_KEY, DEF_JDBC_JAVELIN_ENABLED);
-        isJdbcJavelinLightweightMode_ =
+        isJdbcJavelinLightweightMode__ =
             configUtil.getBoolean(JDBC_JAVELIN_LIGHTWEIGHT_KEY, DEF_JDBC_JAVELIN_LIGHTWEIGHT);
+        logAllSql__ = configUtil.getBoolean(LOG_ALL_SQL_KEY, false);
+        logDir__ = configUtil.getString(JDBC_LOG_DIR_KEY, "../traces");
     }
 
     /**
@@ -284,7 +296,7 @@ public class JdbcJavelinConfig extends JavelinConfig
     {
         isRecordDuplJdbcCall__ = recordDuplJdbcCall;
     }
- 
+
     /** 
      * 実行計画出力ON/OFFフラグを返す。
      *
@@ -304,7 +316,7 @@ public class JdbcJavelinConfig extends JavelinConfig
     {
         isRecordExecPlan__ = recordExecPlan;
     }
-    
+
     /** 
      * SQL文のFull Scanを監視するかどうのフラグを返す。
      *
@@ -553,7 +565,7 @@ public class JdbcJavelinConfig extends JavelinConfig
      */
     public boolean isJdbcJavelinLightweightMode()
     {
-        return isJdbcJavelinLightweightMode_;
+        return isJdbcJavelinLightweightMode__;
     }
 
     /**
@@ -563,6 +575,25 @@ public class JdbcJavelinConfig extends JavelinConfig
      */
     public void setJdbcJavelinLightweightMode(boolean isJdbcJavelinLightweightMode)
     {
-        JdbcJavelinConfig.isJdbcJavelinLightweightMode_ = isJdbcJavelinLightweightMode;
+        JdbcJavelinConfig.isJdbcJavelinLightweightMode__ = isJdbcJavelinLightweightMode;
     }
+
+    /**
+     * 全SQLをログ出力するかどうかを取得する。
+     * @return 全SQLをログ出力するかどうか
+     */
+    public boolean isLogAllSql()
+    {
+        return logAllSql__;
+    }
+
+    /**
+     * SQLログの出力先フォルダを取得する。
+     * @return SQLログの出力先フォルダ
+     */
+    public String getLogDir()
+    {
+        return logDir__;
+    }
+
 }

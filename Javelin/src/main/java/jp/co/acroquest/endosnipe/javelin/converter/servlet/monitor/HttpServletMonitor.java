@@ -57,10 +57,10 @@ public class HttpServletMonitor
     }
 
     /** セッションIDを入力する引数番号 */
-    private static final int ARGS_SESSIONID_NUM = 0;
+    public static final int ARGS_SESSIONID_NUM = 0;
 
     /** IPアドレスを入力する引数番号 */
-    private static final int ARGS_IPADRESS_NUM = 1;
+    public static final int ARGS_IPADRESS_NUM = 1;
 
     /** ホスト名を入力する引数番号 */
     private static final int ARGS_HOST_NUM = 2;
@@ -84,7 +84,7 @@ public class HttpServletMonitor
     private static final int ARGS_PARAMETER_MAP_NUM = 8;
 
     /** Cookieの値を入力する引数番号 */
-    private static final int ARGS_HTTP_COOKIE_NUM = 9;
+    public static final int ARGS_HTTP_COOKIE_NUM = 9;
 
     /** エラーステータス400番台を表す整数 */
     private static final int ERROR_STATUS_FOUR_HUNDRED = 400;
