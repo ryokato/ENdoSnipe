@@ -6,6 +6,7 @@ ENS.SystemMapView = wgp.AbstractView
         this.DIV_ID_CONTROLLER = "range_controller";
         this.ID_CLUSTER_NAME = "cluster_name";
         this.ID_RELOAD_BTN = "reload_btn";
+        this.SOCKET_CLOSE_TIME = 5000;
 
         // 配置位置の定数
         this.OBJ_MARGIN = 10;
@@ -14,7 +15,7 @@ ENS.SystemMapView = wgp.AbstractView
 
         this.profileList = [];
 
-        this.websocketClient = this._connectSocket();
+        // this.websocketClient = this._connectSocket();
 
         // リアルタイム描画の制御フラグ（falseでコネクションを閉じる。）
         this.isOpenSocket = true;
@@ -64,8 +65,57 @@ ENS.SystemMapView = wgp.AbstractView
         // クラスタ単位でエージェント名を取得し、Profile取得通知を呼び出す。
         this.agentKeyList = this._getAgentList($("#" + this.ID_CLUSTER_NAME)
             .val());
+        this.targetAgentKeyList = $.extend(true, [], this.agentKeyList);
+        this._loadNotify();
+
+        // profileを取得して描画する。
+        var instance = this;
+        setTimeout(
+            function() {
+              $
+                  .each(
+                      instance.agentKeyList,
+                      function(index, agentKey) {
+                        var settings = {
+                          url : ENS.tree.PROFILE_GET,
+                          data : {
+                            agentName : agentKey
+                          }
+                        };
+
+                        // 非同期通信でデータを送信する
+                        settings[wgp.ConnectionConstants.SUCCESS_CALL_OBJECT_KEY] = instance;
+                        var result = instance.ajaxHandler
+                            .requestServerSync(settings);
+
+                        var profileListTmp = $.parseJSON(result);
+                        var dataTmp = [];
+                        $.each(profileListTmp,
+                            function(index, notificationData) {
+
+                              var existFlag = false;
+                              $.each(instance.profileList, function(index,
+                                  profile) {
+                              });
+                              dataTmp.push(notificationData);
+                            });
+                        instance.profileList.push({
+                          agentKey : agentKey,
+                          dataList : dataTmp
+                        });
+                      });
+
+              instance._renderSystemMap();
+              $.each(instance.agentKeyList, function(index, agentKey) {
+                instance._resetNotify(agentKey);
+              });
+            }, this.SOCKET_CLOSE_TIME);
+
+      },
+      _loadNotify : function() {
         var instance = this;
         $.each(this.agentKeyList, function(index, agentKey) {
+          // if ($.inArray(agentKey, instance.targetAgentKeyList) !== -1) {
           ENS.tree.agentName = agentKey;
           var settings = {
             data : {
@@ -73,20 +123,39 @@ ENS.SystemMapView = wgp.AbstractView
             },
             url : ENS.tree.PROFILER_RELOAD
           };
-          instance.ajaxHandler.requestServerAsync(settings);
+          instance._startNotify(agentKey);
+
+          // instance.targetAgentKeyList = instance.targetAgentKeyList
+          // .filter(function(v) {
+          // return v != agentKey;
+          // });
+          // return false;
+          // }
         });
+      },
+      _startNotify : function(agentKey) {
+        var instance = this;
+        ENS.tree.agentName = agentKey;
+        var settings = {
+          data : {
+            agentName : ENS.tree.agentName
+          },
+          url : ENS.tree.PROFILER_RELOAD
+        };
+        instance.ajaxHandler.requestServerAsync(settings);
       },
       notifyEvent : function(notificationList) {
 
         // 受け取った通知からProfileを抽出し、画面に保持する。
         var instance = this;
+        var agentKey = "";
         $.each(notificationList, function(notification, dataObj) {
 
           // Profile以外の通知は処理を行わない。
           if (!notification.endsWith("profiler")) {
             return false;
           }
-          var agentKey = notification.split("/")[0];
+          agentKey = notification.split("/")[0];
           $.each(dataObj, function(key, notificationData) {
 
             var existFlag = false;
@@ -109,16 +178,102 @@ ENS.SystemMapView = wgp.AbstractView
           });
         });
 
-        // 最初の通知を受け取った10秒後にソケットを閉じるフラグを設定する。
-        if (this.isOpenSocket) {
-          setTimeout(function() {
-            instance.isOpenSocket = false;
-          }, 10000);
-        }
+        // 最初の通知を受け取った数秒後に描画をやめる。
+        setTimeout(function() {
+          if (agentKey) {
+            instance._resetNotify(agentKey);
+            instance._loadNotify();
+          }
 
-        this._renderSystemMap();
+          // agentKeyが全て通知し終わっていれば、マップを描画する。
+          if (instance.targetAgentKeyList.length === 0) {
+            if (instance.isOpenSocket) {
+              instance.isOpenSocket = false;
+              instance._renderSystemMap();
+            }
+          }
+        }, this.SOCKET_CLOSE_TIME);
+      },
+      _resetNotify : function(agentName) {
+        var settings = {
+          data : {
+            agentName : agentName
+          },
+          url : ENS.tree.PROFILER_RESET
+        };
+        var ajaxHandler = new wgp.AjaxHandler();
+        ajaxHandler.requestServerAsync(settings);
       },
       _renderSystemMap : function() {
+
+        // TODO DEMO処理ここから //
+        // this.agentKeyList = [ "web_000", "web_001", "web_002",
+        // "batch-manager_000", "batch-cluster_000", "batch-cluster_001",
+        // "batch-cluster_002" ];
+        //
+        // var authDB = "jdbc:postgresql://postgres:5432/auth-db";
+        // var batchDB = "jdbc:postgresql://postgres:5432/batch-db";
+        // var appDB = "jdbc:postgresql://postgres:5432/app-db";
+        //
+        // this.profileList = [];
+        // this.profileList.push({
+        // agentKey : "web_000",
+        // dataList : [ {
+        // className : "/batch-manager"
+        // }, {
+        // className : authDB
+        // }, {
+        // className : appDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "web_001",
+        // dataList : [ {
+        // className : "/batch-manager"
+        // }, {
+        // className : authDB
+        // }, {
+        // className : appDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "web_002",
+        // dataList : [ {
+        // className : "/batch-manager"
+        // }, {
+        // className : authDB
+        // }, {
+        // className : appDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "batch-manager_000",
+        // dataList : [ {
+        // className : "/batch-cluster"
+        // }, {
+        // className : batchDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "batch-cluster_000",
+        // dataList : [ {
+        // className : appDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "batch-cluster_001",
+        // dataList : [ {
+        // className : appDB
+        // } ]
+        // });
+        // this.profileList.push({
+        // agentKey : "batch-cluster_002",
+        // dataList : [ {
+        // className : appDB
+        // } ]
+        // });
+        // TODO DEMO処理ここまで //
+
         // 関連を抽出する。
         var relTargetList = this._getRelationTarget(this.profileList);
         // 関連するオブジェクトを生成する。（関連のないAgentは生成しない。）
@@ -142,10 +297,10 @@ ENS.SystemMapView = wgp.AbstractView
                 lineWidth : 2,
                 strokeStyle : "#b0c4de",
                 outlineWidth : 1,
-                outlineColor : "#e6e6fab"
+                outlineColor : "#b0c4de"
               },
               hoverPaintStyle : {
-                strokeStyle : "#e6e6fab"
+                strokeStyle : "#6495ed"
               },
               endpoint : "Dot",
               endpointStyle : {
@@ -178,10 +333,6 @@ ENS.SystemMapView = wgp.AbstractView
 
         this.systemMap = jsPlumb.ready(this.systemMapSetting.init);
 
-        // リアルタイム描画の制御フラグがオフの場合、ソケットを閉じる。
-        if (!this.isOpenSocket) {
-          this.WebSocket.ws.close(4500, "描画済み");
-        }
       },
       _renderSelectArea : function() {
         // クラスタ選択ドロップダウンリスト
@@ -212,7 +363,7 @@ ENS.SystemMapView = wgp.AbstractView
         var instance = this;
         $reloadBtn.click(function() {
           // SystemMapの読み込み。
-          instance.websocketClient = instance._connectSocket();
+          // instance.websocketClient = instance._connectSocket();
           instance.isOpenSocket = true;
           instance._onLoadSystemMap();
         });
@@ -221,6 +372,7 @@ ENS.SystemMapView = wgp.AbstractView
       },
       _getRelationTarget : function(profileList) {
         var relTargetList = {};
+        var instance = this;
         $.each(profileList, function(index, proflie) {
           var relationTarget = {
             db : [],
@@ -245,8 +397,14 @@ ENS.SystemMapView = wgp.AbstractView
             } else {
               // リクエスト判定
               targetStr = target.split("/")[1];
-              if ($.inArray(targetStr, relationTarget.agent) === -1) {
-                relationTarget.agent.push(targetStr);
+              if (targetStr) {
+                $.each(instance.agentKeyList, function(index, baseAgentKey) {
+                  if (baseAgentKey.startsWith(targetStr)) {
+                    if ($.inArray(baseAgentKey, relationTarget.agent) === -1) {
+                      relationTarget.agent.push(baseAgentKey);
+                    }
+                  }
+                });
               }
             }
           });
@@ -280,38 +438,55 @@ ENS.SystemMapView = wgp.AbstractView
 
           var relTargetList = relTargetListAll[agentKey];
 
-          // DBオブジェクトを生成
-          $.each(relTargetList.db, function(index, dbName) {
-            if ($("#db_" + dbName).length === 0) {
-              $("#" + id).append(
-                  '<div class="map-elm" id="db_' + dbName + '"><span>' + dbName
-                      + '</span><div class="data-resource"></div></div>');
-            }
-          });
+          if (!relTargetList) {
+            return true;
+          }
 
-          // クラスタ構成のAgent名は末尾に連番が付与されているため、その分生成する。
-          $.each(relTargetList.agent, function(index, agentName) {
-            $.each(agentKeyList, function(index, agentKey) {
-              if ($("#agent_" + agentKey).length === 0) {
-                if (agentKey === agentName) {
-                  $("#" + id).append(
-                      '<div class="map-elm" id="agent_' + agentKey + '"><span>'
-                          + agentKey + '</span><div class="app"></div></div>');
-                } else if (agentKey.startsWith(agentName)
-                    && agentKey.match(/_\d\d\d$/)) {
-                  $("#" + id).append(
-                      '<div class="map-elm" id="agent_' + agentKey + '"><span>'
-                          + agentKey + '</span><div class="app"></div></div>');
-                }
+          // DBオブジェクトを生成
+          if (relTargetList.db) {
+            $.each(relTargetList.db, function(index, dbName) {
+              if ($("#db_" + dbName).length === 0) {
+                $("#" + id).append(
+                    '<div class="map-elm" id="db_' + dbName + '"><span>'
+                        + dbName
+                        + '</span><div class="data-resource"></div></div>');
               }
             });
-          });
+          }
+
+          // クラスタ構成のAgent名は末尾に連番が付与されているため、その分生成する。
+          if (relTargetList.agent) {
+            $.each(relTargetList.agent, function(index, agentName) {
+              $.each(agentKeyList, function(index, agentKey) {
+                if ($("#agent_" + agentKey).length === 0) {
+                  if (agentKey === agentName) {
+                    $("#" + id).append(
+                        '<div class="map-elm" id="agent_' + agentKey
+                            + '"><span>' + agentKey
+                            + '</span><div class="app"></div></div>');
+                  } else if (agentKey.startsWith(agentName)
+                      && agentKey.match(/_\d\d\d$/)) {
+                    $("#" + id).append(
+                        '<div class="map-elm" id="agent_' + agentKey
+                            + '"><span>' + agentKey
+                            + '</span><div class="app"></div></div>');
+                  }
+                }
+              });
+            });
+          }
+
         });
       },
       _getRelation : function(relTargetListAll) {
 
         var connection = [];
         $.each(relTargetListAll, function(agentKey, relTargetList) {
+          // 存在しないエージェントは対象外とする。
+          if ($("#agent_" + agentKey).length === 0) {
+            return true;
+          }
+
           // DBの関連を指定。
           $.each(relTargetList.db, function(index, dbName) {
             connection.push([ "agent_" + agentKey, "db_" + dbName ]);
@@ -360,10 +535,8 @@ ENS.SystemMapView = wgp.AbstractView
           if (existTarget2 == -1) {
             costList.push({
               id : target2,
-              cost : -1
+              cost : 0
             });
-          } else {
-            costList[existTarget2].cost == costList[existTarget2].cost - 1;
           }
         });
 
@@ -392,7 +565,6 @@ ENS.SystemMapView = wgp.AbstractView
             marginLeft += instance.OBJ_MARGIN_LEFT;
             marginTop = instance.OBJ_MARGIN;
           } else {
-            marginLeft = instance.OBJ_MARGIN;
             marginTop += instance.OBJ_MARGIN_TOP;
           }
 
@@ -440,7 +612,7 @@ ENS.SystemMapView = wgp.AbstractView
         var instance = this;
         $selector.change(function() {
           // SystemMapの読み込み。
-          instance.websocketClient = instance._connectSocket();
+          // instance.websocketClient = instance._connectSocket();
           instance.isOpenSocket = true;
           instance._onLoadSystemMap();
         });

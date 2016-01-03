@@ -204,6 +204,7 @@ ENS.tree.PROFILER_RELOAD = wgp.common.getContextPath()+"/profiler/reload";
 ENS.tree.PROFILER_RESET = wgp.common.getContextPath()+"/profiler/reset";
 ENS.tree.PROFILER_UPDATE = wgp.common.getContextPath()+"/profiler/update";
 ENS.tree.PROFILER_DOWNLOAD = wgp.common.getContextPath()+"/profiler/download";
+ENS.tree.PROFILE_GET = wgp.common.getContextPath() + "/profiler/getProfile";
 
 ENS.tree.CONTROLLER_RELOAD = wgp.common.getContextPath()+"/property/reload";
 ENS.tree.CONTROLLER_UPDATE = wgp.common.getContextPath()+"/property/update";

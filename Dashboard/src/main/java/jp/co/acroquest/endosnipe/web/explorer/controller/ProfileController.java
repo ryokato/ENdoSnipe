@@ -18,13 +18,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import jp.co.acroquest.endosnipe.web.explorer.dto.MethodModelDto;
-import jp.co.acroquest.endosnipe.web.explorer.entity.ClassModel;
-import jp.co.acroquest.endosnipe.web.explorer.entity.InvocationInfo;
-import jp.co.acroquest.endosnipe.web.explorer.manager.ProfilerManager;
-import jp.co.acroquest.endosnipe.web.explorer.service.ProfilerService;
-import net.arnx.jsonic.JSON;
-
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,9 +26,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jp.co.acroquest.endosnipe.web.explorer.dto.MethodModelDto;
+import jp.co.acroquest.endosnipe.web.explorer.entity.ClassModel;
+import jp.co.acroquest.endosnipe.web.explorer.entity.InvocationInfo;
+import jp.co.acroquest.endosnipe.web.explorer.manager.ProfilerManager;
+import jp.co.acroquest.endosnipe.web.explorer.service.ProfilerService;
+import net.arnx.jsonic.JSON;
+
 /**
  * プロファイラ機能のコントローラクラス
- * 
+ *
  * @author hiramatsu
  */
 @Controller
@@ -56,7 +56,7 @@ public class ProfileController
 
     /**
      * 「再読み込み」
-     * 
+     *
      * @param agentName 操作対象のエージェント名
      */
     @RequestMapping(value = "/reload", method = RequestMethod.POST)
@@ -68,7 +68,7 @@ public class ProfileController
 
     /**
      * 「リセット」
-     * 
+     *
      * @param agentName 通知対象エージェント名
      */
     @RequestMapping(value = "/reset", method = RequestMethod.POST)
@@ -80,7 +80,7 @@ public class ProfileController
 
     /**
      * 「設定を反映」
-     * 
+     *
      * @param agentName 通知対象エージェント名
      * @param invocations 通知する設定情報
      */
@@ -118,7 +118,7 @@ public class ProfileController
 
         String result = profilerService_.createCsvData(classModels);
 
-        //レスポンス設定           
+        //レスポンス設定
         response.setContentType("application/octet-stream");
         response.setCharacterEncoding("Windows-31j");
         response.setHeader("Content-Disposition", "filename=\"profile.csv\"");
@@ -131,5 +131,19 @@ public class ProfileController
         {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * プロファイラデータを取得する。
+     * @param response {@link HttpServletResponse}
+     * @param agentName エージェント名
+     */
+    @RequestMapping(value = "/getProfile", method = RequestMethod.POST)
+    @ResponseBody
+    public ClassModel[] getProfile(final HttpServletResponse response,
+            @RequestParam(value = "agentName") final String agentName)
+    {
+        ProfilerManager manager = ProfilerManager.getInstance();
+        return manager.getProfilerData(agentName);
     }
 }
