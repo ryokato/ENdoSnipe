@@ -25,6 +25,10 @@
  ******************************************************************************/
 package jp.co.acroquest.endosnipe.javelin.jdbc.stats;
 
+import static jp.co.acroquest.endosnipe.javelin.converter.servlet.monitor.HttpServletMonitor.ARGS_HTTP_COOKIE_NUM;
+import static jp.co.acroquest.endosnipe.javelin.converter.servlet.monitor.HttpServletMonitor.ARGS_IPADRESS_NUM;
+import static jp.co.acroquest.endosnipe.javelin.converter.servlet.monitor.HttpServletMonitor.ARGS_SESSIONID_NUM;
+
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -50,6 +54,7 @@ import jp.co.acroquest.endosnipe.javelin.StatsJavelinRecorder;
 import jp.co.acroquest.endosnipe.javelin.bean.Component;
 import jp.co.acroquest.endosnipe.javelin.bean.ExcludeMonitor;
 import jp.co.acroquest.endosnipe.javelin.bean.Invocation;
+import jp.co.acroquest.endosnipe.javelin.common.logger.SqlLogger;
 import jp.co.acroquest.endosnipe.javelin.converter.leak.monitor.CollectionMonitor;
 import jp.co.acroquest.endosnipe.javelin.event.FullScanEvent;
 import jp.co.acroquest.endosnipe.javelin.jdbc.common.JdbcJavelinConfig;
@@ -595,6 +600,11 @@ public class JdbcJavelinRecorder
 
             // 再構築したargsをnodeにセット
             node.setArgs(tempArgs.toArray(new String[tempArgs.size()]));
+
+            if (config__.isLogAllSql())
+            {
+                appendSqlLog(stmt, tree, node, queryTime);
+            }
         }
         catch (Exception ex)
         {
@@ -607,6 +617,51 @@ public class JdbcJavelinRecorder
             jdbcJvnStatus.setExecPlanSql(null);
         }
 
+    }
+
+    /**
+     * SQLログを書き込む。
+     * @param stmt {@link Statement}
+     * @param tree {@link CallTree}
+     * @param node {@link CallTreeNode}
+     * @param queryTime クエリ発行時間
+     */
+    private static void appendSqlLog(final Statement stmt, CallTree tree, CallTreeNode node,
+        long queryTime)
+    {
+        List<String> parameterList = new ArrayList<String>();
+        String[] args = tree.getRootNode().getArgs();
+        if (args != null && args.length > ARGS_HTTP_COOKIE_NUM)
+        {
+            parameterList.add("[IP]" + args[ARGS_IPADRESS_NUM]);
+            parameterList.add("[JSESSIONID]" + args[ARGS_SESSIONID_NUM]);
+            String cookieValue = args[ARGS_HTTP_COOKIE_NUM];
+            if (cookieValue != null && !cookieValue.equals(""))
+            {
+                parameterList.add(args[ARGS_HTTP_COOKIE_NUM]);
+            }
+        }
+        parameterList.add("[Time]" + queryTime);
+        if (config__.isRecordBindVal())
+        {
+            List<?> bindList = SqlUtil.getJdbcJavelinBindValByRef(stmt);
+            if (bindList != null)
+            {
+                int cnt = 0;
+                StringBuffer bindBuffer = new StringBuffer();
+                for (Object bind : bindList)
+                {
+                    if (cnt != 0)
+                    {
+                        bindBuffer.append(", ");
+                    }
+                    bindBuffer.append(bind);
+                    cnt++;
+                }
+                parameterList.add("[Param]" + bindBuffer.toString());
+            }
+        }
+        SqlLogger.getInstance().log(node.getInvocation().getMethodName(), parameterList);
     }
 
     /**

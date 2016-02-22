@@ -57,10 +57,10 @@ public class BindValUtil
      * @param isLimitLength バインド引数を文字列かする際に文字列長を制限するかどうか。
      */
     public static void recordBindVal(List<Map<Integer, Object>> bindValList, int bindValListIndex,
-            int index, Object bindVal, boolean isLimitLength)
+        int index, Object bindVal, boolean isLimitLength)
     {
         JdbcJavelinConfig config = JdbcJavelinRecorder.getConfig();
-        if (config.isRecordBindVal() == false && config.isRecordExecPlan() == false)
+        if (config.isRecordBindVal() == false)
         {
             return;
         }
@@ -88,10 +88,10 @@ public class BindValUtil
      * @param bindVal バインド引数。
      */
     public static void recordBindVal(List<Map<Integer, Object>> bindValList, int bindValListIndex,
-            int index, byte bindVal)
+        int index, byte bindVal)
     {
         JdbcJavelinConfig config = JdbcJavelinRecorder.getConfig();
-        if (config.isRecordBindVal() == false && config.isRecordExecPlan() == false)
+        if (config.isRecordBindVal() == false)
         {
             return;
         }
@@ -109,14 +109,14 @@ public class BindValUtil
      * @param bindVal バインド引数。
      */
     public static void recordBindVal(List<Map<Integer, Object>> bindValList, int bindValListIndex,
-            int index, byte[] bindVal)
+        int index, byte[] bindVal)
     {
         JdbcJavelinConfig config = JdbcJavelinRecorder.getConfig();
-        if (config.isRecordBindVal() == false && config.isRecordExecPlan() == false)
+        if (config.isRecordBindVal() == false)
         {
             return;
         }
-        
+
         String bindValStr = StatsUtil.toStr(bindVal);
         recordBindVal(bindValList, bindValListIndex, index, bindValStr);
     }
@@ -130,8 +130,13 @@ public class BindValUtil
      * @param bindValStr バインド引数。
      */
     public static void recordBindVal(List<Map<Integer, Object>> bindValList, int bindValListIndex,
-            int index, String bindValStr)
+        int index, String bindValStr)
     {
+        JdbcJavelinConfig config = JdbcJavelinRecorder.getConfig();
+        if (config.isRecordBindVal() == false)
+        {
+            return;
+        }
         Map<Integer, Object> map = getBindValMap(bindValList, bindValListIndex);
         map.put(Integer.valueOf(index), bindValStr);
     }
@@ -144,7 +149,7 @@ public class BindValUtil
      * @return バインド引数のマップ。
      */
     private static Map<Integer, Object> getBindValMap(List<Map<Integer, Object>> bindValList,
-            int bindValListIndex)
+        int bindValListIndex)
     {
         Map<Integer, Object> map;
         if (bindValList.size() <= bindValListIndex)
